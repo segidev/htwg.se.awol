@@ -37,4 +37,30 @@ case class Deck(amount: Int = Deck.defaultAmount) {
   }
 }
 
-val deck1 = new Deck(52)
+val deck1 = new Deck(32)
+
+case object Player {
+  val defaultRank: String = "Pöbel"
+  val ranks = Array[String] ("König", "Vize-König", "Vize-Arschloch", "Arschloch")
+}
+
+case class Player(rank: Int) {
+  def rankName: String = this.rank match {
+    case n:Int if (n >= 0 && n < Player.ranks.length) => Player.ranks(n)
+    case _ => Player.defaultRank
+  }
+}
+
+Player(0).rankName
+Player(1).rankName
+Player(2).rankName
+Player(3).rankName
+Player(4).rankName
+Player(5).rankName
+Player(-2).rankName
+
+/*
+Von Worksheet in eigene Dateien als Klassen anlegen
+Main Funktion klein halten
+Tests dann für die angelegten Klassen erstellen
+*/

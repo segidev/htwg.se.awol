@@ -1,0 +1,8 @@
+package de.htwg.se.awol.model.environmentComponents
+
+sealed trait MessageEnvironment
+
+case object M_DividableByFour extends MessageEnvironment
+case object M_MaxAmountOfCards extends MessageEnvironment
+case object M_MissingLanguage extends MessageEnvironment
+case object M_CardColorNotExist extends MessageEnvironment

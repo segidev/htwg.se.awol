@@ -23,9 +23,7 @@ class CardSpec extends WordSpec with Matchers {
     "should have a value of Bube and be unknown" in {
       val card = new Card(11, 5)
       card.cardName should be("Bube")
-      card.colorName should be("Herz")
+      card.colorName should be("Die gegebene Kartenfarbe existiert nicht!")
     }
   }
 }
-
-

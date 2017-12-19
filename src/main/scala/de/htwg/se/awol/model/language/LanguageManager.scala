@@ -1,5 +1,6 @@
 package de.htwg.se.awol.model.language
 
+import de.htwg.se.awol.model.environmentComponents._
 import de.htwg.se.awol.model.language.handler._
 
 case object LanguageManager {
@@ -26,7 +27,7 @@ case object LanguageManager {
       actualLanguage = langHandler
       actualLangCode = lang
     }
-    case _ => println(getTranslation(StakeAndPepper.M_MissingLanguage) + lang)
+    case _ => println(getTranslation(MessageEnvironment.M_MissingLanguage) + lang)
   }
 
   /**
@@ -40,7 +41,14 @@ case object LanguageManager {
     * @param translationKeyword The short string for the translation
     * @return The translated string or a message that the translation wasn't found
     */
-  def getTranslation(translationKeyword: StakeAndPepper.Value): String = actualLanguage.getTranslation(translationKeyword)
+  def getTranslation(word: PlayerEnvironment): String = actualLanguage.getTranslation(word)
+  def getTranslation(word: CardEnvironment): String = actualLanguage.getTranslation(word)
+  def getTranslation(word: MessageEnvironment): String = actualLanguage.getTranslation(word)
+  //def getTranslation(translationKeyword: MessageEnvironment.Message): String = actualLanguage.getTranslation(translationKeyword)
 
   def availableTranslations: Map[String, LanguageHandler] = languages
+}
+
+trait LanguageM {
+  def getTranslation(a: GlobalEnvironment.Value): String
 }

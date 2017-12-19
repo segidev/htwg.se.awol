@@ -1,7 +1,7 @@
 package de.htwg.se.awol.model.cardComponents
 
+import de.htwg.se.awol.model.environmentComponents.PlayerEnvironment
 import de.htwg.se.awol.model.language.LanguageManager
-import de.htwg.se.awol.model.language.handler.StakeAndPepper
 
 case object Deck {
   val smallCardStackSize: Int = 32
@@ -17,11 +17,11 @@ case class Deck(amount: Int = Deck.smallCardStackSize) {
   private def createCards(amount: Int): Unit = {
     if (amount % Deck.amountOfColoredEquals != 0) {
       //assert(!(amount % 4 != 0), LanguageManager.getMessage("dividableByFour"))
-      println(LanguageManager.getTranslation(StakeAndPepper.M_DividableByFour))
+      println(LanguageManager.getTranslation(MessageEnvironment.M_DividableByFour))
       return
     } else if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
       //assert(amount >= Deck.defaultAmount && amount <= Deck.twoSetsAmount, LanguageManager.getMessage("maxAmountOfCards"))
-      println(LanguageManager.getTranslation(StakeAndPepper.M_MaxAmountOfCards))
+      println(LanguageManager.getTranslation(MessageEnvironment.M_MaxAmountOfCards))
       return
     }
 
@@ -31,10 +31,10 @@ case class Deck(amount: Int = Deck.smallCardStackSize) {
     var startCard: Int = Deck.maxPlayerCardAmount - cardStackSize
 
     for (i <- 0 until amount) {
-      val cardNum = i % cardStackSize + startCard
+      val cardValue = i % cardStackSize + startCard
       val cardColor = i / cardStackSize
 
-      cards(i) = Card(cardNum, cardColor)
+      cards(i) = Card(cardValue, cardColor)
     }
   }
 

@@ -1,7 +1,7 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.model.environmentComponents.SettingsEnvironment
+import de.htwg.se.awol.model.languageComponents._
 import org.junit.runner.RunWith
 import org.scalatest._
 import org.scalatest.junit.JUnitRunner
@@ -10,6 +10,8 @@ import org.scalatest.junit.JUnitRunner
 class DeckSpec extends WordSpec with Matchers {
   "A new Deck" should {
     "contain 32 cards" in {
+      Settings.setLanguage(LanguageGerman)
+
       val deck = new Deck()
       deck.size should be(32)
     }
@@ -28,7 +30,7 @@ class DeckSpec extends WordSpec with Matchers {
       an [IndexOutOfBoundsException] should be thrownBy new Deck(56)
     }
     "return the string representation of the deck in German" in {
-      Settings.setLanguage(SettingsEnvironment.Language.German)
+      Settings.setLanguage(LanguageGerman)
       val deck = new Deck()
 
       val testString = deck.toString
@@ -40,7 +42,7 @@ class DeckSpec extends WordSpec with Matchers {
 
   "Switch to english" should {
     "return the string representation of the deck in English" in {
-      Settings.setLanguage(SettingsEnvironment.Language.English)
+      Settings.setLanguage(LanguageEnglish)
       val deck = new Deck()
 
       val testString = deck.toString

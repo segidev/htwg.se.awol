@@ -4,28 +4,30 @@ import de.htwg.se.awol.model.environmentComponents._
 
 object LanguageGerman extends _LanguageHandler {
   override val translations: Map[Any, String] = Map(
-    PlayerEnvironment.Rank.Mob -> "Pöbel",
-    PlayerEnvironment.Rank.King -> "König",
-    PlayerEnvironment.Rank.Viceroy -> "Vize-König",
-    PlayerEnvironment.Rank.Viceasshole -> "Vize-Arschloch",
-    PlayerEnvironment.Rank.Asshole -> "Arschloch",
+    PlayerEnv.Rank.Mob -> "Pöbel",
+    PlayerEnv.Rank.King -> "König",
+    PlayerEnv.Rank.Viceroy -> "Vize-König",
+    PlayerEnv.Rank.Viceasshole -> "Vize-Arschloch",
+    PlayerEnv.Rank.Asshole -> "Arschloch",
 
-    CardEnvironment.Colors.Clubs -> "Kreuz",
-    CardEnvironment.Colors.Spades -> "Pik",
-    CardEnvironment.Colors.Hearts -> "Herz",
-    CardEnvironment.Colors.Diamonds -> "Karo",
-    CardEnvironment.Descriptions.Jack -> "Bube",
-    CardEnvironment.Descriptions.Queen -> "Dame",
-    CardEnvironment.Descriptions.King -> "König",
-    CardEnvironment.Descriptions.Ace -> "Ass",
+    CardEnv.Colors.Clubs -> "Kreuz",
+    CardEnv.Colors.Spades -> "Pik",
+    CardEnv.Colors.Hearts -> "Herz",
+    CardEnv.Colors.Diamonds -> "Karo",
+    CardEnv.Values.Jack -> "Bube",
+    CardEnv.Values.Queen -> "Dame",
+    CardEnv.Values.King -> "König",
+    CardEnv.Values.Ace -> "Ass",
 
-    MessageEnvironment.Warnings.DividableByFour -> "Anzahl der Karten muss durch 4 teilbar sein!",
-    MessageEnvironment.Warnings.MaxAmountOfCards -> "Anzahl der Spielkarten muss zwischen 32 und 52 liegen.",
-    MessageEnvironment.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: ",
-    MessageEnvironment.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: ",
+    MessageEnv.Warnings.DividableByFour -> "Anzahl der Karten muss durch 4 teilbar sein!",
+    MessageEnv.Warnings.MaxAmountOfCards -> "Anzahl der Spielkarten muss zwischen 32 und 52 liegen.",
+    MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: ",
+    MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: ",
 
-    SettingsEnvironment.Language.German -> "Deutsch",
-    SettingsEnvironment.Language.English -> "Englisch",
-    SettingsEnvironment.Language.Youth -> "Jugendsprache"
+    SettingEnv.Language.German -> "Deutsch",
+    SettingEnv.Language.English -> "Englisch",
+    SettingEnv.Language.Youth -> "Jugendsprache"
   )
+
+  override def getLanguageCode = SettingEnv.Language.German
 }

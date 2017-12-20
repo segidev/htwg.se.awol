@@ -1,7 +1,9 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.environmentComponents.MessageEnvironment
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, MessageEnv}
+
+import scala.collection.mutable.ListBuffer
 
 case object Deck {
   val smallCardStackSize: Int = 32
@@ -13,17 +15,17 @@ case object Deck {
 case class Deck(amount: Int = Deck.smallCardStackSize) {
   validateDeck()
 
+  val cardStackSize: Int = amount / Deck.amountOfColoredEquals
   private var cards: Array[Card] = createCards(amount)
 
   private def createCards(amount: Int): Array[Card] = {
     var cards = new Array[Card](amount)
 
-    val cardStackSize: Int = amount / Deck.amountOfColoredEquals
     var startCard: Int = Deck.maxPlayerCardAmount - cardStackSize
 
     for (i <- 0 until amount) {
-      val cardNum = i % cardStackSize + startCard
-      val cardColor = i / cardStackSize
+      val cardNum = CardEnv.Values.apply(i % cardStackSize + startCard)
+      val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
       cards(i) = Card(cardNum, cardColor)
     }
@@ -31,23 +33,38 @@ case class Deck(amount: Int = Deck.smallCardStackSize) {
     cards
   }
 
-  override def toString: String = {
-    var sb: StringBuilder = new StringBuilder
-
-    for(c <- cards) {
-      sb.append(c).append("\n")
-    }
-
-    sb.toString()
-  }
+  def getCards: ListBuffer[Card] = cards.to[ListBuffer]
 
   def size: Int = cards.length
 
   def validateDeck(): Unit = {
-    if (amount % Deck.amountOfColoredEquals != 0) {
-      throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnvironment.Warnings.DividableByFour))
-    } else if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
-      throw new IndexOutOfBoundsException(LanguageTranslator.translate(MessageEnvironment.Warnings.MaxAmountOfCards))
+    if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
+      throw new IndexOutOfBoundsException(LanguageTranslator.translate(MessageEnv.Warnings.MaxAmountOfCards))
+    } else if (amount % Deck.amountOfColoredEquals != 0) {
+      throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.DividableByFour))
     }
+  }
+
+  override def toString: String = {
+    var sb: StringBuilder = new StringBuilder
+
+    var maxLength = 0;
+    for(c <- cards) {
+      if (c.toString.length > maxLength) {
+        maxLength = c.toString.length
+      }
+    }
+
+    sb.append(size + " cards\n")
+    for(i <- 0 until cardStackSize) {
+      sb.append("|   ")
+      sb.append(cards(i)).append(String.format("%" + (maxLength - cards(i).toString.length + 5) + "s", ""))
+        .append(cards(i + cardStackSize)).append(String.format("%" + (maxLength - cards(i + cardStackSize).toString.length + 5) + "s", ""))
+        .append(cards(i + cardStackSize * 2)).append(String.format("%" + (maxLength - cards(i + cardStackSize * 2).toString.length + 5) + "s", ""))
+        .append(cards(i + cardStackSize * 3))
+        .append("\n")
+    }
+
+    sb.toString()
   }
 }

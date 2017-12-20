@@ -1,7 +1,7 @@
 package de.htwg.se.awol.model.playerComponent
 
-import de.htwg.se.awol.model.language.LanguageManager
-import de.htwg.se.awol.model.language.handler.StakeAndPepper
+import de.htwg.se.awol.controller.environmentController.Settings
+import de.htwg.se.awol.model.environmentComponents.{PlayerEnvironment, SettingsEnvironment}
 import org.junit.runner.RunWith
 import org.scalatest._
 import org.scalatest.junit.JUnitRunner
@@ -11,7 +11,7 @@ class PlayerSpec extends WordSpec with Matchers {
   "A new Player" should {
     "be the Pöbel when initialized without a rank" in {
       val player = new Player()
-      player.rank should be(StakeAndPepper.P_Mob)
+      player.rank should be(PlayerEnvironment.Rank.Mob)
       player.rankName should be("Pöbel")
     }
   }
@@ -20,30 +20,19 @@ class PlayerSpec extends WordSpec with Matchers {
     val player = new Player()
 
     "change it's rank to be a King and should be the König now" in {
-      player.setRank(StakeAndPepper.P_King)
-      player.rank should be(StakeAndPepper.P_King)
+      player.setRank(PlayerEnvironment.Rank.King)
+      player.rank should be(PlayerEnvironment.Rank.King)
       player.rankName should be("König")
     }
     "also become an Asshole what makes him an Arschloch" in {
-      player.setRank(StakeAndPepper.P_Asshole)
-      player.rank should be(StakeAndPepper.P_Asshole)
+      player.setRank(PlayerEnvironment.Rank.Asshole)
+      player.rank should be(PlayerEnvironment.Rank.Asshole)
       player.rankName should be("Arschloch")
     }
-    "shall still be the Asshole even when the game is in english now" in {
-      LanguageManager.switchLanguage("en")
-      player.setRank(StakeAndPepper.P_Asshole)
-      player.rank should be(StakeAndPepper.P_Asshole)
+    "and should still be the Asshole even when the game is in english now" in {
+      Settings.setLanguage(SettingsEnvironment.Language.English)
+
       player.rankName should be("Asshole")
     }
   }
-
-  /*"A Player" when { "new" should {
-    val player = new Player(1)
-    "have a name"  in {
-      player.rankName should be("Vize-König")
-    }
-    "have a nice String representation" in {
-      player.toString should be("Vize-König")
-    }
-  }}*/
 }

@@ -7,6 +7,7 @@ Spiel: Karten austeilen, { Spieler machen Zug, Gewinner wird festgelegt, Ränge 
 Ende: Den Spieler demütigen, egal ob er gewonnen oder verloren hat. Natürlich härter demütigen wenn er verloren hat.
 */
 
+import de.htwg.se.awol.controller.environmentController.Game
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.languageComponents.LanguageGerman
@@ -17,42 +18,6 @@ import scala.collection.mutable.ListBuffer
 import scala.io.StdIn.readLine
 import scala.util.Random
 
-/**
-  * *** States ***
-  * NewGame: In diesem Zustand wird das Kartendeck erstellt und die Anfangskarte wird festgelegt
-  * HandOut: Die Karten werden an die Spieler verteilt und der Spieler der anfangen darf wird festgelegt
-  *
-  * Playing: Die Spieler werfen ihre Karten in die Arena, dabei sind natürlich Regeln zu beachten.
-  *
-  * *** CardConditions ***
-  * One: Es wurde eine Karte gelegt, die anderen Spieler müssen mit genau einer höheren Karte den Stich machen oder passen.
-  * Two: Es wurden zwei Karten gelegt, die anderen Spieler müssen mit genau zwei höheren, gleichen Karten den Stich machen oder passen.
-  * Three: Es wurden drei Karten gelegt, die anderen Spieler müssen mit genau drei höheren, gleichen Karten den Stich machen oder passen.
-  * Four: Es wurden vier Karten gelegt, die anderen Spieler müssen mit genau vier höheren, gleichen Karten den Stich machen oder passen.
-  * *** End of CardConditions ***
-  *
-  * Evaluation: Die Auswertung der Runde. Der Spieler der den Stich gewonnen hat, wird die nächste Runde beginnen. Zurück zu [Playing]
-  *
-  * EndOfGame: Den Spielern werden ihre jeweiligen Ränge zugewiesen. Das Arschloch wird den ersten Zug machen dürfen. Zurück zu [HandOut]
-  * CardSwap: Die Spieler tauschen ihre höchsten/niedrigsten Karten mit den jeweiligen Rängen. Zurück zu [Playing] [Erfordert ein Spieler als Arschloch]
-  * *** End of States ***
-  */
-object Game {
-  // TODO Vielleicht muss man hier noch sicherstellen, dass die States in gewisser Reihenfolge aufgerufen werden!
-  object States extends Enumeration {
-    val NewGame, HandOut, Playing, Evaluation, EndOfGame, CardSwap = Value
-  }
-
-  object CardConditions extends Enumeration {
-    val One, Two, Three, Four = Value
-  }
-
-  private var actualState: States.Value = States.NewGame
-
-  def getActualState: States.Value = actualState
-  def setActualState(newState: States.Value): Unit = actualState = newState
-}
-
 object Arschloch {
   val tui = new Tui
   var deck = new Deck(Deck.smallCardStackSize)
@@ -60,27 +25,34 @@ object Arschloch {
   //noinspection ScalaStyle
   def main(args: Array[String]): Unit = {
     var deckSize = 32
-    var playerCount = 4
-    var starterCard = new Card(CardEnv.Values.Seven, CardEnv.Colors.Diamonds)
+    var playerCount = 2
+    var starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
     var lang = LanguageGerman
 
-    var playerList: Array[Player] = new Array[Player](playerCount)
+    var roundNumber: Int = 0
+
+    var winnerList: ListBuffer[Player] = new ListBuffer
+    var playerList: ListBuffer[Player] = new ListBuffer[Player]
     for (i <- 0 until playerCount) {
-      playerList(i) = new Player(i)
+      playerList.append(new Player(i))
     }
 
-    var activePlayer: Player = playerList(0)
+    var activePlayer: Player = playerList.head
+    var winningPlayer: Player = playerList.head
 
     var input: String = ""
     do {
-      if (Game.getActualState == Game.States.NewGame) {
+      if (Game.getGameState == Game.States.NewGame) {
         println("1. New game with " + playerCount + " players\n")
         println(deck)
         println("Starter Card is: " + starterCard)
         print("Enter s to start game: ")
 
+        input = readLine()
+        deck = tui.processInputLine(input, deck)
       }
-      if (Game.getActualState == Game.States.HandOut) {
+
+      if (Game.getGameState == Game.States.HandOut) {
         println("\n2. Handing out cards to players...\n")
 
         // Get the original card stack
@@ -109,29 +81,85 @@ object Arschloch {
 
         println("Player " + activePlayer.getPlayerNumber + " starts the game!")
 
-        Game.setActualState(Game.States.Playing)
-
-      }
-      if (Game.getActualState == Game.States.Playing) {
         println("\n3. The game starts.\n")
+        Game.setGameState(Game.States.Playing)
+      }
+
+      if (Game.getGameState == Game.States.Playing) {
+        println("Round " + roundNumber + " starts")
+        var cardsOnTable: ListBuffer[Card] = new ListBuffer
+        var actualCardVal: Int = 0
+        var actualCardCount: Int = 0
 
         var i: Int = activePlayer.getPlayerNumber
         for(c <- 0 until playerCount) {
           val player: Player = playerList(i % playerCount)
-          val playerNumber: Int = player.getPlayerNumber
 
-          if (playerNumber == 0) {
-            println("It's YOUR turn")
-          } else {
-            println("It's player " + player.getPlayerNumber + " turn.")
+          if(!winnerList.contains(player)) {
+            val playerNumber: Int = player.getPlayerNumber
+
+            if (playerNumber == -1) {
+              println("It's YOUR turn")
+              input = readLine()
+              deck = tui.processInputLine(input, deck)
+            } else {
+              // TODO Prüfe für KI ob Anzahl der gelegten Karten (1 - 4) vom selben Wert vorhanden und ob höher
+              println("It's player " + player.getPlayerNumber + " turn.")
+
+              player.pickCard(actualCardVal, actualCardCount) match {
+                case Some(o) =>
+                  actualCardVal = o._1; actualCardCount = o._2
+                  activePlayer = player
+
+                  println("He picked " + actualCardCount + " card(s) with value: " + actualCardVal + "\n")
+
+                  if (player.cardAmount == 0) {
+                    // Remove player from actual playing ones and add to winner list
+                    winnerList.append(player)
+                  }
+                case _ => println("He passed...\n")
+              }
+            }
           }
 
           i += 1
         }
+
+        roundNumber += 1
+
+        if (winnerList.length == playerList.length - 1) {
+          Game.setGameState(Game.States.EndOfGame)
+        } else {
+          Game.setGameState(Game.States.Evaluation)
+        }
       }
 
-      input = readLine()
-      deck = tui.processInputLine(input, deck)
+      if (Game.getGameState == Game.States.Evaluation) {
+        println("\n == Player " + activePlayer.getPlayerNumber + " has won the round! == \n")
+
+        Game.setGameState(Game.States.Playing)
+      }
+
+      if (Game.getGameState == Game.States.EndOfGame) {
+        for (i <- winnerList.indices) {
+          val player: Player = winnerList(i)
+          println("\nPlayer " + player.getPlayerNumber + " ranked at place " + (i + 1))
+          //player.setRank()
+        }
+
+        winnerList.clear()
+
+        Game.setGameState(Game.States.HandOut)
+
+        input = readLine()
+
+        /*println("Resetting the game...\n")
+        for (player <- winnerList) {
+          playerList.append(player)
+        }
+
+        winnerList.clear()*/
+      }
     } while(input != "q")
   }
 }

@@ -1,6 +1,6 @@
 package de.htwg.se.awol.view
 
-import de.htwg.se.awol.Game
+import de.htwg.se.awol.controller.environmentController.Game
 import de.htwg.se.awol.model.cardComponents.Deck
 
 class Tui {
@@ -8,14 +8,14 @@ class Tui {
 
   def processInputLine(input: String, deck: Deck): Deck = {
     input match {
-      case "q" => deck
+      case "q" => return deck
       case _ => None
     }
 
-    Game.getActualState match {
+    Game.getGameState match {
       case Game.States.NewGame => input match {
         case "s" =>
-          Game.setActualState(Game.States.HandOut)
+          Game.setGameState(Game.States.HandOut)
           deck
         case _ =>
           System.err.println("Command \"" + input + "\" doesn't exist")

@@ -13,15 +13,15 @@ class DeckSpec extends WordSpec with Matchers {
       Settings.setLanguage(LanguageGerman)
 
       val deck = new Deck()
-      deck.size should be(32)
+      deck.getDeckSize should be(32)
     }
     "contain 44 cards when initialized with it" in {
       val deck = new Deck(44)
-      deck.size should be(44)
+      deck.getDeckSize should be(44)
     }
     "contain 52 cards when initialized with it" in {
       val deck = new Deck(52)
-      deck.size should be(52)
+      deck.getDeckSize should be(52)
     }
     "should throw an exception if the card amount in the deck is not dividable by four" in {
       an [IllegalArgumentException] should be thrownBy new Deck(43)

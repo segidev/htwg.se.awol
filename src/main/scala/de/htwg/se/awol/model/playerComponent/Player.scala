@@ -1,16 +1,15 @@
 package de.htwg.se.awol.model.playerComponent
 
-import de.htwg.se.awol.controller.environmentController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.cardComponents._
-import de.htwg.se.awol.model.environmentComponents._
+import de.htwg.se.awol.model.cardComponents.{Card, Deck}
+import de.htwg.se.awol.model.environmentComponents.PlayerEnv
 
 import scala.collection.mutable.ListBuffer
-import scala.util.Random
 
-class Player(private val playerNumber: Int) {
-  private var rank: PlayerEnv.Rank.Value = PlayerEnv.Rank.Mob
-  private var cards: ListBuffer[Card] = ListBuffer[Card]()
+trait Player {
+  val playerNumber: Int
+  var rank: PlayerEnv.Rank.Value = PlayerEnv.Rank.Mob
+  var cards: ListBuffer[Card] = ListBuffer()
 
   def addCard(assignedCard: Card): Unit = {
     cards.append(assignedCard)
@@ -21,47 +20,13 @@ class Player(private val playerNumber: Int) {
 
   def cardAmount: Int = cards.length
 
-  def removeCards(myCards: ListBuffer[Card], actualCardCount: Int): Option[(Int, Int)] = {
-    if (myCards.nonEmpty) {
-      var i: Int = 0
-      var lastCardValue: Int = myCards.head.cardValue
-      var n: Int = 1
-
-      for (card <- myCards) {
-        if (card.cardValue == lastCardValue) {
-          i += 1
-        } else {
-          i = 1
-          lastCardValue = card.cardValue
-        }
-
-        if (i == actualCardCount) {
-          // Hier alle Karten von Index n-i+1 bis Index n entfernen
-
-          println("Removing card: " + cards.apply(n-i))
-          cards.remove(n-i, i)
-          return Option(lastCardValue, actualCardCount)
-        }
-        n += 1
-      }
-    }
-    None
-  }
-
-  // Playing
-  def pickCard(actualCardVal: Int, actualCardCount: Int): Option[(Int, Int)] = {
-    if (actualCardCount > 0) {
-      val myCards: ListBuffer[Card] = cards.filter(_.cardValue > actualCardVal)
-      removeCards(myCards, actualCardCount)
-    } else {
-      val pickedCard: Card = cards.head
-      removeCards(cards, cards.count(_.cardValue == pickedCard.cardValue))
-    }
-  }
+  def clearCards(): Unit = cards.clear()
 
   def getPlayerNumber: Int = playerNumber
 
   def getRank: PlayerEnv.Rank.Value = rank
+
+  def resetRank(): Unit = rank = PlayerEnv.Rank.Mob
 
   def getRankName: String = LanguageTranslator.translate(rank)
 

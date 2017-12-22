@@ -7,11 +7,12 @@ Spiel: Karten austeilen, { Spieler machen Zug, Gewinner wird festgelegt, Ränge 
 Ende: Den Spieler demütigen, egal ob er gewonnen oder verloren hat. Natürlich härter demütigen wenn er verloren hat.
 */
 
-import de.htwg.se.awol.controller.environmentController.Game
+import de.htwg.se.awol.controller.environmentController.Settings
+import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
-import de.htwg.se.awol.model.environmentComponents.CardEnv
-import de.htwg.se.awol.model.languageComponents.LanguageGerman
-import de.htwg.se.awol.model.playerComponent.Player
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
+import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
+import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 import de.htwg.se.awol.view.Tui
 
 import scala.collection.mutable.ListBuffer
@@ -20,22 +21,39 @@ import scala.util.Random
 
 object Arschloch {
   val tui = new Tui
-  var deck = new Deck(Deck.smallCardStackSize)
+
+  var king: Player = _
+  var viceroy: Player = _
+  var viceasshole: Player = _
+  var asshole: Player = _
 
   //noinspection ScalaStyle
   def main(args: Array[String]): Unit = {
-    var deckSize = 32
-    var playerCount = 2
-    var starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
-    var lang = LanguageGerman
+    var swapCardsNeeded: Boolean = false
+    var deckSize: Int = 32
+    var playerCount: Int = 2 // Dwarf nur 2, 4, 6 oder 8 sign
+    var starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+    Settings.setLanguage(LanguageGerman)
 
-    var roundNumber: Int = 0
+    //TODO: Abfragen Anzahl der Karten durch Anzahl der Spieler gleichmässig verteilt wird
+    /*while(deckSize % playerCount != 0) {
+      deckSize = readLine("How big is your deck? ").toInt
+      playerCount = readLine("How many players should play? ").toInt
+    }*/
 
-    var winnerList: ListBuffer[Player] = new ListBuffer
+    var deck = new Deck(deckSize)
+
+    var roundNumber: Int = 1
+
+    var rankedList: ListBuffer[Player] = new ListBuffer
     var playerList: ListBuffer[Player] = new ListBuffer[Player]
-    for (i <- 0 until playerCount) {
-      playerList.append(new Player(i))
+
+    playerList.append(new HumanPlayer(0))
+    for (i <- 1 until playerCount) {
+      playerList.append(new BotPlayer(i))
     }
+
+    Game.humanPlayer = playerList.head
 
     var activePlayer: Player = playerList.head
     var winningPlayer: Player = playerList.head
@@ -49,7 +67,7 @@ object Arschloch {
         print("Enter s to start game: ")
 
         input = readLine()
-        deck = tui.processInputLine(input, deck)
+        tui.processInputLine(input)
       }
 
       if (Game.getGameState == Game.States.HandOut) {
@@ -70,56 +88,72 @@ object Arschloch {
         }
 
         // Show all players and their cards and find the player with the starter card
-        for (i <- playerList.indices) {
-          val player: Player = playerList(i)
-          println("Player " + player.getPlayerNumber + " holds " + player.cardAmount + " cards with rank " + player)
-
-          if (player.hasCard(starterCard)) {
-            activePlayer = player
+        activePlayer = playerList.find(_.getRank == PlayerEnv.Rank.Asshole) match {
+          case Some(p1) => p1
+          case _ => playerList.find(_.hasCard(starterCard)) match {
+            case Some(p2) => p2
+            case _ => throw new MatchError("No player fulfills the given conditions")
           }
         }
 
-        println("Player " + activePlayer.getPlayerNumber + " starts the game!")
+        // Who got which cards
+        for (i <- playerList.indices) {
+          val player: Player = playerList(i)
+          println("Player " + player.getPlayerNumber + " holds " + player.cardAmount + " cards with rank " + player)
+        }
 
-        println("\n3. The game starts.\n")
-        Game.setGameState(Game.States.Playing)
+        if (swapCardsNeeded) {
+          println("Players swapping cards...")
+          Game.setGameState(Game.States.CardSwap)
+        } else {
+          println("Player " + activePlayer.getPlayerNumber + " starts the game!")
+          println("\n3. The game starts.\n")
+          Game.setGameState(Game.States.Playing)
+        }
+
       }
 
       if (Game.getGameState == Game.States.Playing) {
         println("Round " + roundNumber + " starts")
         var cardsOnTable: ListBuffer[Card] = new ListBuffer
         var actualCardVal: Int = 0
-        var actualCardCount: Int = 0
+        Game.setActualCardCount(0)
+        var passCounter: Int = 0
 
         var i: Int = activePlayer.getPlayerNumber
-        for(c <- 0 until playerCount) {
+        while(passCounter < playerCount - 1) {
           val player: Player = playerList(i % playerCount)
 
-          if(!winnerList.contains(player)) {
+          if(!(rankedList.contains(player) ||  (rankedList.length == playerList.length - 1))) {
             val playerNumber: Int = player.getPlayerNumber
 
-            if (playerNumber == -1) {
-              println("It's YOUR turn")
+            if (playerNumber == 0) {
+              println("It's YOUR turn. Please pick " + Game.getActualCardCount + " cards or type p to pass")
               input = readLine()
-              deck = tui.processInputLine(input, deck)
+              tui.processInputLine(input)
             } else {
-              // TODO Prüfe für KI ob Anzahl der gelegten Karten (1 - 4) vom selben Wert vorhanden und ob höher
               println("It's player " + player.getPlayerNumber + " turn.")
 
-              player.pickCard(actualCardVal, actualCardCount) match {
+              player.pickCard(actualCardVal, Game.getActualCardCount) match {
                 case Some(o) =>
-                  actualCardVal = o._1; actualCardCount = o._2
+                  actualCardVal = o._1; Game.setActualCardCount(o._2)
                   activePlayer = player
 
-                  println("He picked " + actualCardCount + " card(s) with value: " + actualCardVal + "\n")
+                  println("He picked " + Game.getActualCardCount + " card(s) with value: " + actualCardVal + "\n")
 
                   if (player.cardAmount == 0) {
                     // Remove player from actual playing ones and add to winner list
-                    winnerList.append(player)
+                    rankedList.append(player)
                   }
-                case _ => println("He passed...\n")
+                  passCounter = 0
+                case _ =>
+                  passCounter += 1
+                  println("He passed...\n")
               }
+              println(player + "\n")
             }
+          } else {
+            passCounter += 1
           }
 
           i += 1
@@ -127,7 +161,7 @@ object Arschloch {
 
         roundNumber += 1
 
-        if (winnerList.length == playerList.length - 1) {
+        if (rankedList.length >= playerList.length - 1) {
           Game.setGameState(Game.States.EndOfGame)
         } else {
           Game.setGameState(Game.States.Evaluation)
@@ -141,24 +175,52 @@ object Arschloch {
       }
 
       if (Game.getGameState == Game.States.EndOfGame) {
-        for (i <- winnerList.indices) {
-          val player: Player = winnerList(i)
-          println("\nPlayer " + player.getPlayerNumber + " ranked at place " + (i + 1))
-          //player.setRank()
+
+
+
+        val arschloch: Player = playerList.filter(_.cardAmount != 0).head
+        rankedList.append(arschloch)
+
+        playerList.foreach(_.resetRank())
+
+
+        king = rankedList.head
+        asshole = rankedList.last
+
+        king.setRank(PlayerEnv.Rank.King)
+        asshole.setRank(PlayerEnv.Rank.Asshole)
+        rankedList.length match {
+          case 4 | 6 | 8 =>
+            viceroy = rankedList(1)
+            viceasshole = rankedList(rankedList.length-2)
+
+            viceroy.setRank(PlayerEnv.Rank.Viceroy)
+            viceasshole.setRank(PlayerEnv.Rank.Viceasshole)
+          case _ =>
         }
 
-        winnerList.clear()
+        for (i <- rankedList.indices) {
+          val player: Player = rankedList(i)
+          player.clearCards()
+          println("\nPlayer " + player.getPlayerNumber + " ranked at place " + (i + 1) + " and is now the " + player.getRankName)
+        }
+
+        rankedList.clear()
+        swapCardsNeeded = true
 
         Game.setGameState(Game.States.HandOut)
 
         input = readLine()
+      }
 
-        /*println("Resetting the game...\n")
-        for (player <- winnerList) {
-          playerList.append(player)
+      if (Game.getGameState == Game.States.CardSwap) {
+        king.swapWith(asshole)
+
+        readLine() match {
+          case _ =>
         }
 
-        winnerList.clear()*/
+        Game.setGameState(Game.States.Playing)
       }
     } while(input != "q")
   }

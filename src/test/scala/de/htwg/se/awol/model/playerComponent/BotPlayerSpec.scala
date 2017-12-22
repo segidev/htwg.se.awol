@@ -8,19 +8,19 @@ import org.scalatest._
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class PlayerSpec extends WordSpec with Matchers {
+class BotPlayerSpec extends WordSpec with Matchers {
   "A new Player" should {
     "be the Pöbel when initialized without a rank" in {
       Settings.setLanguage(LanguageGerman)
 
-      val player = new Player(0)
+      val player = new BotPlayer(0)
       player.getRank should be(PlayerEnv.Rank.Mob)
       player.getRankName should be("Pöbel")
     }
   }
 
   "A Player" can {
-    val player = new Player(0)
+    val player = new BotPlayer(0)
 
     "change it's rank to be a King and should be the König now" in {
       player.setRank(PlayerEnv.Rank.King)

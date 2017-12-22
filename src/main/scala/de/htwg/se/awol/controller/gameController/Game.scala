@@ -1,4 +1,6 @@
-package de.htwg.se.awol.controller.environmentController
+package de.htwg.se.awol.controller.gameController
+
+import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
 /**
   * *** States ***
@@ -34,8 +36,13 @@ object Game {
     val Four = Value(4)
   }
 
+  var humanPlayer: Player = _
   private var actualGameState: States.Value = States.NewGame
   private var actualCardState: CardStates.Value = CardStates.Undefined
+  private var actualCardCount: Int = 0
+
+  def getActualCardCount: Int = actualCardCount
+  def setActualCardCount(newCardCount: Int): Unit = { actualCardCount = newCardCount }
 
   def getGameState: States.Value = actualGameState
   def setGameState(newState: States.Value): Unit = actualGameState = newState

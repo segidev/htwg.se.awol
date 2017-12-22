@@ -12,10 +12,10 @@ case object Deck {
   val amountOfColoredEquals: Int = 4
 }
 
-case class Deck(amount: Int = Deck.smallCardStackSize) {
+case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   validateDeck()
 
-  val cardStackSize: Int = amount / Deck.amountOfColoredEquals
+  private val cardStackSize: Int = amount / Deck.amountOfColoredEquals
   private var cards: Array[Card] = createCards(amount)
 
   private def createCards(amount: Int): Array[Card] = {
@@ -35,7 +35,7 @@ case class Deck(amount: Int = Deck.smallCardStackSize) {
 
   def getCards: ListBuffer[Card] = cards.to[ListBuffer]
 
-  def size: Int = cards.length
+  def getDeckSize: Int = cards.length
 
   def validateDeck(): Unit = {
     if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
@@ -55,7 +55,7 @@ case class Deck(amount: Int = Deck.smallCardStackSize) {
       }
     }
 
-    sb.append(size + " cards\n")
+    sb.append(getDeckSize + " cards\n")
     for(i <- 0 until cardStackSize) {
       sb.append("|   ")
       sb.append(cards(i)).append(String.format("%" + (maxLength - cards(i).toString.length + 5) + "s", ""))

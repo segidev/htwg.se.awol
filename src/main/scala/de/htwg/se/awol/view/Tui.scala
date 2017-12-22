@@ -1,14 +1,17 @@
 package de.htwg.se.awol.view
 
-import de.htwg.se.awol.controller.environmentController.Game
+import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Deck
 
 class Tui {
   val newGameWithAmount = "n\\s*(\\d+)".r
 
-  def processInputLine(input: String, deck: Deck): Deck = {
+  def processInputLine(input: String) = {
+    val setMyCards = ("(\\d{1,2}) " * Game.getActualCardCount).trim.r
+    println(setMyCards)
+
     input match {
-      case "q" => return deck
+      case "q" => return _
       case _ => None
     }
 
@@ -16,40 +19,32 @@ class Tui {
       case Game.States.NewGame => input match {
         case "s" =>
           Game.setGameState(Game.States.HandOut)
-          deck
         case _ =>
           System.err.println("Command \"" + input + "\" doesn't exist")
-          deck
       }
+
       case Game.States.HandOut => input match {
-        case "c" => deck
+        case "c" =>
         case _ =>
           System.err.println("Command \"" + input + "\" doesn't exist")
-          deck
+      }
+
+      case Game.States.Playing => input match {
+        case "p" =>
+          throw new MatchError("PASSED!")
+        case setMyCards(a) =>
+          Game.humanPlayer.throwMyCardsIntoGame(a)
+        case setMyCards(a, b) =>
+          Game.humanPlayer.throwMyCardsIntoGame(a, b)
+        case setMyCards(a, b, c) =>
+          Game.humanPlayer.throwMyCardsIntoGame(a, b, c)
+        case setMyCards(a, b, c, d) =>
+          Game.humanPlayer.throwMyCardsIntoGame(a, b, c, d)
+        case _ =>
+          System.err.println("Command \"" + input + "\" doesn't exist")
       }
 
       case _ => throw new RuntimeException("Illegal Game State!")
     }
-    /*input match {
-      case "n" => new Deck(32)
-      case newGameWithAmount(a) =>
-        try {
-          val deck = new Deck(a.toInt)
-          Game.setActualState(Game.States.NewGame)
-          deck
-        } catch {
-          case iob: IndexOutOfBoundsException => {
-            System.err.println(iob.getMessage)
-            deck
-          }
-          case iae: IllegalArgumentException => {
-            System.err.println(iae.getMessage)
-            deck
-          }
-        }
-      case _ =>
-        System.err.println("Command \"" + input + "\" doesn't exist")
-        deck
-    }*/
   }
 }

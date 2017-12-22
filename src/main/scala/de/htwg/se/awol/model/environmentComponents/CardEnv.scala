@@ -1,13 +1,11 @@
 package de.htwg.se.awol.model.environmentComponents
 
-import de.htwg.se.awol.model.environmentComponents.CardEnv.Values
-
 object CardEnv {
   object Colors extends Enumeration {
     val Clubs, Spades, Hearts, Diamonds = Value
   }
 
-  object Values extends Enumeration {
+  object Values extends Enumeration{
     val Two: Values.Value = Value(2)
     val Three: Values.Value = Value(3)
     val Four: Values.Value = Value(4)

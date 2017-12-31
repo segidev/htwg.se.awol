@@ -36,7 +36,7 @@ object Game {
     val Four = Value(4)
   }
 
-  var humanPlayer: Player = _
+  var humanPlayer: HumanPlayer = _
   private var actualGameState: States.Value = States.NewGame
   private var actualCardState: CardStates.Value = CardStates.Undefined
   private var actualCardCount: Int = 0

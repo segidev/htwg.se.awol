@@ -6,12 +6,12 @@ import de.htwg.se.awol.model.cardComponents.Deck
 class Tui {
   val newGameWithAmount = "n\\s*(\\d+)".r
 
-  def processInputLine(input: String) = {
+  def processInputLine(input: String): Unit = {
     val setMyCards = ("(\\d{1,2}) " * Game.getActualCardCount).trim.r
     println(setMyCards)
 
     input match {
-      case "q" => return _
+      case "q" => return
       case _ => None
     }
 

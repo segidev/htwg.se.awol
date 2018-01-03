@@ -48,12 +48,13 @@ object Arschloch {
     var rankedList: ListBuffer[Player] = new ListBuffer
     var playerList: ListBuffer[Player] = new ListBuffer[Player]
 
-    playerList.append(new HumanPlayer(0))
-    for (i <- 1 until playerCount) {
+    // Set Player first
+    //Game.humanPlayer = HumanPlayer(0)
+    //playerList.append(Game.humanPlayer)
+
+    for (i <- 0 until playerCount) { // TODO: Switch 0 to 1 when bringing back human player
       playerList.append(new BotPlayer(i))
     }
-
-    Game.humanPlayer = playerList.head
 
     var activePlayer: Player = playerList.head
     var winningPlayer: Player = playerList.head
@@ -124,19 +125,25 @@ object Arschloch {
         while(passCounter < playerCount - 1) {
           val player: Player = playerList(i % playerCount)
 
-          if(!(rankedList.contains(player) ||  (rankedList.length == playerList.length - 1))) {
-            val playerNumber: Int = player.getPlayerNumber
+          if(!(rankedList.contains(player) ||  rankedList.lengthCompare(playerList.length - 1) == 0)) {
 
-            if (playerNumber == 0) {
+            if (player.isHumanPlayer) {
               println("It's YOUR turn. Please pick " + Game.getActualCardCount + " cards or type p to pass")
+
+              println("Found cards: ", player.findSuitableCards(actualCardVal, Game.getActualCardCount))
+
               input = readLine()
               tui.processInputLine(input)
             } else {
               println("It's player " + player.getPlayerNumber + " turn.")
 
-              player.pickCard(actualCardVal, Game.getActualCardCount) match {
+              val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(actualCardVal, Game.getActualCardCount)
+              println("Found cards: " + suitableCards)
+
+              player.pickAndDropCard(suitableCards) match {
                 case Some(o) =>
-                  actualCardVal = o._1; Game.setActualCardCount(o._2)
+                  actualCardVal = o._1
+                  Game.setActualCardCount(o._2)
                   activePlayer = player
 
                   println("He picked " + Game.getActualCardCount + " card(s) with value: " + actualCardVal + "\n")
@@ -161,7 +168,7 @@ object Arschloch {
 
         roundNumber += 1
 
-        if (rankedList.length >= playerList.length - 1) {
+        if (rankedList.lengthCompare(playerList.length - 1) >= 0) {
           Game.setGameState(Game.States.EndOfGame)
         } else {
           Game.setGameState(Game.States.Evaluation)
@@ -175,9 +182,6 @@ object Arschloch {
       }
 
       if (Game.getGameState == Game.States.EndOfGame) {
-
-
-
         val arschloch: Player = playerList.filter(_.cardAmount != 0).head
         rankedList.append(arschloch)
 
@@ -210,15 +214,15 @@ object Arschloch {
 
         Game.setGameState(Game.States.HandOut)
 
+        println("\nPress Enter to initialize a new game")
         input = readLine()
       }
 
       if (Game.getGameState == Game.States.CardSwap) {
         king.swapWith(asshole)
 
-        readLine() match {
-          case _ =>
-        }
+        println("\nPress Enter to start playing")
+        input = readLine()
 
         Game.setGameState(Game.States.Playing)
       }

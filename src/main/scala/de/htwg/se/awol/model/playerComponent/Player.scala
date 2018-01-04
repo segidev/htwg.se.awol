@@ -53,7 +53,7 @@ trait Player {
       val myCards: Map[Int, ListBuffer[Card]] = cards.filter(_.cardValue > actualCardVal).groupBy(_.cardValue).filter(_._2.lengthCompare(actualCardCount) >= 0)
       myCards
     } else {
-      println("PICK ANY CARD YOU WANT")
+      println("These cards are allowed:")
       val myCards: Map[Int, ListBuffer[Card]] = cards.groupBy(_.cardValue)
       myCards
     }

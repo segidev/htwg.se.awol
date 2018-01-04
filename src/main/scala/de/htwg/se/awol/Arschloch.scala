@@ -49,15 +49,15 @@ object Arschloch {
     var playerList: ListBuffer[Player] = new ListBuffer[Player]
 
     // Set Player first
-    //Game.humanPlayer = HumanPlayer(0)
-    //playerList.append(Game.humanPlayer)
+    Game.humanPlayer = HumanPlayer(0) // TODO: Uncomment this for human player
+    playerList.append(Game.humanPlayer)
 
-    for (i <- 0 until playerCount) { // TODO: Switch 0 to 1 when bringing back human player
+    for (i <- 1 until playerCount) { // TODO: Switch 0 to 1 when bringing back human player
       playerList.append(new BotPlayer(i))
     }
 
-    var activePlayer: Player = playerList.head
-    var winningPlayer: Player = playerList.head
+    Game.setActivePlayer(playerList.head)
+    //var winningPlayer: Player = playerList.head       TODO: Unused
 
     var input: String = ""
     do {
@@ -89,10 +89,10 @@ object Arschloch {
         }
 
         // Show all players and their cards and find the player with the starter card
-        activePlayer = playerList.find(_.getRank == PlayerEnv.Rank.Asshole) match {
-          case Some(p1) => p1
+        playerList.find(_.getRank == PlayerEnv.Rank.Asshole) match {
+          case Some(p1) => Game.setActivePlayer(p1)
           case _ => playerList.find(_.hasCard(starterCard)) match {
-            case Some(p2) => p2
+            case Some(p2) => Game.setActivePlayer(p2)
             case _ => throw new MatchError("No player fulfills the given conditions")
           }
         }
@@ -106,8 +106,9 @@ object Arschloch {
         if (swapCardsNeeded) {
           println("Players swapping cards...")
           Game.setGameState(Game.States.CardSwap)
+          Game.setActualCardValue(0)
         } else {
-          println("Player " + activePlayer.getPlayerNumber + " starts the game!")
+          println("Player " + Game.getActivePlayer.getPlayerNumber + " starts the game!")
           println("\n3. The game starts.\n")
           Game.setGameState(Game.States.Playing)
         }
@@ -115,52 +116,63 @@ object Arschloch {
       }
 
       if (Game.getGameState == Game.States.Playing) {
-        println("Round " + roundNumber + " starts")
-        var cardsOnTable: ListBuffer[Card] = new ListBuffer
-        var actualCardVal: Int = 0
+        println("Round " + roundNumber + " starts.")
+        //var cardsOnTable: ListBuffer[Card] = new ListBuffer TODO: Unused
         Game.setActualCardCount(0)
-        var passCounter: Int = 0
+        Game.setPassCounter(0)
 
-        var i: Int = activePlayer.getPlayerNumber
-        while(passCounter < playerCount - 1) {
+        var i: Int = Game.getActivePlayer.getPlayerNumber
+        while(Game.getPassCounter < playerCount - 1) {
           val player: Player = playerList(i % playerCount)
 
           if(!(rankedList.contains(player) ||  rankedList.lengthCompare(playerList.length - 1) == 0)) {
 
             if (player.isHumanPlayer) {
-              println("It's YOUR turn. Please pick " + Game.getActualCardCount + " cards or type p to pass")
+              println("It's YOUR turn.")
+              Game.setPlayerTurn(true)
+               while(Game.getPlayerTurn) {
+                 if (Game.getActualCardCount == 0) {
+                   println("Please choose any amount of cards of the same value by typing" +
+                     " \"number of cards\" \"value\".")
+                 }
+                 else {
+                   println("Please pick " + Game.getActualCardCount + " cards by typing \"number of cards\" \"value\"" +
+                     " or type p to pass.")
+                 }
+                 if (Game.getActualCardValue == 0) { println("Choose any card value.") }
+                 else { println("Following card value was placed on the stack: " + Game.getActualCardValue) }
+                 println("Found cards: ", player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount))
 
-              println("Found cards: ", player.findSuitableCards(actualCardVal, Game.getActualCardCount))
-
-              input = readLine()
-              tui.processInputLine(input)
+                 input = readLine()
+                 tui.processInputLine(input)
+               }
             } else {
               println("It's player " + player.getPlayerNumber + " turn.")
 
-              val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(actualCardVal, Game.getActualCardCount)
+              val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
               println("Found cards: " + suitableCards)
 
               player.pickAndDropCard(suitableCards) match {
                 case Some(o) =>
-                  actualCardVal = o._1
+                  Game.setActualCardValue(o._1)
                   Game.setActualCardCount(o._2)
-                  activePlayer = player
+                  Game.setActivePlayer(player)
 
-                  println("He picked " + Game.getActualCardCount + " card(s) with value: " + actualCardVal + "\n")
+                  println("He picked " + Game.getActualCardCount + " card(s) with value: " + Game.getActualCardValue + "\n")
 
-                  if (player.cardAmount == 0) {
-                    // Remove player from actual playing ones and add to winner list
-                    rankedList.append(player)
-                  }
-                  passCounter = 0
+                  Game.setPassCounter(0)
                 case _ =>
-                  passCounter += 1
+                  Game.setPassCounter(Game.getPassCounter + 1)
                   println("He passed...\n")
               }
-              println(player + "\n")
             }
+            if (player.cardAmount == 0) {
+              // Remove player from actual playing ones and add to winner list
+              rankedList.append(player)
+            }
+            println(player + "\n")
           } else {
-            passCounter += 1
+            Game.setPassCounter(Game.getPassCounter + 1)
           }
 
           i += 1
@@ -176,8 +188,8 @@ object Arschloch {
       }
 
       if (Game.getGameState == Game.States.Evaluation) {
-        println("\n == Player " + activePlayer.getPlayerNumber + " has won the round! == \n")
-
+        println("\n == Player " + Game.getActivePlayer.getPlayerNumber + " has won the round! == \n")
+        Game.setActualCardValue(0)
         Game.setGameState(Game.States.Playing)
       }
 

@@ -40,6 +40,22 @@ object Game {
   private var actualGameState: States.Value = States.NewGame
   private var actualCardState: CardStates.Value = CardStates.Undefined
   private var actualCardCount: Int = 0
+  private var actualCardValue: Int = 0
+  private var activePlayer: Player = _
+  private var passCounter: Int = 0
+  private var playerTurn: Boolean = false
+
+  def getPlayerTurn: Boolean = playerTurn
+  def setPlayerTurn(newPlayerTurn: Boolean): Unit = playerTurn = newPlayerTurn
+
+  def getPassCounter: Int = passCounter
+  def setPassCounter(newPassCounter: Int): Unit = passCounter = newPassCounter
+
+  def getActivePlayer: Player = activePlayer
+  def setActivePlayer(newActivePlayer: Player): Unit = activePlayer = newActivePlayer
+
+  def getActualCardValue: Int = actualCardValue
+  def setActualCardValue(newCardValue: Int): Unit = actualCardValue = newCardValue
 
   def getActualCardCount: Int = actualCardCount
   def setActualCardCount(newCardCount: Int): Unit = { actualCardCount = newCardCount }

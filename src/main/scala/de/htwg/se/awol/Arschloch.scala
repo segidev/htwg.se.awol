@@ -8,7 +8,7 @@ Ende: Den Spieler demütigen, egal ob er gewonnen oder verloren hat. Natürlich 
 */
 
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.controller.gameController.Game
+import de.htwg.se.awol.controller.gameController.{Game, _GameHandler}
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
 import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
@@ -20,7 +20,9 @@ import scala.io.StdIn.readLine
 import scala.util.Random
 
 object Arschloch {
-  val tui = new Tui
+  val controller = new _GameHandler()
+  val tui = new Tui(controller)
+
 
   var king: Player = _
   var viceroy: Player = _

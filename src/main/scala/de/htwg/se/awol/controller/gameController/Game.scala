@@ -2,6 +2,8 @@ package de.htwg.se.awol.controller.gameController
 
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
+import scala.collection.mutable.ListBuffer
+
 /**
   * *** States ***
   * NewGame: In diesem Zustand wird das Kartendeck erstellt und die Anfangskarte wird festgelegt
@@ -28,25 +30,29 @@ object Game {
     val NewGame, HandOut, Playing, Evaluation, EndOfGame, CardSwap = Value
   }
 
-  object CardStates extends Enumeration {
-    val Undefined = Value(0)
-    val One = Value(1)
-    val Two = Value(2)
-    val Three = Value(3)
-    val Four = Value(4)
-  }
-
   var humanPlayer: HumanPlayer = _
+
+  private var deckSize: Int = 32
+  private var playerList: ListBuffer[Player] = ListBuffer()
+  private var playerCount: Int = _
+
+  private var roundNumber: Int = _
+
   private var actualGameState: States.Value = States.NewGame
-  private var actualCardState: CardStates.Value = CardStates.Undefined
   private var actualCardCount: Int = 0
+
+  def getDeckSize: Int = deckSize
+  def setDeckSize(size: Int): Unit = { deckSize = size }
+
+  def getPlayerList: ListBuffer[Player] = playerList
+  def addPlayerToPlayerlist(player: Player): Unit = playerList.append(player)
+
+  def getPlayerCount: Int = playerCount
+  def setPlayerCount(count: Int): Unit = { playerCount = count }
 
   def getActualCardCount: Int = actualCardCount
   def setActualCardCount(newCardCount: Int): Unit = { actualCardCount = newCardCount }
 
   def getGameState: States.Value = actualGameState
   def setGameState(newState: States.Value): Unit = actualGameState = newState
-
-  def getCardState: CardStates.Value = actualCardState
-  def setCardState(newState: CardStates.Value): Unit = actualCardState = newState
 }

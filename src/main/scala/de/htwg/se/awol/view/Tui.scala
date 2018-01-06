@@ -1,9 +1,17 @@
 package de.htwg.se.awol.view
 
-import de.htwg.se.awol.controller.gameController.Game
+import de.htwg.se.awol.controller.gameController.{Game, _GameHandler}
 import de.htwg.se.awol.model.cardComponents.Deck
 
-class Tui {
+import scala.swing.Reactor
+
+class Tui(controller: _GameHandler) extends Reactor {
+  listenTo(controller)
+
+  /*reactions += {
+    case ev:
+  }*/
+
   val newGameWithAmount = "n\\s*(\\d+)".r
 
   def processInputLine(input: String): Unit = {

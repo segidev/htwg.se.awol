@@ -1,6 +1,6 @@
 package de.htwg.se.awol.model.languageComponents
 
-import de.htwg.se.awol.model.environmentComponents._
+import de.htwg.se.awol.model.environmentComponents.{SettingEnv, _}
 
 object LanguageGerman extends _LanguageHandler {
   override val translations: Map[Any, String] = Map(
@@ -24,10 +24,33 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: ",
     MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: ",
 
+    MessageEnv.Menues.File -> "Datei",
+    MessageEnv.Menues.NewGame -> "Neues Spiel",
+    MessageEnv.Menues.Quit -> "Beenden",
+    MessageEnv.Menues.Options -> "Optionen",
+    MessageEnv.Menues.Players_2 -> "2 Spieler",
+    MessageEnv.Menues.Players_4 -> "4 Spieler",
+    MessageEnv.Menues.Players_6 -> "6 Spieler",
+    MessageEnv.Menues.Players_8 -> "8 Spieler",
+    MessageEnv.Menues.DeckSize -> "Stapelgröße",
+    MessageEnv.Menues.StartGame -> "Spiel starten",
+    MessageEnv.Menues.Cancel -> "Abbrechen",
+
+    MessageEnv.Words.Yes -> "Ja",
+    MessageEnv.Words.No -> "Nein",
+
+    MessageEnv.Titles.GameTitle -> "Arschloch",
+    MessageEnv.Titles.QuitGame -> "Spiel beenden",
+    MessageEnv.Titles.GameOptions -> "Spiel Optionen",
+
+    MessageEnv.Questions.QuitGame -> "Wollen sie das Spiel wirklich beenden?",
+
+    MessageEnv.Phrases.WelcomeToTheGame -> "Willkommen im Spiel",
+
     SettingEnv.Language.German -> "Deutsch",
     SettingEnv.Language.English -> "Englisch",
     SettingEnv.Language.Youth -> "Jugendsprache"
   )
 
-  override def getLanguageCode = SettingEnv.Language.German
+  override def getLanguageCode: SettingEnv.Language.Value = SettingEnv.Language.German
 }

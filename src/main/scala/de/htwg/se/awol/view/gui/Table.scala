@@ -225,7 +225,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   def updateGameWindow(): Unit = {
-    humanPlayerArea.layAssignedCards()
+    humanPlayerArea.showCardsOnTable()
   }
 
   // Listener

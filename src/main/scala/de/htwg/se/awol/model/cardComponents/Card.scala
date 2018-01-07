@@ -19,6 +19,8 @@ case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
     case _ => value.id.toString
   }
 
+  def cardFilename: String = cardValue + "_of_" + CardEnv.CardFileColorMap.apply(color.id)
+
   def cardValue: Int = value.id
 
   /**

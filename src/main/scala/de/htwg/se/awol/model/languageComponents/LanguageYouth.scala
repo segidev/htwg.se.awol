@@ -10,6 +10,8 @@ object LanguageYouth extends _LanguageHandler {
     PlayerEnv.Rank.Viceasshole -> "Richtiger Otto",
     PlayerEnv.Rank.Asshole -> "Der Hurensohn",
 
+    PlayerEnv.BotNames.Player_1 -> "Du fei",
+
     CardEnv.Colors.Clubs -> "Kräuz",
     CardEnv.Colors.Spades -> "Dem sei Pik",
     CardEnv.Colors.Hearts -> "Herzblut Blitzgewitter",

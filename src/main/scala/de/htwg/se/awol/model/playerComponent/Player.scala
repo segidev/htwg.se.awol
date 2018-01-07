@@ -7,9 +7,10 @@ import de.htwg.se.awol.model.environmentComponents.PlayerEnv
 import scala.collection.mutable.ListBuffer
 
 trait Player {
-  val playerNumber: Int
-  var rank: PlayerEnv.Rank.Value = PlayerEnv.Rank.Mob
-  var cards: ListBuffer[Card] = ListBuffer()
+  protected val playerNumber: Int = 0
+
+  private var rank: PlayerEnv.Rank.Value = PlayerEnv.Rank.Mob
+  private var cards: ListBuffer[Card] = ListBuffer()
 
   def addCard(assignedCard: Card): Unit = {
     cards.append(assignedCard)
@@ -22,7 +23,18 @@ trait Player {
 
   def clearCards(): Unit = cards.clear()
 
+  def getCards: ListBuffer[Card] = cards
+
   def getPlayerNumber: Int = playerNumber
+
+  def getPlayerName: String = {
+    val nameObj = PlayerEnv.BotNames.apply(playerNumber)
+
+    LanguageTranslator.translateWithOption(nameObj) match {
+      case Some(c) => c
+      case _ => nameObj.toString
+    }
+  }
 
   def getRank: PlayerEnv.Rank.Value = rank
 
@@ -53,7 +65,7 @@ trait Player {
       val myCards: Map[Int, ListBuffer[Card]] = cards.filter(_.cardValue > actualCardVal).groupBy(_.cardValue).filter(_._2.lengthCompare(actualCardCount) >= 0)
       myCards
     } else {
-      println("PICK ANY CARD YOU WANT")
+      println("These cards are allowed:")
       val myCards: Map[Int, ListBuffer[Card]] = cards.groupBy(_.cardValue)
       myCards
     }

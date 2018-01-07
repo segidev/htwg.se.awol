@@ -10,6 +10,8 @@ object LanguageGerman extends _LanguageHandler {
     PlayerEnv.Rank.Viceasshole -> "Vize-Arschloch",
     PlayerEnv.Rank.Asshole -> "Arschloch",
 
+    PlayerEnv.BotNames.Player_1 -> "Ich",
+
     CardEnv.Colors.Clubs -> "Kreuz",
     CardEnv.Colors.Spades -> "Pik",
     CardEnv.Colors.Hearts -> "Herz",

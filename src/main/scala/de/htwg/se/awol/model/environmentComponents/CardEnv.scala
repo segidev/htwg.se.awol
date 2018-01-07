@@ -20,4 +20,11 @@ object CardEnv {
     val King: Values.Value = Value(13)
     val Ace: Values.Value = Value(14)
   }
+
+  val CardFileColorMap: Map[Int, String] = Map(
+    0 -> "clubs",
+    1 -> "spades",
+    2 -> "hearts",
+    3 -> "diamonds"
+  )
 }

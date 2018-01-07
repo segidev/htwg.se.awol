@@ -8,7 +8,7 @@ import de.htwg.se.awol.model.environmentComponents._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
-class BotPlayer(override val playerNumber: Int) extends Player {
+class BotPlayer(override protected val playerNumber: Int) extends Player {
   // Playing
   override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, Int)] = {
     if (suitableCards.isEmpty) {

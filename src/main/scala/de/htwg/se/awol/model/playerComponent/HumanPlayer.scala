@@ -6,13 +6,26 @@ import de.htwg.se.awol.model.environmentComponents.CardEnv
 
 import scala.collection.mutable.ListBuffer
 
-case class HumanPlayer(override val playerNumber: Int) extends Player {
-  def throwMyCardsIntoGame(pickedCards: String*): Unit = {
-    for (cardNumber <- pickedCards) {
-      //new Card(CardEnv.Values.apply(cardNumber.toInt), CardEnv.Colors.)
-      //hasCard(cardNumber)
+case class HumanPlayer(override protected val playerNumber: Int) extends Player {
+  def throwMyCardsIntoGame(cardCount: Int, cardValue: Int, pickedCardCount: Int ,pickedCardValue: Int): Unit = {
+    println("Amount of card(s): " + pickedCardCount)
+    println("Value of card(s): " + pickedCardValue)
+    val suitableCards: Map[Int, ListBuffer[Card]] = this.findSuitableCards(cardValue ,cardCount)
+
+    suitableCards.get(pickedCardValue) match {
+      case Some(buffer) => if (buffer.size < pickedCardCount) {
+        println("You don't have enough card of the value " + pickedCardValue + " on your hand.")
+      } else {
+        removeCardsFromMyStack(buffer.take(pickedCardCount))
+        Game.setActualCardValue(pickedCardValue)
+        if (cardCount == 0) {
+          Game.setActualCardCount(pickedCardCount)
+        }
+        Game.setActivePlayer(this)
+        Game.setPlayerTurn(false)
+      }
+      case _ => println("You don't have any cards with the given value")
     }
-    //Game.humanPlayer.hasCard()
   }
 
   override def isHumanPlayer: Boolean = true

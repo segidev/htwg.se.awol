@@ -1,7 +1,9 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.environmentComponents.CardEnv
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, GuiEnv}
+
+import scalafx.scene.image.Image
 
 case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
   /**
@@ -20,6 +22,8 @@ case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
   }
 
   def cardFilename: String = cardValue + "_of_" + CardEnv.CardFileColorMap.apply(color.id)
+
+  def getMySFXImage: Image = GuiEnv.getCardImage(this)
 
   def cardValue: Int = value.id
 

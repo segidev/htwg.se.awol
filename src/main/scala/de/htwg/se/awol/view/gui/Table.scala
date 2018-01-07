@@ -1,10 +1,13 @@
 package de.htwg.se.awol.view.gui
 
-import de.htwg.se.awol.controller.gameController.{CardsChanged, Game, _GameHandler}
-import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.cardComponents.Deck
-import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
+import javafx.scene.effect.Glow
 
+import de.htwg.se.awol.controller.gameController._
+import de.htwg.se.awol.controller.languageController.LanguageTranslator
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
+import de.htwg.se.awol.model.playerComponent.Player
+
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
@@ -14,38 +17,32 @@ import scalafx.geometry.{HPos, Pos, VPos}
 import scalafx.scene.Scene
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
+import scalafx.scene.image.ImageView
 import scalafx.scene.input.KeyCombination
 import scalafx.scene.layout._
+import scalafx.scene.text.TextAlignment
 
 class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   listenTo(controller)
 
-  val playerAreaList: ListBuffer[PlayerArea] = new ListBuffer()
+  val playerAreaMap: mutable.HashMap[Player, PlayerArea] = mutable.HashMap()
   var humanPlayerArea: PlayerArea = _
 
-  val topRow: GridPane = new GridPane {
+  val globalMessage: Label = new Label {
+    maxHeight = Double.PositiveInfinity
+    maxWidth = Double.PositiveInfinity
     alignment = Pos.Center
-    vgap = Table.spacingGap
-  }
-  val rightRow: GridPane = new GridPane {
-    alignment = Pos.Center
-    vgap = Table.spacingGap
-  }
-  val bottomRow: GridPane = new GridPane {
-    alignment = Pos.Center
-    vgap = Table.spacingGap
-  }
-  val leftRow: GridPane = new GridPane {
-    alignment = Pos.Center
-    vgap = Table.spacingGap
-  }
-  val tableArea: GridPane = new GridPane {
-    alignment = Pos.Center
-    style = Table.styleTableArea
-    hgap = Table.spacingGap
-    vgap = Table.spacingGap
+    textAlignment = TextAlignment.Center
+    style = Table.styleGlobalMessage
+    visible = false
+
+    onMouseReleased = handle {
+      hideGlobalMessage(globalMessage)
+      controller.callNextActionByState()
+    }
   }
 
+  // Layout
   val mainPane: VBox = new VBox() {
     alignment = Pos.Center
   }
@@ -53,6 +50,33 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   val contentPane: StackPane = new StackPane() {
     vgrow = Priority.Always
   }
+
+  // Space for PlayerAreas
+  val topRow: GridPane = new GridPane {
+    alignment = Pos.Center
+  }
+  val rightRow: GridPane = new GridPane {
+    alignment = Pos.Center
+  }
+  val bottomRow: GridPane = new GridPane {
+    alignment = Pos.Center
+  }
+  val leftRow: GridPane = new GridPane {
+    alignment = Pos.Center
+  }
+
+  // Table Area
+  val tableArea: HBox = new HBox {
+    alignment = Pos.Center
+    style = Table.styleTableArea
+    spacing = Table.spacingGap
+  }
+
+  val cardSize: (Double, Double) = GuiEnv.getCardSize
+  val tableCard_1: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
+  val tableCard_2: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
+  val tableCard_3: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
+  val tableCard_4: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
 
   val playPane: BorderPane = new BorderPane {
     top = topRow
@@ -62,13 +86,15 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     center = tableArea
   }
 
-  val globalMessage: Label = new Label {
-    maxHeight = Double.PositiveInfinity
-    maxWidth = Double.PositiveInfinity
-    alignment = Pos.Center
-    style = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-text-fill: white; -fx-font-size: 32px"
+  def showGlobalMessage(msg: String): Unit = {
+    globalMessage.text = msg
+    globalMessage.visible = true
   }
-  globalMessage.visible = false
+
+  def hideGlobalMessage(globalMessage: Label): Unit = {
+    globalMessage.text = ""
+    globalMessage.visible = false
+  }
 
   def createMenuBar(): MenuBar = {
     val playerOptionsGroup = new ToggleGroup()
@@ -143,12 +169,15 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     GridPane.setValignment(playerArea, VPos.Center)
   }
 
-  def resetPlayerAreas(): Unit = {
+  def resetLayoutAndVariables(): Unit = {
     topRow.children.clear()
     rightRow.children.clear()
     bottomRow.children.clear()
     leftRow.children.clear()
-    playerAreaList.clear()
+    tableArea.children.clear()
+
+    playerAreaMap.clear()
+
     //humanPlayerArea = null
   }
 
@@ -162,9 +191,10 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
       if (player.isHumanPlayer) {
         humanPlayerArea = playerArea
+        humanPlayerArea.hideHumanPlayerItems()
       }
 
-      playerAreaList.append(playerArea)
+      playerAreaMap.put(player, playerArea)
 
       assignPlayerPosition(i, playerArea)
 
@@ -192,7 +222,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       case Some(diag.buttonStart) =>
         Game.setDeckSize(diag.getDeckSize)
         Game.setPlayerCount(diag.getPlayerCount)
-        controller.resetHandler(diag.getDeckSize, diag.getPlayerCount) // TODO: Sehr wichtige Funktion, hier ok?
+        controller.initNewGame(diag.getDeckSize, diag.getPlayerCount) // TODO: Sehr wichtige Funktion, hier ok?
 
         true
       case _ => false
@@ -201,9 +231,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   def startNewGame(): Unit = {
     if (showAndSetGameOptions()) {
-      resetPlayerAreas()
-      createPlayerAreas()
-      controller.handoutCards()
+      showGlobalMessage("Handing out cards\nClick anywhere to start...")
     }
   }
 
@@ -224,22 +252,55 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
-  def updateGameWindow(): Unit = {
+  def updatePlayerView(): Unit = {
+    resetLayoutAndVariables()
+
+    tableArea.children.add(tableCard_1)
+    tableArea.children.add(tableCard_2)
+    tableArea.children.add(tableCard_3)
+    tableArea.children.add(tableCard_4)
+
+    createPlayerAreas()
+  }
+
+  def updateCardView(): Unit = {
     humanPlayerArea.showCardsOnTable()
+  }
+
+  def updatePlayerHints(): Unit = {
+    playerAreaMap.values.foreach(_.setAsActive(false))
+
+    playerAreaMap.get(Game.getActivePlayer) match {
+      case Some(p) => p.setAsActive(true)
+      case _ => throw new MatchError("Active player seems to not be existent in the game")
+    }
+  }
+
+  def updateTableView(): Unit = {
+    var i = 0
+    for (card <- controller.getLatestCardsOnTable) {
+      i match {
+        case 0 => tableCard_1.children.clear(); tableCard_1.children.add(new ImageView(card.getMySFXImage))
+        case 1 => tableCard_2.children.clear(); tableCard_2.children.add(new ImageView(card.getMySFXImage))
+        case 2 => tableCard_3.children.clear(); tableCard_3.children.add(new ImageView(card.getMySFXImage))
+        case 3 => tableCard_4.children.clear(); tableCard_4.children.add(new ImageView(card.getMySFXImage))
+      }
+
+      i += 1
+    }
   }
 
   // Listener
   reactions += {
-    case event: CardsChanged => updateGameWindow()
+    case event: CardsChanged => updateCardView()
+    case event: PlayersChanged => updatePlayerView()
+    case event: ActivePlayerChanged => updatePlayerHints()
+    case event: CardsOnTableChanged => updateTableView()
     //case event: CellChanged     => redraw
     //case event: CandidatesChanged => redraw
   }
 
   // Initializations
-  tableArea.add(new Label("Card 1"), 0, 0)
-  tableArea.add(new Label("Card 2"), 1, 0)
-  tableArea.add(new Label("Card 3"), 2, 0)
-
   mainPane.children = List(createMenuBar(), contentPane)
 
   contentPane.children = List(playPane, globalMessage)
@@ -250,7 +311,9 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 }
 
 object Table {
-  val styleTableArea = "-fx-border-color: green; -fx-padding: 25px" // -fx-background-color: green;
+  val styleTableArea = "-fx-background-color: green; -fx-padding: 25px" //
+  val styleEmptyCardArea = "-fx-border-color: grey; -fx-border-style: segments(10, 10, 10, 10) line-cap round"
+  val styleGlobalMessage = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-text-fill: white; -fx-font-size: 32px"
 
   val spacingGap = 5
 }

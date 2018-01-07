@@ -4,6 +4,7 @@ import de.htwg.se.awol.model.cardComponents.{Card, Deck}
 import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.swing.Publisher
 import scala.util.Random
@@ -22,10 +23,39 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
   // User controlled
   private var starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+  private var actualCardsOnTable: mutable.Queue[ListBuffer[Card]] = mutable.Queue()
   private var deckSize: Int = 32
 
   // Game Handling
-  def resetHandler(newDeckSize: Int, newPlayerCount: Int): Unit = {
+  def callNextActionByState(): Unit = {
+    Game.getGameState match {
+      case Game.States.NewGame =>
+        createPlayers()
+        publish(new PlayersChanged)
+      case Game.States.HandOut =>
+        handoutCards()
+        publish(new CardsChanged)
+
+        callNextActionByState()
+      case Game.States.FindStartingPlayer =>
+        findStartingPlayer()
+        publish(new ActivePlayerChanged)
+
+        //callNextActionByState()
+      case Game.States.CardSwap =>
+        swapCards()
+        publish(new CardsChanged)
+      case Game.States.Playing =>
+        play()
+      case Game.States.Evaluation =>
+        evaluateRound()
+      case Game.States.EndOfGame =>
+        summarizeEndOfGame()
+      case _ => throw new RuntimeException("Illegal Game State!")
+    }
+  }
+
+  def initNewGame(newDeckSize: Int, newPlayerCount: Int): Unit = {
     playerList.clear()
     rankedList.clear()
     swapCardsNeeded = false
@@ -39,7 +69,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     playerCount = newPlayerCount
 
     Game.setGameState(Game.States.NewGame)
-    createPlayers()
+    callNextActionByState()
   }
 
   def createPlayers(): Unit = {
@@ -52,7 +82,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
       playerList.append(new BotPlayer(i))
     }
 
-    Game.setActivePlayer(playerList.head)
+    //Game.setActivePlayer(playerList.head) // TODO: weg?
 
     Game.setGameState(Game.States.HandOut)
   }
@@ -76,25 +106,25 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
       i += 1
     }
 
-    publish(new CardsChanged)
+    Game.setGameState(Game.States.FindStartingPlayer)
+  }
 
-    setStartingPlayer()
+  def findStartingPlayer(): Unit = {
+    assert(Game.getGameState == Game.States.FindStartingPlayer, "Find starting player in wrong game state!")
+
+    playerList.find(_.getRank == PlayerEnv.Rank.Asshole) match {
+      case Some(p1) => setCardLeadingPlayer(p1)
+      case _ => playerList.find(_.hasCard(starterCard)) match {
+        case Some(p2) => setCardLeadingPlayer(p2)
+        case _ => throw new MatchError("No player fulfills the given condition to be the starting player")
+      }
+    }
 
     if (swapCardsNeeded) {
       Game.setGameState(Game.States.CardSwap)
       //Game.setActualCardValue(0) // TODO: Ist das nötig?
     } else {
       Game.setGameState(Game.States.Playing)
-    }
-  }
-
-  def setStartingPlayer(): Unit = {
-    playerList.find(_.getRank == PlayerEnv.Rank.Asshole) match {
-      case Some(p1) => Game.setActivePlayer(p1)
-      case _ => playerList.find(_.hasCard(starterCard)) match {
-        case Some(p2) => Game.setActivePlayer(p2)
-        case _ => throw new MatchError("No player fulfills the given conditions")
-      }
     }
   }
 
@@ -118,7 +148,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     while(Game.getPassCounter < playerCount - 1) {
       val player: Player = playerList(i % playerCount)
 
-      if(!(rankedList.contains(player) ||  rankedList.lengthCompare(playerList.length - 1) == 0)) {
+      if(!(rankedList.contains(player) || rankedList.lengthCompare(playerList.length - 1) == 0)) {
 
         if (player.isHumanPlayer) {
           println("It's YOUR turn.")
@@ -147,9 +177,14 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
           player.pickAndDropCard(suitableCards) match {
             case Some(o) =>
-              Game.setActualCardValue(o._1)
-              Game.setActualCardCount(o._2)
-              Game.setActivePlayer(player)
+              val newCardValue: Int = o._1
+              val pickedCards: ListBuffer[Card] = o._2
+
+              Game.setActualCardValue(newCardValue)
+              Game.setActualCardCount(pickedCards.length)
+
+              setCardLeadingPlayer(player)
+              addCardsToCardsOnTable(pickedCards)
 
               println("He picked " + Game.getActualCardCount + " card(s) with value: " + Game.getActualCardValue + "\n")
 
@@ -178,51 +213,66 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     } else {
       Game.setGameState(Game.States.Evaluation)
     }
+  }
 
-    def evaluateRound(): Unit = {
-      assert(Game.getGameState == Game.States.Evaluation, "Evaluating round in wrong game state!")
+  def evaluateRound(): Unit = {
+    assert(Game.getGameState == Game.States.Evaluation, "Evaluating round in wrong game state!")
 
-      println("\n == Player " + Game.getActivePlayer.getPlayerNumber + " has won the round! == \n")
-      Game.setActualCardValue(0)
-      Game.setGameState(Game.States.Playing)
+    println("\n == Player " + Game.getActivePlayer.getPlayerNumber + " has won the round! == \n")
+    Game.setActualCardValue(0)
+    Game.setGameState(Game.States.Playing)
+  }
+
+  def summarizeEndOfGame(): Unit = {
+    val arschloch: Player = playerList.filter(_.cardAmount != 0).head
+    rankedList.append(arschloch)
+
+    playerList.foreach(_.resetRank())
+
+    king = rankedList.headOption
+    asshole = rankedList.lastOption
+
+    king.get.setRank(PlayerEnv.Rank.King)
+    asshole.get.setRank(PlayerEnv.Rank.Asshole)
+
+    rankedList.length match {
+      case 4 | 6 | 8 =>
+        viceroy = Option(rankedList(1))
+        viceasshole = Option(rankedList(rankedList.length - 2))
+
+        viceroy.get.setRank(PlayerEnv.Rank.Viceroy)
+        viceasshole.get.setRank(PlayerEnv.Rank.Viceasshole)
+      case _ =>
     }
 
-    def summarizeEndOfGame(): Unit = {
-      val arschloch: Player = playerList.filter(_.cardAmount != 0).head
-      rankedList.append(arschloch)
-
-      playerList.foreach(_.resetRank())
-
-      king = rankedList.headOption
-      asshole = rankedList.lastOption
-
-      king.get.setRank(PlayerEnv.Rank.King)
-      asshole.get.setRank(PlayerEnv.Rank.Asshole)
-
-      rankedList.length match {
-        case 4 | 6 | 8 =>
-          viceroy = Option(rankedList(1))
-          viceasshole = Option(rankedList(rankedList.length - 2))
-
-          viceroy.get.setRank(PlayerEnv.Rank.Viceroy)
-          viceasshole.get.setRank(PlayerEnv.Rank.Viceasshole)
-        case _ =>
-      }
-
-      for (i <- rankedList.indices) {
-        val player: Player = rankedList(i)
-        player.clearCards()
-        println("\nPlayer " + player.getPlayerNumber + " ranked at place " + (i + 1) + " and is now the " + player.getRankName)
-      }
-
-      rankedList.clear()
-      swapCardsNeeded = true
-
-      Game.setGameState(Game.States.HandOut)
+    for (i <- rankedList.indices) {
+      val player: Player = rankedList(i)
+      player.clearCards()
+      println("\nPlayer " + player.getPlayerNumber + " ranked at place " + (i + 1) + " and is now the " + player.getRankName)
     }
+
+    rankedList.clear()
+    swapCardsNeeded = true
+
+    Game.setGameState(Game.States.HandOut)
+  }
+
+  // Event Triggers
+  def setCardLeadingPlayer(player: Player): Unit = {
+    Game.setActivePlayer(player)
+    publish(new ActivePlayerChanged)
+  }
+
+  def addCardsToCardsOnTable(pickedCards: ListBuffer[Card]): Unit = {
+    actualCardsOnTable.enqueue(pickedCards)
+    publish(new CardsOnTableChanged)
   }
 
   // Getter - Setter
+  def getLatestCardsOnTable: ListBuffer[Card] = {
+    actualCardsOnTable.front
+  }
+
   def getPlayerList: ListBuffer[Player] = playerList
 
   def getPlayerCount: Int = playerCount

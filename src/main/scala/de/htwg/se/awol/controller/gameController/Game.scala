@@ -27,7 +27,7 @@ import scala.collection.mutable.ListBuffer
 object Game {
   // TODO Vielleicht muss man hier noch sicherstellen, dass die States in gewisser Reihenfolge aufgerufen werden!
   object States extends Enumeration {
-    val NewGame, HandOut, Playing, Evaluation, EndOfGame, CardSwap = Value
+    val NewGame, HandOut, FindStartingPlayer, Playing, Evaluation, EndOfGame, CardSwap = Value
   }
 
   var humanPlayer: HumanPlayer = _
@@ -38,7 +38,7 @@ object Game {
 
   private var roundNumber: Int = _
 
-  private var actualGameState: States.Value = States.NewGame
+  private var actualGameState: States.Value = _
   private var actualCardCount: Int = 0
   private var actualCardValue: Int = 0
   private var activePlayer: Player = _

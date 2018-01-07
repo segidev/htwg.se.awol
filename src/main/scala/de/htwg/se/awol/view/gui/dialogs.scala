@@ -54,7 +54,6 @@ class GameOptionsDialog extends Dialog {
   private val labelDeckSize: Label = new Label(LanguageTranslator.translate(MessageEnv.Menues.DeckSize))
   private val spinnerDeckSize: Spinner[Int] = new Spinner(Deck.smallCardStackSize, Deck.bigCardStackSize, Deck.smallCardStackSize, 4)
 
-  //radioButton6Players.disable <== spinnerDeckSize.valueFactory.onChange{}
   spinnerDeckSize.value.onChange(checkValidation)
 
   def checkValidation: Unit = {

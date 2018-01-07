@@ -75,6 +75,10 @@ object GuiEnv {
     Images.Image_Player -> imagePlayer
   )
 
+  def getCardSize: (Double, Double) = {
+    (imageCardMap.head._2.getWidth, imageCardMap.head._2.getHeight)
+  }
+
   def getCardImage(card: Card): Image = {
     imageCardMap.get(card.cardFilename) match {
       case Some(img) => img

@@ -30,5 +30,5 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
 
   override def isHumanPlayer: Boolean = true
 
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, Int)] = ???
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])] = ???
 }

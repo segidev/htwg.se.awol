@@ -1,10 +1,13 @@
 package de.htwg.se.awol.view.gui
 
+import javafx.scene.effect.Glow
+
 import de.htwg.se.awol.model.environmentComponents.GuiEnv
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scalafx.Includes._
 import scalafx.animation.Timeline
+import scalafx.beans.property.BooleanProperty
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Label, Tooltip}
 import scalafx.scene.effect.DropShadow
@@ -16,20 +19,17 @@ class PlayerArea(private val player: Player) extends GridPane {
   alignment = Pos.Center
   style = PlayerArea.stylePlayerArea
   private var direction: GuiEnv.Layout.Value = _
-  private var isVertical: Boolean = false
+  var isActive: BooleanProperty = new BooleanProperty()
 
-  val tooltip = new Tooltip() {
+  val tooltip: Tooltip = new Tooltip() {
     style = PlayerArea.styleTooltip
   }
 
-  private val playerImage: ImageView = new ImageView(GuiEnv.getImage(GuiEnv.Images.Image_Player)) {
-    preserveRatio = true
-    fitWidth = 100
-  }
+  private val playerImage: ImageView = new ImageView(GuiEnv.getImage(GuiEnv.Images.Image_Player))
 
   private val playerLabel: Label = new Label() {
     alignment = Pos.BottomCenter
-    style = "-fx-background-color: black; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 2px"
+    style <== when(isActive) choose PlayerArea.stylePlayerLabelActive otherwise PlayerArea.stylePlayerLabelInactive
   }
 
   private var playerActionArea: HBox = _
@@ -40,6 +40,8 @@ class PlayerArea(private val player: Player) extends GridPane {
   }
 
   // Methods
+  def setAsActive(active: Boolean): Unit = isActive.set(active)
+
   def setLayout(direction: GuiEnv.Layout.Value): Unit = {
     this.direction = direction
 
@@ -56,13 +58,9 @@ class PlayerArea(private val player: Player) extends GridPane {
         add(playerActionArea, 0, 0)
         add(playerBox, 0, 1)
       case GuiEnv.Layout.RIGHT =>
-        isVertical = true
-
         add(playerActionArea, 0, 0)
         add(playerBox, 1, 0)
       case GuiEnv.Layout.LEFT =>
-        isVertical = true
-
         add(playerBox, 0, 0)
         add(playerActionArea, 1, 0)
       case _ => throw new MatchError("Layout direction not defined")
@@ -94,7 +92,7 @@ class PlayerArea(private val player: Player) extends GridPane {
 
       var translateCards = 0
       for (card <- cardGroup) {
-        val cardImg = new ImageView(GuiEnv.getCardImage(card))
+        val cardImg = new ImageView(card.getMySFXImage)
 
         stackPane.onMouseEntered = handle {
           tooltip.setText(cardGroup.length + "x " + card.cardName)
@@ -120,10 +118,14 @@ class PlayerArea(private val player: Player) extends GridPane {
     }
   }
 
+  def hideHumanPlayerItems(): Unit = {playerImage.visible = false}
+
   def setName(str: String): Unit = playerLabel.setText(str)
 }
 
 object PlayerArea {
-  val stylePlayerArea = "-fx-border-color: grey; -fx-padding: 5"
+  val stylePlayerArea = "-fx-background-color: rgb(220, 220, 220); -fx-padding: 5px"
+  val stylePlayerLabelInactive = "-fx-background-color: black; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 2px"
+  val stylePlayerLabelActive = "-fx-background-color: rgb(150, 0, 0); -fx-text-fill: white; -fx-font-size: 22px; -fx-padding: 16px"
   val styleTooltip = "-fx-font-size: 16px"
 }

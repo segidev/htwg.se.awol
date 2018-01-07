@@ -2,13 +2,13 @@ package de.htwg.se.awol
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._GameHandler
-import de.htwg.se.awol.model.languageComponents.LanguageGerman
+import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
 import de.htwg.se.awol.view.{Gui, Tui}
 
 import scala.io.StdIn.readLine
 
 object Arschloch {
-  Settings.setLanguage(LanguageGerman)
+  Settings.setLanguage(LanguageEnglish)
 
   val defaultPlayerCount: Int = 4
   val controller: _GameHandler = new _GameHandler(defaultPlayerCount)

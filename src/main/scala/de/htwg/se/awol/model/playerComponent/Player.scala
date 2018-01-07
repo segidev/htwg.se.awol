@@ -77,7 +77,7 @@ trait Player {
 
   def isHumanPlayer: Boolean
 
-  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, Int)]
+  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])]
 
   override def toString: String = {
     var sb: StringBuilder = new StringBuilder

@@ -2,9 +2,13 @@ package de.htwg.se.awol.view.gui
 
 import javafx.scene.effect.Glow
 
+import de.htwg.se.awol.controller.gameController._GameHandler
+import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.GuiEnv
 import de.htwg.se.awol.model.playerComponent.Player
 
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scalafx.Includes._
 import scalafx.animation.Timeline
 import scalafx.beans.property.BooleanProperty
@@ -15,11 +19,13 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout._
 
-class PlayerArea(private val player: Player) extends GridPane {
+class PlayerArea(private val player: Player, controller: _GameHandler) extends GridPane {
   alignment = Pos.Center
   style = PlayerArea.stylePlayerArea
+
   private var direction: GuiEnv.Layout.Value = _
-  var isActive: BooleanProperty = new BooleanProperty()
+  private var isActive: BooleanProperty = new BooleanProperty()
+  private val cardGroupMap: mutable.HashMap[Int, ListBuffer[ImageView]] = mutable.HashMap()
 
   val tooltip: Tooltip = new Tooltip() {
     style = PlayerArea.styleTooltip
@@ -92,7 +98,13 @@ class PlayerArea(private val player: Player) extends GridPane {
 
       var translateCards = 0
       for (card <- cardGroup) {
-        val cardImg = new ImageView(card.getMySFXImage)
+        val cardImageView = card.getMySFXImageView
+
+        if (!cardGroupMap.contains(card.cardValue)) {
+          cardGroupMap.put(card.cardValue, ListBuffer[ImageView]())
+        }
+
+        cardGroupMap.apply(card.cardValue).append(cardImageView)
 
         stackPane.onMouseEntered = handle {
           tooltip.setText(cardGroup.length + "x " + card.cardName)
@@ -108,13 +120,30 @@ class PlayerArea(private val player: Player) extends GridPane {
 
         }
 
-        stackPane.children.add(cardImg)
-        cardImg.setTranslateX(translateCards)
+        stackPane.children.add(cardImageView)
+        cardImageView.setTranslateX(translateCards)
 
         translateCards += 6
       }
 
       playerActionArea.children.add(stackPane)
+    }
+  }
+
+  def highlightSuitableCards(suitableCards: Map[Int, ListBuffer[Card]]): Unit = {
+    cardGroupMap.foreach(_._2.foreach(_.opacity = 0.2)) //
+
+    for (key <- suitableCards.keys) {
+      for (cardViewImage <- cardGroupMap.apply(key)) {
+        cardViewImage.opacity = 1
+
+        cardViewImage.onMouseReleased = handle {
+          val pickedCards: ListBuffer[Card] = suitableCards.apply(key)
+
+          controller.humanPlaying(pickedCards)
+        }
+      }
+      //cardGroupMap.apply(key).foreach(_.opacity = 1)
     }
   }
 

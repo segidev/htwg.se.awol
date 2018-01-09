@@ -4,6 +4,7 @@ import javafx.scene.effect.Glow
 
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
+import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
 import de.htwg.se.awol.model.playerComponent.Player
 
@@ -186,7 +187,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     var i = 0
     for (player <- playerList) {
-      val playerArea = new PlayerArea(player)
+      val playerArea = new PlayerArea(player, controller)
       playerArea.setName(player.getPlayerName)
 
       if (player.isHumanPlayer) {
@@ -200,6 +201,13 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
       i += 1
     }
+  }
+
+  def clearCardsFromTable(): Unit = {
+    tableCard_1.children.clear()
+    tableCard_2.children.clear()
+    tableCard_3.children.clear()
+    tableCard_4.children.clear()
   }
 
   def assignPlayerPosition(idx: Int, playerArea: PlayerArea): Unit = {
@@ -277,16 +285,27 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   def updateTableView(): Unit = {
+    clearCardsFromTable()
+
     var i = 0
     for (card <- controller.getLatestCardsOnTable) {
       i match {
-        case 0 => tableCard_1.children.clear(); tableCard_1.children.add(new ImageView(card.getMySFXImage))
-        case 1 => tableCard_2.children.clear(); tableCard_2.children.add(new ImageView(card.getMySFXImage))
-        case 2 => tableCard_3.children.clear(); tableCard_3.children.add(new ImageView(card.getMySFXImage))
-        case 3 => tableCard_4.children.clear(); tableCard_4.children.add(new ImageView(card.getMySFXImage))
+        case 0 => tableCard_1.children.add(card.getMySFXImageView)
+        case 1 => tableCard_2.children.add(card.getMySFXImageView)
+        case 2 => tableCard_3.children.add(card.getMySFXImageView)
+        case 3 => tableCard_4.children.add(card.getMySFXImageView)
       }
 
       i += 1
+    }
+  }
+
+  def updateHumanView(suitableCards: Map[Int, ListBuffer[Card]]): Unit = {
+    if (suitableCards.isEmpty) {
+      showGlobalMessage("No suitable cards found!")
+    } else {
+      humanPlayerArea.highlightSuitableCards(suitableCards)
+      println(suitableCards)
     }
   }
 
@@ -296,6 +315,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     case event: PlayersChanged => updatePlayerView()
     case event: ActivePlayerChanged => updatePlayerHints()
     case event: CardsOnTableChanged => updateTableView()
+    case event: HumanPlayerPlaying => updateHumanView(event.suitableCards)
     //case event: CellChanged     => redraw
     //case event: CandidatesChanged => redraw
   }
@@ -311,7 +331,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 }
 
 object Table {
-  val styleTableArea = "-fx-background-color: green; -fx-padding: 25px" //
+  val styleTableArea = "-fx-background-color: green; -fx-padding: 25px"
   val styleEmptyCardArea = "-fx-border-color: grey; -fx-border-style: segments(10, 10, 10, 10) line-cap round"
   val styleGlobalMessage = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-text-fill: white; -fx-font-size: 32px"
 

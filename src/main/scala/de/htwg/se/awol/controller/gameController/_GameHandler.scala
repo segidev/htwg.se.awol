@@ -6,8 +6,12 @@ import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 import scala.swing.Publisher
-import scala.util.Random
+import scala.util.{Failure, Random, Success}
+import scalafx.application.Platform
 
 class _GameHandler(private var playerCount: Int) extends Publisher {
   private var playerList: ListBuffer[Player] = ListBuffer()
@@ -15,6 +19,8 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
   private var swapCardsNeeded: Boolean = false
   private var roundNumber: Int = 1
+  private var actualPlayerNum: Int = 0
+  private val timeBetweenPlayerAction: Int = 1000
 
   private var king: Option[Player] = None
   private var viceroy: Option[Player] = None
@@ -23,7 +29,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
   // User controlled
   private var starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
-  private var actualCardsOnTable: mutable.Queue[ListBuffer[Card]] = mutable.Queue()
+  private var actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = 32
 
   // Game Handling
@@ -41,12 +47,12 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
         findStartingPlayer()
         publish(new ActivePlayerChanged)
 
-        //callNextActionByState()
+        callNextActionByState()
       case Game.States.CardSwap =>
         swapCards()
         publish(new CardsChanged)
       case Game.States.Playing =>
-        play()
+        newPlay()
       case Game.States.Evaluation =>
         evaluateRound()
       case Game.States.EndOfGame =>
@@ -137,6 +143,139 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     }
   }
 
+  def newPlay(): Unit = {
+    assert(Game.getGameState == Game.States.Playing, "Start playing in wrong game state!")
+
+    Game.setActualCardValue(0)
+    Game.setActualCardCount(0)
+    Game.setPassCounter(0)
+
+    actualPlayerNum = Game.getActivePlayer.getPlayerNumber
+
+    triggerPlay()
+  }
+
+  def triggerPlay(): Unit = {
+    if (!Platform.isFxApplicationThread) {
+      // Call tiggerPlay() in main thread!
+      Platform.runLater(triggerPlay())
+    } else {
+      doPlay()
+    }
+  }
+
+  def checkPlayerStatus(player: Player): Unit = {
+    if (player.cardAmount == 0) {
+      // Remove player from actual playing ones and add to winner list
+      rankedList.append(player)
+    }
+
+    if (Game.getPassCounter >= playerCount - 1) {
+      println("REACHED END OF ROUND!")
+      roundNumber += 1
+
+      if (rankedList.lengthCompare(playerList.length - 1) >= 0) {
+        Game.setGameState(Game.States.EndOfGame)
+      } else {
+        Game.setGameState(Game.States.Evaluation)
+      }
+    }
+  }
+
+  def doPlay(): Unit = {
+    val player: Player = playerList(actualPlayerNum % playerCount)
+
+    if (!(rankedList.contains(player) || rankedList.lengthCompare(playerList.length - 1) == 0)) {
+      actualPlayerNum += 1
+
+      if (player.isHumanPlayer) {
+        println("You are playing now!")
+        Game.setPlayerTurn(true)
+
+        val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
+
+        publish(new HumanPlayerPlaying(suitableCards))
+      } else {
+        println(player.getPlayerName + " is playing now")
+        botPlaying(player)
+
+        val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
+        f.onComplete {
+          case Success(v) => triggerPlay()
+          case Failure(e) => throw e
+        }
+      }
+    } else {
+      Game.setPassCounter(Game.getPassCounter + 1)
+    }
+  }
+
+  def humanPlaying(pickedCards: ListBuffer[Card]): Boolean = {
+    val pickedCardValue = pickedCards.head.cardValue
+    val pickedCardCount = pickedCards.length
+
+    println(pickedCardValue, pickedCardCount)
+    println(Game.getActualCardValue, Game.getActualCardCount)
+
+    if (pickedCardValue <= Game.getActualCardValue) { // TODO: Das muss alles in den HumanPlayer rein
+      println("Card value below/equal the actual one")
+      false
+    } else if (Game.getActualCardCount != 0 && pickedCardCount < Game.getActualCardCount) {
+      println("Amount of cards doesn't match actual of " + Game.getActualCardCount)
+      false
+    } else {
+      val player: Player = Game.getActivePlayer
+      val usedCards = pickedCards.slice(0, Game.getActualCardCount)
+
+      player.removeCardsFromMyStack(usedCards)
+
+      Game.setActualCardValue(pickedCardValue)
+      if (Game.getActualCardCount == 0) {
+        Game.setActualCardCount(pickedCardCount)
+      }
+
+      setCardLeadingPlayer(player)
+      addCardsToCardsOnTable(usedCards)
+
+      Game.setPlayerTurn(false)
+
+      checkPlayerStatus(player)
+
+      val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
+      f.onComplete {
+        case Success(v) => triggerPlay()
+        case Failure(e) => throw e
+      }
+      true
+    }
+    //Game.humanPlayer.throwMyCardsIntoGame(cardCount, Game.getActualCardValue, count, value)
+  }
+
+  def botPlaying(player: Player): Unit = {
+    val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
+
+    player.pickAndDropCard(suitableCards) match {
+      case Some(o) =>
+        val newCardValue: Int = o._1
+        val pickedCards: ListBuffer[Card] = o._2
+
+        Game.setActualCardValue(newCardValue)
+        Game.setActualCardCount(pickedCards.length)
+
+        setCardLeadingPlayer(player)
+        addCardsToCardsOnTable(pickedCards)
+
+        println("He picked " + Game.getActualCardCount + " card(s) with value: " + Game.getActualCardValue + "\n")
+
+        Game.setPassCounter(0)
+      case _ =>
+        Game.setPassCounter(Game.getPassCounter + 1)
+        println("He passed...\n")
+    }
+
+    checkPlayerStatus(player)
+  }
+
   def play(): Unit = {
     assert(Game.getGameState == Game.States.Playing, "Start playing in wrong game state!")
 
@@ -164,6 +303,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
             }
             if (Game.getActualCardValue == 0) { println("Choose any card value.") }
             else { println("Following card value was placed on the stack: " + Game.getActualCardValue) }
+
             println("Found cards: ", player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount))
 
             //input = readLine()
@@ -264,13 +404,18 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
   }
 
   def addCardsToCardsOnTable(pickedCards: ListBuffer[Card]): Unit = {
-    actualCardsOnTable.enqueue(pickedCards)
+    actualCardsOnTable.push(pickedCards)
     publish(new CardsOnTableChanged)
   }
 
   // Getter - Setter
   def getLatestCardsOnTable: ListBuffer[Card] = {
-    actualCardsOnTable.front
+    println(actualCardsOnTable)
+    println(actualCardsOnTable.head)
+    actualCardsOnTable.headOption match {
+      case Some(c) => c
+      case _ => ListBuffer[Card]()
+    }
   }
 
   def getPlayerList: ListBuffer[Player] = playerList

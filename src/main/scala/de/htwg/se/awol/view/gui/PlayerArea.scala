@@ -1,22 +1,19 @@
 package de.htwg.se.awol.view.gui
 
-import javafx.scene.effect.Glow
-
 import de.htwg.se.awol.controller.gameController._GameHandler
+import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.GuiEnv
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scalafx.Includes._
-import scalafx.animation.Timeline
 import scalafx.beans.property.BooleanProperty
 import scalafx.geometry.Pos
-import scalafx.scene.control.{Label, Tooltip}
+import scalafx.scene.control.{Button, Label, Tooltip}
 import scalafx.scene.effect.DropShadow
-import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.input.MouseEvent
+import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 
 class PlayerArea(private val player: Player, controller: _GameHandler) extends GridPane {
@@ -38,12 +35,20 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     style <== when(isActive) choose PlayerArea.stylePlayerLabelActive otherwise PlayerArea.stylePlayerLabelInactive
   }
 
+  val passButton: Button = new Button {
+    text = LanguageTranslator.translate(MessageEnv.Words.Pass)
+    onAction = handle { println("You passed!") }
+  }
+
   private var playerActionArea: HBox = _
 
   val playerBox: StackPane = new StackPane() {
     alignment = Pos.Center
-    children = List(playerImage, playerLabel)
+    children = List(playerImage, playerLabel, passButton)
   }
+
+  passButton.translateX = 100
+  passButton.visible = false
 
   // Methods
   def setAsActive(active: Boolean): Unit = isActive.set(active)
@@ -147,7 +152,10 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     }
   }
 
-  def hideHumanPlayerItems(): Unit = {playerImage.visible = false}
+  def toggleHumanPlayerItems(): Unit = {
+    playerImage.visible = false
+    passButton.visible = true
+  }
 
   def setName(str: String): Unit = playerLabel.setText(str)
 }

@@ -164,7 +164,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     }
   }
 
-  def checkPlayerStatus(player: Player): Unit = {
+  def checkPlayerStatus(player: Player): Boolean = {
     if (player.cardAmount == 0) {
       // Remove player from actual playing ones and add to winner list
       rankedList.append(player)
@@ -179,6 +179,10 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
       } else {
         Game.setGameState(Game.States.Evaluation)
       }
+
+      true
+    } else {
+      false
     }
   }
 
@@ -198,12 +202,6 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
       } else {
         println(player.getPlayerName + " is playing now")
         botPlaying(player)
-
-        val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
-        f.onComplete {
-          case Success(v) => triggerPlay()
-          case Failure(e) => throw e
-        }
       }
     } else {
       Game.setPassCounter(Game.getPassCounter + 1)
@@ -224,6 +222,8 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
       println("Amount of cards doesn't match actual of " + Game.getActualCardCount)
       false
     } else {
+      // TODO: Passen ermöglichen
+
       val player: Player = Game.getActivePlayer
       val usedCards = pickedCards.slice(0, Game.getActualCardCount)
 
@@ -239,13 +239,8 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
       Game.setPlayerTurn(false)
 
-      checkPlayerStatus(player)
+      checkForEndOfRound(player)
 
-      val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
-      f.onComplete {
-        case Success(v) => triggerPlay()
-        case Failure(e) => throw e
-      }
       true
     }
     //Game.humanPlayer.throwMyCardsIntoGame(cardCount, Game.getActualCardValue, count, value)
@@ -273,7 +268,23 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
         println("He passed...\n")
     }
 
-    checkPlayerStatus(player)
+    checkForEndOfRound(player)
+  }
+
+  def checkForEndOfRound(player: Player): Unit = {
+    if (checkPlayerStatus(player)) {
+      callNextActionByState()
+    } else {
+      triggerPauseBeforePlay()
+    }
+  }
+
+  def triggerPauseBeforePlay(): Unit = {
+    val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
+    f.onComplete {
+      case Success(v) => triggerPlay()
+      case Failure(e) => throw e
+    }
   }
 
   def play(): Unit = {

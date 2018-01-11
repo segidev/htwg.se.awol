@@ -192,7 +192,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
       if (player.isHumanPlayer) {
         humanPlayerArea = playerArea
-        humanPlayerArea.hideHumanPlayerItems()
+        humanPlayerArea.toggleHumanPlayerItems()
       }
 
       playerAreaMap.put(player, playerArea)

@@ -18,7 +18,7 @@ object MessageEnv {
   }
 
   object Words extends Enumeration {
-    val Yes, No = Value
+    val Yes, No, Pass = Value
   }
 
   object Menues extends Enumeration {

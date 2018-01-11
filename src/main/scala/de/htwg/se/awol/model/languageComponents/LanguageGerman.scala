@@ -40,6 +40,7 @@ object LanguageGerman extends _LanguageHandler {
 
     MessageEnv.Words.Yes -> "Ja",
     MessageEnv.Words.No -> "Nein",
+    MessageEnv.Words.Pass -> "Passen",
 
     MessageEnv.Titles.GameTitle -> "Arschloch",
     MessageEnv.Titles.QuitGame -> "Spiel beenden",

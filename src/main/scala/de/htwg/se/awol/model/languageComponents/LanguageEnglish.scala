@@ -40,6 +40,7 @@ object LanguageEnglish extends _LanguageHandler {
 
     MessageEnv.Words.Yes -> "Yes",
     MessageEnv.Words.No -> "No",
+    MessageEnv.Words.Pass -> "Pass",
 
     MessageEnv.Titles.GameTitle -> "Asshole",
     MessageEnv.Titles.QuitGame -> "Quit Game",

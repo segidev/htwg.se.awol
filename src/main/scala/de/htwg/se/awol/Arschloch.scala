@@ -8,7 +8,7 @@ import de.htwg.se.awol.view.{Gui, Tui}
 import scala.io.StdIn.readLine
 
 object Arschloch {
-  Settings.setLanguage(LanguageEnglish)
+  Settings.setLanguage(LanguageGerman)
 
   val defaultPlayerCount: Int = 4
   val controller: _GameHandler = new _GameHandler(defaultPlayerCount)

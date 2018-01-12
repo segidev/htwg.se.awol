@@ -121,9 +121,6 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
           tooltip.hide()
           stackPane.setEffect(null)
         }
-        stackPane.onMouseReleased = handle {
-
-        }
 
         stackPane.children.add(cardImageView)
         cardImageView.setTranslateX(translateCards)
@@ -143,6 +140,8 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
         cardViewImage.opacity = 1
 
         cardViewImage.onMouseReleased = handle {
+          cardGroupMap.foreach(_._2.foreach(_.onMouseReleased = handle()))
+
           val pickedCards: ListBuffer[Card] = suitableCards.apply(key)
 
           controller.humanPlaying(pickedCards)

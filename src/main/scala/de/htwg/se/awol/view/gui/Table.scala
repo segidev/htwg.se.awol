@@ -289,11 +289,14 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     var i = 0
     for (card <- controller.getLatestCardsOnTable) {
+      val cardImageView: ImageView = card.getMySFXImageView
+      cardImageView.setTranslateX(0)
+
       i match {
-        case 0 => tableCard_1.children.add(card.getMySFXImageView)
-        case 1 => tableCard_2.children.add(card.getMySFXImageView)
-        case 2 => tableCard_3.children.add(card.getMySFXImageView)
-        case 3 => tableCard_4.children.add(card.getMySFXImageView)
+        case 0 => tableCard_1.children.add(cardImageView)
+        case 1 => tableCard_2.children.add(cardImageView)
+        case 2 => tableCard_3.children.add(cardImageView)
+        case 3 => tableCard_4.children.add(cardImageView)
       }
 
       i += 1

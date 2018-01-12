@@ -20,7 +20,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
   private var swapCardsNeeded: Boolean = false
   private var roundNumber: Int = 1
   private var actualPlayerNum: Int = 0
-  private val timeBetweenPlayerAction: Int = 1000
+  private val timeBetweenPlayerAction: Int = 2000
 
   private var king: Option[Player] = None
   private var viceroy: Option[Player] = None
@@ -146,9 +146,11 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
   def newPlay(): Unit = {
     assert(Game.getGameState == Game.States.Playing, "Start playing in wrong game state!")
 
+    // Reset some values
     Game.setActualCardValue(0)
     Game.setActualCardCount(0)
     Game.setPassCounter(0)
+    clearCardsOnTable()
 
     actualPlayerNum = Game.getActivePlayer.getPlayerNumber
 
@@ -224,17 +226,19 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     } else {
       // TODO: Passen ermöglichen
 
-      val player: Player = Game.getActivePlayer
-      val usedCards = pickedCards.slice(0, Game.getActualCardCount)
-
-      player.removeCardsFromMyStack(usedCards)
-
       Game.setActualCardValue(pickedCardValue)
       if (Game.getActualCardCount == 0) {
         Game.setActualCardCount(pickedCardCount)
       }
 
+      val player: Player = Game.getHumanPlayer
+      val usedCards = pickedCards.slice(0, Game.getActualCardCount)
+      println("My pick (human): " + usedCards)
+
+      player.removeCardsFromMyStack(usedCards)
+
       setCardLeadingPlayer(player)
+      println("Hallo i bims")
       addCardsToCardsOnTable(usedCards)
 
       Game.setPlayerTurn(false)
@@ -281,12 +285,14 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
 
   def triggerPauseBeforePlay(): Unit = {
     val f = Future[Unit] { Thread.sleep(timeBetweenPlayerAction) }
+
     f.onComplete {
       case Success(v) => triggerPlay()
       case Failure(e) => throw e
     }
   }
 
+  @deprecated
   def play(): Unit = {
     assert(Game.getGameState == Game.States.Playing, "Start playing in wrong game state!")
 
@@ -369,7 +375,7 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
   def evaluateRound(): Unit = {
     assert(Game.getGameState == Game.States.Evaluation, "Evaluating round in wrong game state!")
 
-    println("\n == Player " + Game.getActivePlayer.getPlayerNumber + " has won the round! == \n")
+    println("\n == Player " + Game.getActivePlayer.getPlayerName + " has won the round! == \n")
     Game.setActualCardValue(0)
     Game.setGameState(Game.States.Playing)
   }
@@ -419,10 +425,13 @@ class _GameHandler(private var playerCount: Int) extends Publisher {
     publish(new CardsOnTableChanged)
   }
 
+  def clearCardsOnTable(): Unit = {
+    actualCardsOnTable.clear()
+    publish(new CardsOnTableChanged)
+  }
+
   // Getter - Setter
   def getLatestCardsOnTable: ListBuffer[Card] = {
-    println(actualCardsOnTable)
-    println(actualCardsOnTable.head)
     actualCardsOnTable.headOption match {
       case Some(c) => c
       case _ => ListBuffer[Card]()

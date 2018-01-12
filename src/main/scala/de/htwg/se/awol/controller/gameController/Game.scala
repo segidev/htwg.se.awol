@@ -51,6 +51,8 @@ object Game {
   def getPassCounter: Int = passCounter
   def setPassCounter(newPassCounter: Int): Unit = passCounter = newPassCounter
 
+  def getHumanPlayer: Player = humanPlayer
+
   def getActivePlayer: Player = activePlayer
   def setActivePlayer(newActivePlayer: Player): Unit = activePlayer = newActivePlayer
 

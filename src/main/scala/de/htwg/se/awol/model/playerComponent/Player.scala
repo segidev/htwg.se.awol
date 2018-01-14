@@ -27,6 +27,8 @@ trait Player {
 
   def getPlayerNumber: Int = playerNumber
 
+  def getPlayerNameObject: PlayerEnv.BotNames.Value = PlayerEnv.BotNames.apply(playerNumber)
+
   def getPlayerName: String = {
     val nameObj = PlayerEnv.BotNames.apply(playerNumber)
 
@@ -65,7 +67,6 @@ trait Player {
       val myCards: Map[Int, ListBuffer[Card]] = cards.filter(_.cardValue > actualCardVal).groupBy(_.cardValue).filter(_._2.lengthCompare(actualCardCount) >= 0)
       myCards
     } else {
-      println("These cards are allowed:")
       val myCards: Map[Int, ListBuffer[Card]] = cards.groupBy(_.cardValue)
       myCards
     }
@@ -82,7 +83,7 @@ trait Player {
   override def toString: String = {
     var sb: StringBuilder = new StringBuilder
 
-    sb.append(getRankName)
+    sb.append(getPlayerName).append(" - ").append(getRankName)
 
     if (cards.nonEmpty) {
       sb.append("\n")

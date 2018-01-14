@@ -21,7 +21,6 @@ class BotPlayer(override protected val playerNumber: Int) extends Player {
       if (Game.getActualCardCount > 0) {
         myPickedCards = myPickedCards.slice(0, Game.getActualCardCount)
       }
-      println("I (Bot) used these cards: " + myPickedCards)
 
       // Remove cards from my stack
       removeCardsFromMyStack(myPickedCards)

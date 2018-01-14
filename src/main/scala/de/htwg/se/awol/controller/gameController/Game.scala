@@ -3,29 +3,26 @@ package de.htwg.se.awol.controller.gameController
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
 import scala.collection.mutable.ListBuffer
+import scalafx.beans.property.BooleanProperty
 
 /**
   * *** States ***
   * NewGame: In diesem Zustand wird das Kartendeck erstellt und die Anfangskarte wird festgelegt
+  *
   * HandOut: Die Karten werden an die Spieler verteilt und der Spieler der anfangen darf wird festgelegt
   *
   * Playing: Die Spieler werfen ihre Karten in die Arena, dabei sind natürlich Regeln zu beachten.
   *
-  * *** CardConditions ***
-  * One: Es wurde eine Karte gelegt, die anderen Spieler müssen mit genau einer höheren Karte den Stich machen oder passen.
-  * Two: Es wurden zwei Karten gelegt, die anderen Spieler müssen mit genau zwei höheren, gleichen Karten den Stich machen oder passen.
-  * Three: Es wurden drei Karten gelegt, die anderen Spieler müssen mit genau drei höheren, gleichen Karten den Stich machen oder passen.
-  * Four: Es wurden vier Karten gelegt, die anderen Spieler müssen mit genau vier höheren, gleichen Karten den Stich machen oder passen.
-  * *** End of CardConditions ***
-  *
   * Evaluation: Die Auswertung der Runde. Der Spieler der den Stich gewonnen hat, wird die nächste Runde beginnen. Zurück zu [Playing]
   *
   * EndOfGame: Den Spielern werden ihre jeweiligen Ränge zugewiesen. Das Arschloch wird den ersten Zug machen dürfen. Zurück zu [HandOut]
+  *
   * CardSwap: Die Spieler tauschen ihre höchsten/niedrigsten Karten mit den jeweiligen Rängen. Zurück zu [Playing] [Erfordert ein Spieler als Arschloch]
   * *** End of States ***
   */
 object Game {
-  // TODO Vielleicht muss man hier noch sicherstellen, dass die States in gewisser Reihenfolge aufgerufen werden!
+  val isPassingAllowed: BooleanProperty = BooleanProperty(false)
+
   object States extends Enumeration {
     val NewGame, HandOut, FindStartingPlayer, Playing, Evaluation, EndOfGame, CardSwap = Value
   }
@@ -41,6 +38,7 @@ object Game {
   private var actualGameState: States.Value = _
   private var actualCardCount: Int = 0
   private var actualCardValue: Int = 0
+  private var leadingPlayer: Player = _
   private var activePlayer: Player = _
   private var passCounter: Int = 0
   private var playerTurn: Boolean = false
@@ -53,8 +51,11 @@ object Game {
 
   def getHumanPlayer: Player = humanPlayer
 
+  def getLeadingPlayer: Player = leadingPlayer
+  def setLeadingPlayer(newLeadingPlayer: Player): Unit = leadingPlayer = newLeadingPlayer
+
   def getActivePlayer: Player = activePlayer
-  def setActivePlayer(newActivePlayer: Player): Unit = activePlayer = newActivePlayer
+  def setActivePlayer(newLeadingPlayer: Player): Unit = activePlayer = newLeadingPlayer
 
   def getActualCardValue: Int = actualCardValue
   def setActualCardValue(newCardValue: Int): Unit = actualCardValue = newCardValue
@@ -69,7 +70,10 @@ object Game {
   def setPlayerCount(count: Int): Unit = { playerCount = count }
 
   def getActualCardCount: Int = actualCardCount
-  def setActualCardCount(newCardCount: Int): Unit = { actualCardCount = newCardCount }
+  def setActualCardCount(newCardCount: Int): Unit = {
+    actualCardCount = newCardCount
+    isPassingAllowed.update(actualCardCount > 0)
+  }
 
   def getGameState: States.Value = actualGameState
   def setGameState(newState: States.Value): Unit = actualGameState = newState

@@ -21,7 +21,7 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
         if (cardCount == 0) {
           Game.setActualCardCount(pickedCardCount)
         }
-        Game.setActivePlayer(this)
+        Game.setLeadingPlayer(this)
         Game.setPlayerTurn(false)
       }
       case _ => println("You don't have any cards with the given value")

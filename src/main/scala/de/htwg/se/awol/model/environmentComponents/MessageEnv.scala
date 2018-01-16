@@ -10,7 +10,7 @@ object MessageEnv {
   }
 
   object Phrases extends Enumeration {
-    val WelcomeToTheGame = Value
+    val WelcomeToTheGame, HandingOutCards, HasWonTheRound, YouHaveWonTheRound, EndOfGameText = Value
   }
 
   object Titles extends Enumeration {
@@ -23,6 +23,6 @@ object MessageEnv {
 
   object Menues extends Enumeration {
     val File, NewGame, Quit, Options, Players_2, Players_4, Players_6, Players_8, DeckSize,
-    StartGame, Cancel = Value
+    StartGame, Cancel, GameSpeed, Fast, Normal, Slow, GameLanguage = Value
   }
 }

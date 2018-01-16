@@ -3,14 +3,18 @@ package de.htwg.se.awol.model.environmentComponents
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.GuiEnv.Images
 
+import scalafx.Includes.handle
 import scalafx.scene.image.{Image, ImageView}
 
 object GuiEnv {
   // Definitions
   private val dimPlayerWidth = 80
   private val dimCardWidth = 140
+  private val dimLeadingWidth = 32
 
   private val imagePlayer: Image = new Image("file:assets/player/player_alt.png", dimPlayerWidth, dimPlayerWidth, true, true)
+
+  private val imageViewLeading: ImageView = new ImageView(new Image("file:assets/player/leading.png", dimLeadingWidth, dimLeadingWidth, true, true))
 
   private val imageCardMap: Map[String, ImageView] = Map(
     "2_of_clubs" -> new ImageView(new Image("file:assets/cards/2_of_clubs.png", dimCardWidth, dimCardWidth, true, true)),
@@ -86,10 +90,16 @@ object GuiEnv {
     }
   }
 
+  def clearAllCardsFromEvents(): Unit = {
+    imageCardMap.values.foreach(_.onMouseReleased = handle())
+  }
+
   def getImage(img: Images.Value): Image = images.get(img) match {
     case Some(i) => i
     case _ => throw new MatchError("Image enumeration not found in imageCards!")
   }
+
+  def getLeadingImageView(): ImageView = imageViewLeading
 
   object Layout extends Enumeration {
     val TOP, RIGHT, BOTTOM, LEFT = Value

@@ -2,16 +2,19 @@ package de.htwg.se.awol.view.gui
 
 import javafx.scene.effect.Glow
 
+import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, SettingEnv}
+import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
+import scalafx.beans.property.BooleanProperty
 import scalafx.embed.swing.SFXPanel
 import scalafx.event.ActionEvent
 import scalafx.geometry.{HPos, Pos, VPos}
@@ -97,47 +100,90 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     globalMessage.visible = false
   }
 
+  //noinspection ScalaStyle
   def createMenuBar(): MenuBar = {
-    val playerOptionsGroup = new ToggleGroup()
+    val languageOptionsGroup = new ToggleGroup()
+    val speedOptionsGroup = new ToggleGroup()
 
     new MenuBar {
       menus = List(
-        new Menu(LanguageTranslator.translate(MessageEnv.Menues.File)) {
+        // File Menu
+        new Menu() {
+          text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.File).get
           items = List(
             new MenuItem(LanguageTranslator.translate(MessageEnv.Menues.NewGame)) {
+              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.NewGame).get
               accelerator = KeyCombination.keyCombination("Ctrl + N")
               onAction = {
                 e: ActionEvent => startNewGame()
               }
             },
+
             new SeparatorMenuItem(),
+
             new MenuItem(LanguageTranslator.translate(MessageEnv.Menues.Quit)) {
+              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Quit).get
               accelerator = KeyCombination.keyCombination("Ctrl + Q")
               onAction = {
                 e: ActionEvent => exitApplication()
               }
             }
           )
-        }/*,
-        new Menu(LanguageTranslator.translate(MessageEnv.Menues.Options)) {
-          items = List(
-            new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Players_2)) {
-              toggleGroup = playerOptionsGroup
-              selected = true
-            },
-            new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Players_4)) {
-              toggleGroup = playerOptionsGroup
-            },
-            new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Players_6)) {
-              toggleGroup = playerOptionsGroup
-            },
-            new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Players_8)) {
-              toggleGroup = playerOptionsGroup
-            },
-            new SeparatorMenuItem()
+        },
 
+        // Options Menu
+        new Menu() {
+          text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Options).get
+          items = List(
+            new Menu() {
+              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.GameLanguage).get
+              items = List(
+                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.English)) {
+                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
+                  toggleGroup = languageOptionsGroup
+                  selected = Settings.isLanguageActive(LanguageEnglish)
+                  onAction = handle { Settings.setLanguage(LanguageEnglish) }
+                },
+                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.German)) {
+                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.German).get
+                  toggleGroup = languageOptionsGroup
+                  selected = Settings.isLanguageActive(LanguageGerman)
+                  onAction = handle { Settings.setLanguage(LanguageGerman) }
+                },
+                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.Youth)) {
+                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.Youth).get
+                  toggleGroup = languageOptionsGroup
+                  selected = Settings.isLanguageActive(LanguageYouth)
+                  onAction = handle { Settings.setLanguage(LanguageYouth) }
+                }
+              )
+            },
+
+            new SeparatorMenuItem(),
+
+            new Menu() {
+              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.GameSpeed).get
+              items = List(
+              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Normal)) {
+                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Normal).get
+                  toggleGroup = speedOptionsGroup
+                  selected = true
+                  onAction = handle { Settings.setNormalSpeed() }
+                },
+              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Fast)) {
+                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Fast).get
+                  toggleGroup = speedOptionsGroup
+                  onAction = handle { Settings.setFastSpeed()}
+                },
+              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Slow)) {
+                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Slow).get
+                  toggleGroup = speedOptionsGroup
+                  onAction = handle { Settings.setSlowSpeed() }
+                }
+              )
+            }
           )
-        }*/
+        }
       )
     }
   }
@@ -188,7 +234,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     var i = 0
     for (player <- playerList) {
       val playerArea = new PlayerArea(player, controller)
-      playerArea.setName(player.getPlayerName)
+      //playerArea.setName(player.getPlayerName)
 
       if (player.isHumanPlayer) {
         humanPlayerArea = playerArea
@@ -239,7 +285,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   def startNewGame(): Unit = {
     if (showAndSetGameOptions()) {
-      showGlobalMessage("Handing out cards\nClick anywhere to start...")
+      showGlobalMessage(LanguageTranslator.translate(MessageEnv.Phrases.HandingOutCards))
     }
   }
 
@@ -282,6 +328,11 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       case Some(p) => p.setAsActive(true)
       case _ => throw new MatchError("Active player seems to not be existent in the game")
     }
+
+    playerAreaMap.get(Game.getLeadingPlayer) match {
+      case Some(p) => p.setLeadingImageToPlayer()
+      case _ => throw new MatchError("Active player seems to not be existent in the game")
+    }
   }
 
   def updateTableView(): Unit = {
@@ -303,24 +354,26 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
-  def updateHumanView(suitableCards: Map[Int, ListBuffer[Card]]): Unit = {
-    if (suitableCards.isEmpty) {
-      showGlobalMessage("No suitable cards found!")
+  def showWinnerOfRound(player: Player): Unit = {
+    if (player.isHumanPlayer) {
+      showGlobalMessage(LanguageTranslator.translate(MessageEnv.Phrases.YouHaveWonTheRound))
     } else {
-      humanPlayerArea.highlightSuitableCards(suitableCards)
-      println(suitableCards)
+      showGlobalMessage(player.getPlayerName + " " + LanguageTranslator.translate(MessageEnv.Phrases.HasWonTheRound))
     }
   }
 
   // Listener
   reactions += {
-    case event: CardsChanged => updateCardView()
-    case event: PlayersChanged => updatePlayerView()
-    case event: ActivePlayerChanged => updatePlayerHints()
+    case event: CardsHandedToPlayers => updateCardView()
+    case event: PlayersCreated => updatePlayerView()
+    case event: PlayerStatusChanged => updatePlayerHints()
     case event: CardsOnTableChanged => updateTableView()
-    case event: HumanPlayerPlaying => updateHumanView(event.suitableCards)
-    //case event: CellChanged     => redraw
-    //case event: CandidatesChanged => redraw
+    case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)
+    case event: PronounceWinnerOfRound =>
+      showWinnerOfRound(event.player)
+      humanPlayerArea.removeCardEventsAndEffects()
+    case event: ShowEndOfGame => showGlobalMessage(String.format(LanguageTranslator.translate(MessageEnv.Phrases.EndOfGameText),
+      event.king.getPlayerName, event.king.getRankName, event.asshole.getPlayerName, event.asshole.getRankName))
   }
 
   // Initializations

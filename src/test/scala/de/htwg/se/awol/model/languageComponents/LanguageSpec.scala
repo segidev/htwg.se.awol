@@ -33,16 +33,17 @@ class LanguageSpec extends WordSpec with Matchers {
     }
   }
 
-  /*"All language classes" should {
-    "have the same amount of translations" in {
-      for (keyWord: StakeAndPepper.Value <- StakeAndPepper.values) {
-        for (languageClass <- LanguageManager.availableTranslations) {
-          withClue(String.format("\"%s\" is missing translation for \"%s\"!", languageClass._1, keyWord.toString)) {
-            languageClass._2.messages.contains(keyWord) should be(true)
-          }
+  "All languages" should {
+    "have a translation for every key" in {
+      for (translationGroup <- LanguageEnglish.translationObjects) {
+        for (translation <- translationGroup.values) {
+          withClue("English Language: ") { LanguageEnglish.translations should contain key translation }
+          withClue("German Language: ") { LanguageGerman.translations should contain key translation }
+          withClue("Youth Language: ") { LanguageYouth.translations should contain key translation }
         }
+      }
     }
-  }*/
+  }
 }
 
 

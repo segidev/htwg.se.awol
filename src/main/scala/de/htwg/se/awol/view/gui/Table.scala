@@ -41,7 +41,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     visible = false
 
     onMouseReleased = handle {
-      hideGlobalMessage(globalMessage)
+      controller.setGamePausedStatus(false)
       controller.callNextActionByState()
     }
   }
@@ -91,6 +91,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   def showGlobalMessage(msg: String): Unit = {
+    controller.setGamePausedStatus(true)
     globalMessage.text = msg
     globalMessage.visible = true
   }
@@ -285,7 +286,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   def startNewGame(): Unit = {
     if (showAndSetGameOptions()) {
-      showGlobalMessage(LanguageTranslator.translate(MessageEnv.Phrases.HandingOutCards))
+      controller.callNextActionByState()
     }
   }
 
@@ -374,6 +375,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       humanPlayerArea.removeCardEventsAndEffects()
     case event: ShowEndOfGame => showGlobalMessage(String.format(LanguageTranslator.translate(MessageEnv.Phrases.EndOfGameText),
       event.king.getPlayerName, event.king.getRankName, event.asshole.getPlayerName, event.asshole.getRankName))
+    case event: GameContinuedFromPause => hideGlobalMessage(globalMessage)
   }
 
   // Initializations

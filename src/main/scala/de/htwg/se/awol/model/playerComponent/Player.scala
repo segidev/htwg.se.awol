@@ -80,7 +80,7 @@ trait Player {
 
   def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])]
 
-  override def toString: String = {
+  /*override def toString: String = {
     var sb: StringBuilder = new StringBuilder
 
     sb.append(getPlayerName).append(" - ").append(getRankName)
@@ -107,5 +107,7 @@ trait Player {
     }
 
     sb.toString
-  }
+  }*/
+
+  override def toString: String = s"$getPlayerName [$cardAmount card(s) left]"
 }

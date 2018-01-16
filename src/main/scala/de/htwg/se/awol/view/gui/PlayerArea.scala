@@ -69,7 +69,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     isActive.set(active)
   }
 
-  def setLeadingImageToPlayer(): Unit = {
+  def setAsLeading(): Unit = {
     val leadingImageView: ImageView = GuiEnv.getLeadingImageView()
 
     if (!playerBox.children.contains(leadingImageView)) {
@@ -84,6 +84,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
 
     playerActionArea = new HBox() {
       alignment = Pos.Center
+      hgrow = Priority.Always
       spacing = -25
     }
 
@@ -186,7 +187,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     }
   }
 
-  def toggleHumanPlayerItems(): Unit = playerImage.visible = false
+  def hidePlayerImage(): Unit = playerImage.visible = false
 
   //def setName(str: String): Unit = playerLabel.text = ""
 }

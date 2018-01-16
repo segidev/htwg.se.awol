@@ -11,7 +11,7 @@ object Arschloch {
   Settings.setLanguage(LanguageGerman)
 
   val defaultPlayerCount: Int = 4
-  val controller: _GameHandler = new _GameHandler(defaultPlayerCount)
+  val controller: _GameHandler = new _GameHandler()
   val tui: Tui = new Tui(controller)
   val gui: Gui = new Gui(controller)
 

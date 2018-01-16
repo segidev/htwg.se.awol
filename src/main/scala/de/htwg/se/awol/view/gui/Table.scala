@@ -1,20 +1,15 @@
 package de.htwg.se.awol.view.gui
 
-import javafx.scene.effect.Glow
-
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, SettingEnv}
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
-import scalafx.beans.property.BooleanProperty
 import scalafx.embed.swing.SFXPanel
 import scalafx.event.ActionEvent
 import scalafx.geometry.{HPos, Pos, VPos}
@@ -115,7 +110,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
               text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.NewGame).get
               accelerator = KeyCombination.keyCombination("Ctrl + N")
               onAction = {
-                e: ActionEvent => startNewGame()
+                e: ActionEvent => showNewGameDialog()
               }
             },
 
@@ -232,18 +227,22 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     val playerList = controller.getPlayerList
 
     var i = 0
-    for (player <- playerList) {
+    for (player: Player <- playerList) {
       val playerArea = new PlayerArea(player, controller)
-      //playerArea.setName(player.getPlayerName)
 
       if (player.isHumanPlayer) {
         humanPlayerArea = playerArea
-        humanPlayerArea.toggleHumanPlayerItems()
+        humanPlayerArea.hidePlayerImage()
       }
 
       playerAreaMap.put(player, playerArea)
 
-      assignPlayerPosition(i, playerArea)
+      playerList.length match {
+        case 2 => assign2PlayerPositions(i, playerArea)
+        case 4 => assign4PlayerPositions(i, playerArea)
+        case 6 => assign6PlayerPositions(i, playerArea)
+        case 8 => assign8PlayerPositions(i, playerArea)
+      }
 
       i += 1
     }
@@ -256,16 +255,43 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     tableCard_4.children.clear()
   }
 
-  def assignPlayerPosition(idx: Int, playerArea: PlayerArea): Unit = {
+  def assign2PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
     idx match {
       case 0 => addPlayerToBottom(playerArea, 0)
       case 1 => addPlayerToTop(playerArea, 0)
-      case 2 => addPlayerToLeft(playerArea, 0)
+    }
+  }
+
+  def assign4PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
+    idx match {
+      case 0 => addPlayerToBottom(playerArea, 0)
+      case 1 => addPlayerToLeft(playerArea, 0)
+      case 2 => addPlayerToTop(playerArea, 0)
       case 3 => addPlayerToRight(playerArea, 0)
-      case 4 => addPlayerToLeft(playerArea, 1)
-      case 5 => addPlayerToRight(playerArea, 1)
-      case 6 => addPlayerToTop(playerArea, 2)
-      case 7 => addPlayerToTop(playerArea, 1)
+    }
+  }
+
+  def assign6PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
+    idx match {
+      case 0 => addPlayerToBottom(playerArea, 0)
+      case 1 => addPlayerToLeft(playerArea, 1)
+      case 2 => addPlayerToLeft(playerArea, 0)
+      case 3 => addPlayerToTop(playerArea, 0)
+      case 4 => addPlayerToTop(playerArea, 1)
+      case 5 => addPlayerToRight(playerArea, 0)
+    }
+  }
+
+  def assign8PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
+    idx match {
+      case 0 => addPlayerToBottom(playerArea, 0)
+      case 1 => addPlayerToLeft(playerArea, 1)
+      case 2 => addPlayerToLeft(playerArea, 0)
+      case 3 => addPlayerToTop(playerArea, 0)
+      case 4 => addPlayerToTop(playerArea, 1)
+      case 5 => addPlayerToRight(playerArea, 0)
+      case 6 => addPlayerToRight(playerArea, 1)
+      case 7 => addPlayerToBottom(playerArea, 1)
     }
   }
 
@@ -276,6 +302,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       case Some(diag.buttonStart) =>
         Game.setDeckSize(diag.getDeckSize)
         Game.setPlayerCount(diag.getPlayerCount)
+
         controller.initNewGame(diag.getDeckSize, diag.getPlayerCount) // TODO: Sehr wichtige Funktion, hier ok?
 
         true
@@ -283,7 +310,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
-  def startNewGame(): Unit = {
+  def showNewGameDialog(): Unit = {
     if (showAndSetGameOptions()) {
       showGlobalMessage(LanguageTranslator.translate(MessageEnv.Phrases.HandingOutCards))
     }
@@ -306,6 +333,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
+  // Event driven methods
   def updatePlayerView(): Unit = {
     resetLayoutAndVariables()
 
@@ -330,8 +358,8 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
 
     playerAreaMap.get(Game.getLeadingPlayer) match {
-      case Some(p) => p.setLeadingImageToPlayer()
-      case _ => throw new MatchError("Active player seems to not be existent in the game")
+      case Some(p) => p.setAsLeading()
+      case _ => throw new MatchError("Leading player seems to not be existent in the game")
     }
   }
 
@@ -364,8 +392,8 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   // Listener
   reactions += {
-    case event: CardsHandedToPlayers => updateCardView()
     case event: PlayersCreated => updatePlayerView()
+    case event: CardsHandedToPlayers => updateCardView()
     case event: PlayerStatusChanged => updatePlayerHints()
     case event: CardsOnTableChanged => updateTableView()
     case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)

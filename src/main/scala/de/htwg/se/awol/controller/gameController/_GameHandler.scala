@@ -2,18 +2,21 @@ package de.htwg.se.awol.controller.gameController
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
-import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, GuiEnv, PlayerEnv}
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 import scala.swing.Publisher
 import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
 
 class _GameHandler() extends Publisher {
+  private var isGamePaused: Boolean = false //hehehe
+
   private var playerList: ListBuffer[Player] = ListBuffer()
   private var activePlayerList: ListBuffer[Player] = ListBuffer()
   private var rankedList: ListBuffer[Player] = ListBuffer()
@@ -63,20 +66,20 @@ class _GameHandler() extends Publisher {
     Game.getGameState match {
       case Game.States.NewGame =>
         createPlayers()
-        publish(new PlayersCreated)
+        publish(PlayersCreated())
       case Game.States.HandOut =>
         handoutCards()
-        publish(new CardsHandedToPlayers)
+        publish(CardsHandedToPlayers())
 
         callNextActionByState() // For: FindStartingPlayer
       case Game.States.FindStartingPlayer =>
         findStartingPlayer()
-        publish(new PlayerStatusChanged)
+        publish(PlayerStatusChanged())
 
         callNextActionByState() // For: CardSawp or Playing
       case Game.States.CardSwap =>
         swapCards()
-        publish(new CardsHandedToPlayers)
+        publish(CardsHandedToPlayers())
       case Game.States.Playing =>
         startNewGame()
       case Game.States.Evaluation =>
@@ -188,17 +191,14 @@ class _GameHandler() extends Publisher {
   }
 
   def doPlay(player: Player): Unit = {
-    println("\nPLAYING AGAIN!\n")
     if (!(rankedList.contains(player) || activePlayerList.length == 1)) { // rankedList.lengthCompare(playerList.length - 1) == 0
       if (player.isHumanPlayer) {
-        println("You are playing now!")
         Game.setPlayerTurn(true)
 
         val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
 
         publish(HumanPlayerPlaying(suitableCards))
       } else {
-        println(player.getPlayerName + " is playing now")
         botPlaying(player)
       }
     } else {
@@ -218,7 +218,7 @@ class _GameHandler() extends Publisher {
         Game.setPassCounter(Game.getPassCounter + 1)
         Game.setPlayerTurn(false)
 
-        checkForEndOfRound(player)
+        Platform.runLater(checkForEndOfRound(player))
       }
     } else {
       val pickedCardValue = pickedCards.head.cardValue
@@ -227,29 +227,27 @@ class _GameHandler() extends Publisher {
       println(pickedCardValue, pickedCardCount)
       println(Game.getActualCardValue, Game.getActualCardCount)
 
-      if (pickedCardValue <= Game.getActualCardValue) { // TODO: Das muss alles in den HumanPlayer rein
-        println("Card value below/equal the actual one")
-      } else if (Game.getActualCardCount != 0 && pickedCardCount < Game.getActualCardCount) {
-        println("Amount of cards doesn't match actual of " + Game.getActualCardCount)
+      var usedCards: ListBuffer[Card] = ListBuffer()
+      if (Game.getActualCardCount == 0) {
+        usedCards = pickedCards.slice(0, pickedCardCount)
       } else {
-        Game.setActualCardValue(pickedCardValue)
-        if (Game.getActualCardCount == 0) {
-          Game.setActualCardCount(pickedCardCount)
-        }
+        usedCards = pickedCards.slice(0, Game.getActualCardCount)
+      }
+      println("My pick (human): " + usedCards)
 
-        val usedCards = pickedCards.slice(0, Game.getActualCardCount)
-        println("My pick (human): " + usedCards)
+      if (player.pickAndDropCard(usedCards.length, pickedCardValue)) {
 
         player.removeCardsFromMyStack(usedCards)
-
-        setCardLeadingPlayer(player)
-        println("Hallo i bims")
-        addCardsToCardsOnTable(usedCards)
-
+        println("Setting new leading player")
+        Platform.runLater(setCardLeadingPlayer(player))
+        println("adding cards to table")
+        Platform.runLater(addCardsToCardsOnTable(usedCards))
+        println("set playerturn false")
         Game.setPlayerTurn(false)
-
+        println("checking for end of round")
         checkForEndOfRound(player)
       }
+
     }
     //Game.humanPlayer.throwMyCardsIntoGame(cardCount, Game.getActualCardValue, count, value)
   }
@@ -268,8 +266,7 @@ class _GameHandler() extends Publisher {
         setCardLeadingPlayer(player)
         addCardsToCardsOnTable(pickedCards)
 
-        println("I (Bot) used these cards: " + pickedCards)
-        println("I have " + player.cardAmount + " cards left.")
+        publish(BotPlayerPlaying(player, pickedCards))
 
         Game.setPassCounter(0)
       case _ =>
@@ -369,18 +366,23 @@ class _GameHandler() extends Publisher {
     val player: Player = getPlayerByIndex(actualPlayerNum)
 
     Game.setActivePlayer(player)
-    publish(new PlayerStatusChanged)
+    publish(PlayerStatusChanged())
   }
 
   def setCardLeadingPlayer(player: Player): Unit = {
     Game.setActivePlayer(player)
     Game.setLeadingPlayer(player)
-    publish(new PlayerStatusChanged)
+    publish(PlayerStatusChanged())
   }
 
   def addCardsToCardsOnTable(pickedCards: ListBuffer[Card]): Unit = {
     actualCardsOnTable.push(pickedCards)
-    publish(new CardsOnTableChanged)
+    publish(CardsOnTableChanged())
+  }
+
+  def clearCardsOnTable(): Unit = {
+    actualCardsOnTable.clear()
+    publish(CardsOnTableChanged())
   }
 
   // Getter - Setter
@@ -397,4 +399,12 @@ class _GameHandler() extends Publisher {
 
   def getPlayerCount: Int = playerCount
   def setPlayerCount(count: Int): Unit = { playerCount = count }
+
+  def setGamePausedStatus(bool: Boolean) = {
+    if (!bool) {
+      publish(GameContinuedFromPause())
+    }
+    isGamePaused = bool
+  }
+  def getGamePausedStatus: Boolean = isGamePaused
 }

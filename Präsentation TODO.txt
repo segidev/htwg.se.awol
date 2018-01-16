@@ -1,0 +1,15 @@
+- Pro Thema ungefähr zwei Folien:
+
+Scrum, GIT, layers MVC, Code Coverage, Cost Estimation, Design Patterns
+
+- Spiel erklären
+- in GIT Contributers Diagramme etc.
+- Scrum Burndown Chart, Board
+- Model-View-Architektur
+- Code Coverage Diagramme
+- Build Management
+- Design Patterns Code Beispiele / UML Diagramm
+- TUI / GUI Development
+- Codebeispiele für Architektur/Injektion/etc.
+
+Präsentation nur Schein: unbenotet!

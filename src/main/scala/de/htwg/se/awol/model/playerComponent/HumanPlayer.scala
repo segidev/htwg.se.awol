@@ -7,25 +7,23 @@ import de.htwg.se.awol.model.environmentComponents.CardEnv
 import scala.collection.mutable.ListBuffer
 
 case class HumanPlayer(override protected val playerNumber: Int) extends Player {
-  def throwMyCardsIntoGame(cardCount: Int, cardValue: Int, pickedCardCount: Int ,pickedCardValue: Int): Unit = {
+  override def pickAndDropCard(pickedCardCount: Int, pickedCardValue: Int): Boolean = {
     println("Amount of card(s): " + pickedCardCount)
     println("Value of card(s): " + pickedCardValue)
-    val suitableCards: Map[Int, ListBuffer[Card]] = this.findSuitableCards(cardValue ,cardCount)
-
-    suitableCards.get(pickedCardValue) match {
-      case Some(buffer) => if (buffer.size < pickedCardCount) {
-        println("You don't have enough card of the value " + pickedCardValue + " on your hand.")
-      } else {
-        removeCardsFromMyStack(buffer.take(pickedCardCount))
-        Game.setActualCardValue(pickedCardValue)
-        if (cardCount == 0) {
-          Game.setActualCardCount(pickedCardCount)
-        }
-        Game.setLeadingPlayer(this)
-        Game.setPlayerTurn(false)
+    if (pickedCardValue <= Game.getActualCardValue) {
+      println("Card value below/equal the actual one")
+      false
+    } else if (Game.getActualCardCount != 0 && pickedCardCount != Game.getActualCardCount) {
+      println("Amount of cards doesn't match actual of " + Game.getActualCardCount)
+      false
+    } else {
+      Game.setActualCardValue(pickedCardValue)
+      if (Game.getActualCardCount == 0) {
+        Game.setActualCardCount(pickedCardCount)
       }
-      case _ => println("You don't have any cards with the given value")
+      true
     }
+
   }
 
   override def isHumanPlayer: Boolean = true

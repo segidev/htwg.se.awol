@@ -15,15 +15,13 @@ object Arschloch {
   val tui: Tui = new Tui(controller)
   val gui: Gui = new Gui(controller)
 
-  println("JO")
-  //sys.exit(0)
 
   def main(args: Array[String]): Unit = {
     var input: String = ""
     do {
       input = readLine()
+      tui.processInputLine(input)
     } while(input != "q")
-
     gui.close()
   }
 }

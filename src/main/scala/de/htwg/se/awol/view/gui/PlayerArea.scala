@@ -45,7 +45,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     effect <== when(isActive) choose activeEffect otherwise inactiveEffect
   }
 
-  val passButton: Button = new Button { // TODO: Bei runden start wird er ativ nach Klick auf Karte, Bei passen direkt ausgrauen, nicht warten
+  val passButton: Button = new Button {
     text <== LanguageTranslator.bindTranslation(MessageEnv.Words.Pass).get
     style = PlayerArea.stylePassButton
     onAction = handle { println("You passed!") }
@@ -77,6 +77,10 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
       leadingImageView.translateX = playerLabel.getWidth / 2
       leadingImageView.translateY = -playerLabel.getHeight / 2
     }
+  }
+
+  def updateCardAmountTextLabel(): Unit = {
+    playerLabel.text <== LanguageTranslator.bindTranslation(player.getPlayerNameObject).getOrElse(StringProperty(player.getPlayerName)) + " (" +  player.cardAmount + ")"
   }
 
   def setLayout(direction: GuiEnv.Layout.Value): Unit = {
@@ -172,6 +176,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
           val pickedCards: ListBuffer[Card] = suitableCards.apply(key)
 
           controller.humanPlaying(pickedCards)
+          updateCardAmountTextLabel()
         }
       }
       //cardGroupMap.apply(key).foreach(_.opacity = 1)

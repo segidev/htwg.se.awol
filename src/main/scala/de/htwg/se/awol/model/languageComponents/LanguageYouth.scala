@@ -28,7 +28,7 @@ object LanguageYouth extends _LanguageHandler {
     CardEnv.Values.Jack -> "Bauer",
     CardEnv.Values.Queen -> "Schlampe",
     CardEnv.Values.King -> "Babo",
-    CardEnv.Values.Ace -> "Arsch, haha",
+    CardEnv.Values.Ace -> "Ass",
 
     MessageEnv.Warnings.DividableByFour -> "Aldem, lern mal Matte du Spast",
     MessageEnv.Warnings.MaxAmountOfCards -> "Junge! Dein Kartem darf nur innen 32 und 54 sein oder so",
@@ -55,6 +55,8 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.Words.Yes -> "Sick",
     MessageEnv.Words.No -> "RIP",
     MessageEnv.Words.Pass -> "Drauf scheissen",
+    MessageEnv.Words.CardSwap -> "Gaunerzeit!\n\n",
+    MessageEnv.Words.EndOfGame -> "Kampf zu Ente\n\n",
 
     MessageEnv.Titles.GameTitle -> "Arschloch",
     MessageEnv.Titles.QuitGame -> "Spiel sein lassen",
@@ -62,11 +64,28 @@ object LanguageYouth extends _LanguageHandler {
 
     MessageEnv.Questions.QuitGame -> "Bisch sicher?",
 
-    MessageEnv.Phrases.WelcomeToTheGame -> "Was geht, lan",
-    MessageEnv.Phrases.HandingOutCards -> "Drogen werden gedealt\nKlick mal irgendwo",
-    MessageEnv.Phrases.HasWonTheRound -> "hat alle kaputt gef****!",
-    MessageEnv.Phrases.YouHaveWonTheRound -> "Du hast alles zerf****! Fett xD",
-    MessageEnv.Phrases.EndOfGameText -> "Party zuende!\n\n%s ruled und ist %s\n%s hat versagt und ist %s\n\nKlick einfach, dann geht weida!",
+    MessageEnv.PhrasesGeneral.WelcomeToTheGame -> "Was geht, lan",
+    MessageEnv.PhrasesGeneral.ClickAnywhereToContinue -> "\nKlick ein Fach, dann geht weida...",
+    MessageEnv.PhrasesGeneral.HitEnterToContinue -> "\nDrücke die fette Taste zum weitermachen...",
+    MessageEnv.PhrasesGeneral.GameHasStarted -> "Die Party hat begonnen!",
+    MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Jeder Junkie hat sein Koks erhalten",
+
+    MessageEnv.PhrasesBot.WonTheRound -> "%s hat alle kaputt gef****!",
+    MessageEnv.PhrasesBot.IsTheWinner -> "%s isch Killer und %s\n",
+    MessageEnv.PhrasesBot.IsTheLooser -> "%s hat verkackt und ist %s\n",
+    MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s snatcht %s vong %s\n",
+    MessageEnv.PhrasesBot.ReceivesCardFromHuman -> "%s snatch %s vong dir\n",
+    MessageEnv.PhrasesBot.IsPlayingNow -> "\n== %s isch jetzt dran! ==\n",
+    MessageEnv.PhrasesBot.Passed -> "%s hat sich in die Hose geschissen und nix gemacht",
+    MessageEnv.PhrasesBot.UsedTheseCards -> "%s hat die Karten rausgehauen: %s",
+    MessageEnv.PhrasesBot.HasCardsLeft -> "%s hat noch %d Karten noch",
+
+    MessageEnv.PhrasesHuman.WonTheRound -> "Du hast alles zerf****! Fett!",
+    MessageEnv.PhrasesHuman.IsTheWinner -> "Du hasch geruled und bisch %s\n",
+    MessageEnv.PhrasesHuman.IsTheLooser -> "Du Versager, jetzt bist du %s\n",
+    MessageEnv.PhrasesHuman.ReceivesCardFrom -> "Du kriegsch %s vom %s\n",
+    MessageEnv.PhrasesHuman.SuitableCards -> "Die Karten sind legal zu legen: %s",
+    MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== Du bisch dran! ==",
 
     SettingEnv.Language.German -> "Kartoffelgelaber",
     SettingEnv.Language.English -> "Obamaland",

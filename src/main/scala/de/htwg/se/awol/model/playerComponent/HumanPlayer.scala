@@ -8,8 +8,6 @@ import scala.collection.mutable.ListBuffer
 
 case class HumanPlayer(override protected val playerNumber: Int) extends Player {
   override def pickAndDropCard(pickedCardCount: Int, pickedCardValue: Int): Boolean = {
-    println("Amount of card(s): " + pickedCardCount)
-    println("Value of card(s): " + pickedCardValue)
     if (pickedCardValue <= Game.getActualCardValue) {
       println("Card value below/equal the actual one")
       false
@@ -23,10 +21,9 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
       }
       true
     }
-
   }
 
   override def isHumanPlayer: Boolean = true
 
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])] = ???
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = ???
 }

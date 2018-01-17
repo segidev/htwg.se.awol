@@ -304,7 +304,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
         Game.setDeckSize(diag.getDeckSize)
         Game.setPlayerCount(diag.getPlayerCount)
 
-        controller.initNewGame(diag.getDeckSize, diag.getPlayerCount) // TODO: Sehr wichtige Funktion, hier ok?
+        controller.initNewGame(diag.getDeckSize, diag.getPlayerCount)
 
         true
       case _ => false
@@ -383,27 +383,43 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
-  def showWinnerOfRound(player: Player): Unit = {
-    if (player.isHumanPlayer) {
-      showGlobalMessage(LanguageTranslator.translate(MessageEnv.Phrases.YouHaveWonTheRound))
-    } else {
-      showGlobalMessage(player.getPlayerName + " " + LanguageTranslator.translate(MessageEnv.Phrases.HasWonTheRound))
-    }
-  }
-
   // Listener
   reactions += {
     case event: PlayersCreated => updatePlayerView()
+
     case event: CardsHandedToPlayers => updateCardView()
+
     case event: PlayerStatusChanged => updatePlayerHints()
+
     case event: CardsOnTableChanged => updateTableView()
+
     case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)
+
+    case event: BotPlayerPlaying => playerAreaMap.apply(event.player).updateCardAmountTextLabel()
+
+    case event: CardsWereSwapped =>
+      val sb: StringBuilder = new StringBuilder()
+
+      sb.append(MessageEnv.getCardsWereSwappedText(event))
+      sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.ClickAnywhereToContinue))
+
+      showGlobalMessage(sb.toString())
+
     case event: PronounceWinnerOfRound =>
-      showWinnerOfRound(event.player)
-      humanPlayerArea.removeCardEventsAndEffects()
-    case event: ShowEndOfGame => showGlobalMessage(String.format(LanguageTranslator.translate(MessageEnv.Phrases.EndOfGameText),
-      event.king.getPlayerName, event.king.getRankName, event.asshole.getPlayerName, event.asshole.getRankName))
+      showGlobalMessage(MessageEnv.getPronounceWinnerOfRoundText(event))
+
+      humanPlayerArea.removeCardEventsAndEffects() // TODO: Bessere Lösung um Karten Events und Effekte zurückzusetzen
+
+    case event: ShowEndOfGame =>
+      val sb: StringBuilder = new StringBuilder()
+
+      sb.append(MessageEnv.getShowEndOfGameText(event))
+      sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.ClickAnywhereToContinue))
+
+      showGlobalMessage(sb.toString())
+
     case event: GameContinuedFromPause => hideGlobalMessage(globalMessage)
+
   }
 
   // Initializations

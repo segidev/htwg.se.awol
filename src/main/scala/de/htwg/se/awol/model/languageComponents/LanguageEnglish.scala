@@ -55,6 +55,8 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.Words.Yes -> "Yes",
     MessageEnv.Words.No -> "No",
     MessageEnv.Words.Pass -> "Pass",
+    MessageEnv.Words.CardSwap -> "Card swap time!\n\n",
+    MessageEnv.Words.EndOfGame -> "End of game\n\n",
 
     MessageEnv.Titles.GameTitle -> "Asshole",
     MessageEnv.Titles.QuitGame -> "Quit Game",
@@ -62,11 +64,28 @@ object LanguageEnglish extends _LanguageHandler {
 
     MessageEnv.Questions.QuitGame -> "Do you really want to exit the game?",
 
-    MessageEnv.Phrases.WelcomeToTheGame -> "Welcome to the game",
-    MessageEnv.Phrases.HandingOutCards -> "Handing out cards\nClick anywhere to start...",
-    MessageEnv.Phrases.HasWonTheRound -> "has won the round!",
-    MessageEnv.Phrases.YouHaveWonTheRound -> "You have won the round! Nice :)",
-    MessageEnv.Phrases.EndOfGameText -> "End of game!\n\n%s is the winner and now %s\n%s has lost and is the new %s\n\nClick anywhere to play again",
+    MessageEnv.PhrasesGeneral.WelcomeToTheGame -> "Welcome to the game",
+    MessageEnv.PhrasesGeneral.ClickAnywhereToContinue -> "\nClick anywhere to continue...",
+    MessageEnv.PhrasesGeneral.HitEnterToContinue -> "\nHit Enter to continue...",
+    MessageEnv.PhrasesGeneral.GameHasStarted -> "The game has started",
+    MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Every play received cards",
+
+    MessageEnv.PhrasesBot.WonTheRound -> "%s has won the round!",
+    MessageEnv.PhrasesBot.IsTheWinner -> "%s ist the winner and ranks as %s\n",
+    MessageEnv.PhrasesBot.IsTheLooser -> "%s lost and is the new %s\n",
+    MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s receives %s from %s\n",
+    MessageEnv.PhrasesBot.ReceivesCardFromHuman -> "%s receives %s from you\n",
+    MessageEnv.PhrasesBot.IsPlayingNow -> "\n== %s is playing now! ==\n",
+    MessageEnv.PhrasesBot.Passed -> "%s passed",
+    MessageEnv.PhrasesBot.UsedTheseCards -> "%s played those cards: %s",
+    MessageEnv.PhrasesBot.HasCardsLeft -> "%s has %d card(s) left",
+
+    MessageEnv.PhrasesHuman.WonTheRound -> "You have won the round! Nice :)",
+    MessageEnv.PhrasesHuman.IsTheWinner -> "You are the winner and you rank as %s\n",
+    MessageEnv.PhrasesHuman.IsTheLooser -> "You have lost, that makes you the %s\n",
+    MessageEnv.PhrasesHuman.ReceivesCardFrom -> "You receive %s from %s\n",
+    MessageEnv.PhrasesHuman.SuitableCards -> "You can play these cards: %s",
+    MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== It's your turn! ==",
 
     SettingEnv.Language.German -> "German",
     SettingEnv.Language.English -> "English",

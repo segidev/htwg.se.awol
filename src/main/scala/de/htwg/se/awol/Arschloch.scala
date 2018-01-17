@@ -6,6 +6,7 @@ import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman
 import de.htwg.se.awol.view.{Gui, Tui}
 
 import scala.io.StdIn.readLine
+import scalafx.application.Platform
 
 object Arschloch {
   Settings.setLanguage(LanguageGerman)
@@ -15,12 +16,11 @@ object Arschloch {
   val tui: Tui = new Tui(controller)
   val gui: Gui = new Gui(controller)
 
-
   def main(args: Array[String]): Unit = {
     var input: String = ""
     do {
       input = readLine()
-      tui.processInputLine(input)
+      Platform.runLater(tui.processInputLine(input))
     } while(input != "q")
     gui.close()
   }

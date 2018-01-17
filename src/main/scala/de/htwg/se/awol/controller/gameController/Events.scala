@@ -15,5 +15,6 @@ case class PronounceWinnerOfRound(player: Player) extends Event
 case class ShowEndOfGame(king: Player, asshole: Player) extends Event
 case class HumanPlayerPlaying(suitableCards: Map[Int, ListBuffer[Card]]) extends Event
 case class BotPlayerPlaying(player: Player, pickedCards: ListBuffer[Card]) extends Event
+case class CardsWereSwapped(swappedCards: ListBuffer[(Player, Card, Player)]) extends Event
 //case class GridSizeChanged(newSize: Int) extends Event
 //class CandidatesChanged extends Event

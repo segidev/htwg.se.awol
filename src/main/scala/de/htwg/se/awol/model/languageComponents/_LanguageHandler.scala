@@ -6,8 +6,8 @@ trait _LanguageHandler {
   val translationObjects = Array(
     PlayerEnv.Rank,
     CardEnv.Colors, CardEnv.Values,
-    MessageEnv.Warnings, MessageEnv.Menues, MessageEnv.Phrases, MessageEnv.Questions, MessageEnv.Titles, MessageEnv.Words,
-    SettingEnv.Language
+    MessageEnv.Warnings, MessageEnv.Menues, MessageEnv.PhrasesGeneral, MessageEnv.PhrasesHuman, MessageEnv.PhrasesBot,
+    MessageEnv.Questions, MessageEnv.Titles, MessageEnv.Words, SettingEnv.Language
   )
 
   val translations: Map[Any, String]

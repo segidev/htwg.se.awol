@@ -21,6 +21,7 @@ import scalafx.beans.property.BooleanProperty
   * *** End of States ***
   */
 object Game {
+
   val isPassingAllowed: BooleanProperty = BooleanProperty(false)
 
   object States extends Enumeration {
@@ -47,6 +48,7 @@ object Game {
   def setPlayerTurn(newPlayerTurn: Boolean): Unit = playerTurn = newPlayerTurn
 
   def getPassCounter: Int = passCounter
+  def addToPassCounter(i: Int): Unit = { passCounter += i }
   def setPassCounter(newPassCounter: Int): Unit = passCounter = newPassCounter
 
   def getHumanPlayer: Player = humanPlayer

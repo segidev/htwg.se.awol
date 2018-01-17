@@ -76,9 +76,9 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s erhält %s von %s\n",
     MessageEnv.PhrasesBot.ReceivesCardFromHuman -> "%s erhält %s von dir\n",
     MessageEnv.PhrasesBot.IsPlayingNow -> "\n== %s ist jetzt dran! ==\n",
-    MessageEnv.PhrasesBot.Passed -> "%s hat gepasst",
-    MessageEnv.PhrasesBot.UsedTheseCards -> "%s hat folgende Karten gespielt: %s",
-    MessageEnv.PhrasesBot.HasCardsLeft -> "%s hat %d Karten übrig",
+    MessageEnv.PhrasesBot.Passed -> "\n%s hat gepasst",
+    MessageEnv.PhrasesBot.UsedTheseCards -> "\n%s hat folgende Karten gespielt: %s",
+    MessageEnv.PhrasesBot.HasCardsLeft -> "\n%s hat %d Karten übrig",
 
     MessageEnv.PhrasesHuman.WonTheRound -> "Du hast die Runde gewonnen! Super :)",
     MessageEnv.PhrasesHuman.IsTheWinner -> "Du bist der Gewinner und somit %s\n",

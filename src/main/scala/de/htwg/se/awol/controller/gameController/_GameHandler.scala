@@ -15,6 +15,8 @@ import scalafx.application.Platform
 
 class _GameHandler() extends Publisher {
   private var isGamePaused: Boolean = false //hehehe
+  private var gameId: Double = 0.0
+  private var oldGameId: Double = 0.0
 
   private var playerList: ListBuffer[Player] = ListBuffer()
   private var activePlayerList: ListBuffer[Player] = ListBuffer()
@@ -43,6 +45,8 @@ class _GameHandler() extends Publisher {
     * @param newPlayerCount
     */
   def initNewGame(newDeckSize: Int, newPlayerCount: Int): Unit = {
+    setNewGameId()
+
     playerList.clear()
     activePlayerList.clear()
     rankedList.clear()
@@ -60,6 +64,22 @@ class _GameHandler() extends Publisher {
 
     Game.setGameState(Game.States.NewGame)
     callNextActionByState()
+  }
+
+  def setNewGameId(): Unit = {
+    val idRange: Double = 10.0
+    val idAdd: Double = 0.1
+    var newId: Double = 0.0
+
+    do {
+      newId = idRange * math.random + idAdd
+      println(newId)
+    } while (newId == gameId)
+
+    gameId = newId
+    if (oldGameId == 0.0) {
+      oldGameId = gameId
+    }
   }
 
   def callNextActionByState(): Unit = {
@@ -178,6 +198,7 @@ class _GameHandler() extends Publisher {
   }
 
   def triggerNextPlay(player: Player): Unit = {
+    publish(CardsRemoveAllEventsAndEffects(playerList))
     markNextActivePlayer()
 
     val nextPlayer: Player = getPlayerByIndex(actualPlayerNum)
@@ -195,6 +216,12 @@ class _GameHandler() extends Publisher {
   }
 
   def doPlay(player: Player): Unit = {
+    if (gameId != oldGameId) {
+      println("Game stopped out of a sudden!")
+      oldGameId = gameId
+      return
+    }
+
     if (!(rankedList.contains(player) || activePlayerList.length == 1)) { // rankedList.lengthCompare(playerList.length - 1) == 0
       if (player.isHumanPlayer) {
         Game.setPlayerTurn(true)
@@ -211,23 +238,25 @@ class _GameHandler() extends Publisher {
     }
   }
 
-  def humanPlaying(pickedCards: ListBuffer[Card]): Unit = {
+  def humanPlaying(pickedCards: ListBuffer[Card]): (Boolean, ListBuffer[Card]) = {
     val player: Player = Game.getHumanPlayer
 
+    var usedCards: ListBuffer[Card] = ListBuffer()
     if (pickedCards.isEmpty) { // Passed
       if (Game.getActualCardCount == 0) {
         println("You are not allowed to pass when no card is on the table")
+        (false, usedCards)
       } else {
         Game.addToPassCounter(1)
         Game.setPlayerTurn(false)
 
         validatePostPlay(player)
+        (true, usedCards)
       }
     } else {
       val pickedCardValue = pickedCards.head.cardValue
       val pickedCardCount = pickedCards.length
 
-      var usedCards: ListBuffer[Card] = ListBuffer()
       if (Game.getActualCardCount == 0) {
         usedCards = pickedCards.slice(0, pickedCardCount)
       } else {
@@ -245,8 +274,10 @@ class _GameHandler() extends Publisher {
         //println("checking for end of round")
 
         validatePostPlay(player)
+        (true, usedCards)
+      } else {
+        (false, usedCards)
       }
-
     }
     //Game.humanPlayer.throwMyCardsIntoGame(cardCount, Game.getActualCardValue, count, value)
   }

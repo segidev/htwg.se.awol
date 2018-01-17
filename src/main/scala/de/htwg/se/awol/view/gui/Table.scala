@@ -8,12 +8,13 @@ import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
 import scalafx.embed.swing.SFXPanel
 import scalafx.event.ActionEvent
 import scalafx.geometry.{HPos, Pos, VPos}
-import scalafx.scene.Scene
+import scalafx.scene.{Scene, layout}
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.ImageView
@@ -43,25 +44,30 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   // Layout
   val mainPane: VBox = new VBox() {
-    alignment = Pos.Center
+    //alignment = Pos.Center
   }
 
   val contentPane: StackPane = new StackPane() {
     vgrow = Priority.Always
+    style= Table.styleBackgroundArea
   }
 
   // Space for PlayerAreas
   val topRow: GridPane = new GridPane {
-    alignment = Pos.Center
+    //alignment = Pos.Center
+    minHeight = Table.minSizeBotArea
   }
   val rightRow: GridPane = new GridPane {
-    alignment = Pos.Center
+    //alignment = Pos.Center
+    minWidth = Table.minSizeBotArea
   }
   val bottomRow: GridPane = new GridPane {
-    alignment = Pos.Center
+    //alignment = Pos.Center
+    minHeight = Table.minSizeHumanArea
   }
   val leftRow: GridPane = new GridPane {
-    alignment = Pos.Center
+    //alignment = Pos.Center
+    minWidth = Table.minSizeBotArea
   }
 
   // Table Area
@@ -187,29 +193,21 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   def addPlayerToTop(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.TOP)
     topRow.add(playerArea, startIdx, 0)
-    GridPane.setHgrow(playerArea, Priority.Always)
-    GridPane.setHalignment(playerArea, HPos.Center)
   }
 
   def addPlayerToRight(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.RIGHT)
     rightRow.add(playerArea, 0, startIdx)
-    GridPane.setVgrow(playerArea, Priority.Always)
-    GridPane.setValignment(playerArea, VPos.Center)
   }
 
   def addPlayerToBottom(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.BOTTOM)
     bottomRow.add(playerArea, startIdx, 0)
-    GridPane.setHgrow(playerArea, Priority.Always)
-    GridPane.setHalignment(playerArea, HPos.Center)
   }
 
   def addPlayerToLeft(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.LEFT)
     leftRow.add(playerArea, 0, startIdx)
-    GridPane.setVgrow(playerArea, Priority.Always)
-    GridPane.setValignment(playerArea, VPos.Center)
   }
 
   def resetLayoutAndVariables(): Unit = {
@@ -347,6 +345,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   def updateCardView(): Unit = {
+    playerAreaMap.values.foreach(_.updatePlayerLabel())
     humanPlayerArea.showCardsOnTable()
   }
 
@@ -383,11 +382,22 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
+  def removeAllEventsAndEffectsFromCards(playerList: ListBuffer[Player]): Unit = {
+    for (player <- playerList) {
+      playerAreaMap.get(player) match {
+        case Some(playerArea) => playerArea.removeCardEventsAndEffects()
+        case _ => throw new MatchError("Couldn't clear cards from player " + player.getPlayerName)
+      }
+    }
+  }
+
   // Listener
   reactions += {
     case event: PlayersCreated => updatePlayerView()
 
     case event: CardsHandedToPlayers => updateCardView()
+
+    case event: CardsRemoveAllEventsAndEffects => removeAllEventsAndEffectsFromCards(event.playerList)
 
     case event: PlayerStatusChanged => updatePlayerHints()
 
@@ -395,7 +405,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)
 
-    case event: BotPlayerPlaying => playerAreaMap.apply(event.player).updateCardAmountTextLabel()
+    case event: BotPlayerPlaying => playerAreaMap.apply(event.player).updatePlayerLabel()
 
     case event: CardsWereSwapped =>
       val sb: StringBuilder = new StringBuilder()
@@ -433,9 +443,12 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 }
 
 object Table {
-  val styleTableArea = "-fx-background-color: green; -fx-padding: 25px"
+  val styleTableArea = "-fx-background-image: url('file:assets/table/table.jpg'); -fx-background-size: 102%; -fx-border-color: grey; -fx-padding: 25px" // -fx-background-color: green;
+  val styleBackgroundArea = "-fx-background-image: url('file:assets/table/floor.jpg');"
   val styleEmptyCardArea = "-fx-border-color: grey; -fx-border-style: segments(10, 10, 10, 10) line-cap round"
   val styleGlobalMessage = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-text-fill: white; -fx-font-size: 32px"
 
   val spacingGap = 5
+  val minSizeBotArea = 150
+  val minSizeHumanArea = 250
 }

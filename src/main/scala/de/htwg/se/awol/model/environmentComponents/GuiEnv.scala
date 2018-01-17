@@ -14,6 +14,8 @@ object GuiEnv {
 
   private val imagePlayer: Image = new Image("file:assets/player/player_alt.png", dimPlayerWidth, dimPlayerWidth, true, true)
 
+  private val imageTable: Image = new Image("file:assets/table/table.jpg")
+
   private val imageViewLeading: ImageView = new ImageView(new Image("file:assets/player/leading.png", dimLeadingWidth, dimLeadingWidth, true, true))
 
   private val imageCardMap: Map[String, ImageView] = Map(
@@ -90,16 +92,14 @@ object GuiEnv {
     }
   }
 
-  def clearAllCardsFromEvents(): Unit = {
-    imageCardMap.values.foreach(_.onMouseReleased = handle())
-  }
-
   def getImage(img: Images.Value): Image = images.get(img) match {
     case Some(i) => i
     case _ => throw new MatchError("Image enumeration not found in imageCards!")
   }
 
   def getLeadingImageView(): ImageView = imageViewLeading
+
+  def getTableImage(): Image = imageTable
 
   object Layout extends Enumeration {
     val TOP, RIGHT, BOTTOM, LEFT = Value

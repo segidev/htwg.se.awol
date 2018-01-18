@@ -6,7 +6,7 @@ import de.htwg.se.awol.model.playerComponent.Player
 
 object MessageEnv {
   object Warnings extends Enumeration {
-    val DividableByFour, MaxAmountOfCards, MissingLanguage, MissingTranslation = Value
+    val DividableByFour, MaxAmountOfCards, MissingLanguage, MissingTranslation, PlayerCountMismatch = Value
   }
 
   object Questions extends Enumeration {
@@ -23,7 +23,8 @@ object MessageEnv {
   }
 
   object PhrasesHuman extends Enumeration {
-    val WonTheRound, IsTheWinner, IsTheLooser, ReceivesCardFrom, SuitableCards, IsPlayingNow = Value
+    val WonTheRound, IsTheWinner, IsTheLooser, ReceivesCardFrom, SuitableCards, NoSuitableCards, IsPlayingNow,
+    Passed, PassForbidden, YouPlayedThoseCards, HowManyCardsToPlay = Value
   }
 
   object Titles extends Enumeration {

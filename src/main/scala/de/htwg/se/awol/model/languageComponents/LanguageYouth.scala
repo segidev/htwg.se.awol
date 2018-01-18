@@ -34,6 +34,7 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.Warnings.MaxAmountOfCards -> "Junge! Dein Kartem darf nur innen 32 und 54 sein oder so",
     MessageEnv.Warnings.MissingLanguage -> "Deine Mongosprache spricht hier keiner: ",
     MessageEnv.Warnings.MissingTranslation -> "Keine Übersetzung lan: ",
+    MessageEnv.Warnings.PlayerCountMismatch -> "Soviel Spieler sind fei net erlaubt!",
 
     MessageEnv.Menues.File -> "Hauptding",
     MessageEnv.Menues.NewGame -> "Neu",
@@ -85,7 +86,12 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.PhrasesHuman.IsTheLooser -> "Du Versager, jetzt bist du %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "Du kriegsch %s vom %s\n",
     MessageEnv.PhrasesHuman.SuitableCards -> "Die Karten sind legal zu legen: %s",
+    MessageEnv.PhrasesHuman.NoSuitableCards -> "Solche Karten hasch du net!",
     MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== Du bisch dran! ==",
+    MessageEnv.PhrasesHuman.Passed -> "Du hast dich gedrückt",
+    MessageEnv.PhrasesHuman.PassForbidden -> "Man checks doch. Du kannsch jetzt net passen, Mongo.",
+    MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "Dein Karten waren mit dem: %s",
+    MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wiefiel vong Karten sollen gehen",
 
     SettingEnv.Language.German -> "Kartoffelgelaber",
     SettingEnv.Language.English -> "Obamaland",

@@ -241,6 +241,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
         case 4 => assign4PlayerPositions(i, playerArea)
         case 6 => assign6PlayerPositions(i, playerArea)
         case 8 => assign8PlayerPositions(i, playerArea)
+        case _ => throw new MatchError("Illegal number of players: " + playerList.length)
       }
 
       i += 1
@@ -299,9 +300,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     diag.showAndWait() match {
       case Some(diag.buttonStart) =>
-        Game.setDeckSize(diag.getDeckSize)
-        Game.setPlayerCount(diag.getPlayerCount)
-
         controller.initNewGame(diag.getDeckSize, diag.getPlayerCount)
 
         true

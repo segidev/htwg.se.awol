@@ -34,6 +34,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.Warnings.MaxAmountOfCards -> "Amount of cards must be in between 32 and 52",
     MessageEnv.Warnings.MissingLanguage -> "The language you specified was not found: ",
     MessageEnv.Warnings.MissingTranslation -> "No translation found for: ",
+    MessageEnv.Warnings.PlayerCountMismatch -> "Player count of %d is not allowed!",
 
     MessageEnv.Menues.File -> "File",
     MessageEnv.Menues.NewGame -> "New Game",
@@ -85,7 +86,12 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesHuman.IsTheLooser -> "You have lost, that makes you the %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "You receive %s from %s\n",
     MessageEnv.PhrasesHuman.SuitableCards -> "You can play these cards: %s",
+    MessageEnv.PhrasesHuman.NoSuitableCards -> "No suitable cards found!",
     MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== It's your turn! ==",
+    MessageEnv.PhrasesHuman.Passed -> "You passed",
+    MessageEnv.PhrasesHuman.PassForbidden -> "You are not allowed to pass. Please put some cards.",
+    MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "You played those cards: %s",
+    MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "How many cards do you want to play?",
 
     SettingEnv.Language.German -> "German",
     SettingEnv.Language.English -> "English",

@@ -34,6 +34,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.Warnings.MaxAmountOfCards -> "Anzahl der Spielkarten muss zwischen 32 und 52 liegen.",
     MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: ",
     MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: ",
+    MessageEnv.Warnings.PlayerCountMismatch -> "Spieleranzahl von %d ist nicht gestattet!",
 
     MessageEnv.Menues.File -> "Datei",
     MessageEnv.Menues.NewGame -> "Neues Spiel",
@@ -85,7 +86,12 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.IsTheLooser -> "Du hast verloren und bist das neue %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "Du erhälst %s von %s\n",
     MessageEnv.PhrasesHuman.SuitableCards -> "Diese Karten kannst du spielen: %s",
+    MessageEnv.PhrasesHuman.NoSuitableCards -> "Keine passenden Karten gefunden!",
     MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== Du bist dran! ==",
+    MessageEnv.PhrasesHuman.Passed -> "Du hast gepasst",
+    MessageEnv.PhrasesHuman.PassForbidden -> "Du kannst jetzt nicht passen. Bitte lege deine Karten.",
+    MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "Du hast folgende Karten gespielt: %s",
+    MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wieviele Karten willst du spielen?",
 
     SettingEnv.Language.German -> "Deutsch",
     SettingEnv.Language.English -> "Englisch",

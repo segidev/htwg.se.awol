@@ -28,30 +28,24 @@ object Game {
     val NewGame, HandOut, FindStartingPlayer, Playing, Evaluation, EndOfGame, CardSwap = Value
   }
 
-  var humanPlayer: HumanPlayer = _
+  private val minPlayers: Int = 2
+  private val maxPlayers: Int = 8
 
-  private var deckSize: Int = 32
-  private var playerList: ListBuffer[Player] = ListBuffer()
-  private var playerCount: Int = _
-
-  private var roundNumber: Int = _
+  private var humanPlayer: HumanPlayer = _
+  private var leadingPlayer: Player = _
+  private var activePlayer: Player = _
 
   private var actualGameState: States.Value = _
   private var actualCardCount: Int = 0
   private var actualCardValue: Int = 0
-  private var leadingPlayer: Player = _
-  private var activePlayer: Player = _
   private var passCounter: Int = 0
-  private var playerTurn: Boolean = false
-
-  def getPlayerTurn: Boolean = playerTurn
-  def setPlayerTurn(newPlayerTurn: Boolean): Unit = playerTurn = newPlayerTurn
 
   def getPassCounter: Int = passCounter
   def addToPassCounter(i: Int): Unit = { passCounter += i }
   def setPassCounter(newPassCounter: Int): Unit = passCounter = newPassCounter
 
   def getHumanPlayer: Player = humanPlayer
+  def setHumanPlayer(player: HumanPlayer): Unit = { humanPlayer = player }
 
   def getLeadingPlayer: Player = leadingPlayer
   def setLeadingPlayer(newLeadingPlayer: Player): Unit = leadingPlayer = newLeadingPlayer
@@ -62,15 +56,6 @@ object Game {
   def getActualCardValue: Int = actualCardValue
   def setActualCardValue(newCardValue: Int): Unit = actualCardValue = newCardValue
 
-  def getDeckSize: Int = deckSize
-  def setDeckSize(size: Int): Unit = { deckSize = size }
-
-  def getPlayerList: ListBuffer[Player] = playerList
-  def addPlayerToPlayerlist(player: Player): Unit = playerList.append(player)
-
-  def getPlayerCount: Int = playerCount
-  def setPlayerCount(count: Int): Unit = { playerCount = count }
-
   def getActualCardCount: Int = actualCardCount
   def setActualCardCount(newCardCount: Int): Unit = {
     actualCardCount = newCardCount
@@ -79,4 +64,7 @@ object Game {
 
   def getGameState: States.Value = actualGameState
   def setGameState(newState: States.Value): Unit = actualGameState = newState
+
+  def getMinPlayers: Int = minPlayers
+  def getMaxPlayers: Int = maxPlayers
 }

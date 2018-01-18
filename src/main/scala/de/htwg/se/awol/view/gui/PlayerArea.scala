@@ -11,11 +11,12 @@ import scala.collection.mutable.ListBuffer
 import scalafx.Includes._
 import scalafx.beans.property.{BooleanProperty, StringProperty}
 import scalafx.geometry.Pos
-import scalafx.scene.control.{Button, Label, Tooltip}
+import scalafx.scene.control._
 import scalafx.scene.effect.{DropShadow, Effect}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
+import scalafx.stage.Popup
 
 class PlayerArea(private val player: Player, controller: _GameHandler) extends GridPane {
   alignment = Pos.Center
@@ -29,6 +30,11 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     radius = 20
   }
   private val inactiveEffect: Effect = null.asInstanceOf[javafx.scene.effect.DropShadow]
+  private val cardGlowEffect: Effect = new DropShadow() {
+    color = Color.White
+    spread = 0.2
+    radius = 15
+  }
 
   private var direction: GuiEnv.Layout.Value = _
   private var isActive: BooleanProperty = BooleanProperty(false)
@@ -73,6 +79,31 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     hgrow = Priority.Always
     vgrow = Priority.Always
   }
+
+  // POPUP
+  private val popup = new Popup
+  private val pickHint: Label = new Label() {
+    text <== LanguageTranslator.bindTranslation(MessageEnv.PhrasesHuman.HowManyCardsToPlay).get
+    style = PlayerArea.stylePopupHint
+  }
+  private val pickOneCardButton: Button = new Button("1")
+  private val pickTwoCardButton: Button = new Button("2")
+  private val pickThreeCardButton: Button = new Button("3")
+  private val pickFourCardButton: Button = new Button("4")
+
+  private val buttonBox = new HBox {
+    spacing = 5
+    alignment = Pos.Center
+    children = List(pickOneCardButton, pickTwoCardButton, pickThreeCardButton, pickFourCardButton)
+  }
+
+  private val popupMain = new VBox {
+    spacing = 5
+    alignment = Pos.Center
+    style = PlayerArea.stylePopup
+    children = List(pickHint, buttonBox)
+  }
+  popup.getContent.add(popupMain)
 
   // Methods
   def setAsActive(active: Boolean): Unit = {
@@ -153,7 +184,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
           tooltip.setText(cardGroup.length + "x " + card.cardName)
           val pos = cardStack.localToScreen(cardStack.getBoundsInLocal)
           tooltip.show(cardStack, pos.getMinX, pos.getMaxY)
-          cardStack.setEffect(new DropShadow())
+          cardStack.setEffect(cardGlowEffect)
         }
         cardStack.onMouseExited = handle {
           tooltip.hide()
@@ -170,27 +201,76 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     }
   }
 
+  //noinspection ScalaStyle
   def highlightSuitableCards(suitableCards: Map[Int, ListBuffer[Card]]): Unit = {
     cardGroupMap.foreach(cardGroup => {
       val cardValue: Int = cardGroup._1
       val cardStack: CardStack = cardGroup._2
+      var cardAmount = Game.getActualCardCount
 
       if (suitableCards.contains(cardValue)) {
         cardStack.onMouseReleased = handle {
-          val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue)
 
-          val (playingPossible, usedCards) = controller.humanPlaying(pickedCards)
-          if (playingPossible) {
-            if (cardStack.removeCards(usedCards)) {
-              cardStack.setVisible(false)
+          if (Game.getActualCardCount == 0) {
+            if (cardStack.getCardImageViews().length == 1) {
+              putCards(suitableCards, cardStack, 1, cardValue)
+            } else {
+              pickOneCardButton.disable = cardStack.getCardImageViews().length < 1
+              pickTwoCardButton.disable = cardStack.getCardImageViews().length < 2
+              pickThreeCardButton.disable = cardStack.getCardImageViews().length < 3
+              pickFourCardButton.disable =  cardStack.getCardImageViews().length < 4
+
+              popup.show(cardStack, cardStack.localToScreen(cardStack.getBoundsInLocal).getMinX, cardStack.localToScreen(cardStack.getBoundsInLocal).getMinY - 50)
+
+              pickOneCardButton.onAction = handle {
+                putCards(suitableCards, cardStack, 1, cardValue)
+              }
+              pickTwoCardButton.onAction = handle {
+                putCards(suitableCards, cardStack, 2, cardValue)
+              }
+              pickThreeCardButton.onAction = handle {
+                putCards(suitableCards, cardStack, 3, cardValue)
+              }
+              pickFourCardButton.onAction = handle {
+                putCards(suitableCards, cardStack, 4, cardValue)
+              }
             }
-            updatePlayerLabel()
+          } else {
+            putCards(suitableCards, cardStack, cardAmount, cardValue)
           }
         }
       } else {
         cardStack.setDisabled()
       }
     })
+  }
+
+  def resetPopup(): Unit = {
+    popup.hide()
+    pickOneCardButton.onAction = null // TODO: Das muss noch auch aus der TUI über nen Event aufgerufen werden
+    pickTwoCardButton.onAction = null
+    pickThreeCardButton.onAction = null
+    pickFourCardButton.onAction = null
+  }
+
+  def putCards(suitableCards: Map[Int, ListBuffer[Card]], cardStack: CardStack, cardAmount: Int, cardValue: Int): Boolean = {
+    if (cardAmount != -1) {
+      val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue)
+
+      controller.humanPlaying(pickedCards.take(cardAmount)) match {
+        case Some(usedCards: ListBuffer[Card]) =>
+          resetPopup()
+
+          if (cardStack.removeCards(usedCards)) {
+            cardStack.setVisible(false)
+          }
+          updatePlayerLabel()
+          true
+        case _ => false
+      }
+    } else {
+      false
+    }
   }
 
   def removeCardEventsAndEffects(): Unit = {
@@ -207,4 +287,6 @@ object PlayerArea {
   val stylePlayerLabel = "-fx-background-color: black; -fx-text-fill: white; -fx-font-size: 18px; -fx-padding: 2px"
   val styleTooltip = "-fx-font-size: 16px"
   val stylePassButton = "-fx-font-size: 20px"
+  val stylePopup = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-border-color: white; -fx-border-width: 1; -fx-border-radius: 6; -fx-padding: 8px"
+  val stylePopupHint = "-fx-text-fill: white"
 }

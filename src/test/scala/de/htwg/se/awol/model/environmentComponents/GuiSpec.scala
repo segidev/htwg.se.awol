@@ -11,10 +11,10 @@ import scalafx.scene.image.{Image, ImageView}
 
 @RunWith(classOf[JUnitRunner])
 class GuiSpec extends WordSpec with Matchers {
+  new SFXPanel()
+  
   "All getter mehthods" should {
     "work if GUI is initialized" in {
-      new SFXPanel() // Init gui, kind of
-
       val tableImage: Image = GuiEnv.getTableImage
       val imageView: ImageView = GuiEnv.getLeadingImageView
       val playerImage: Image = GuiEnv.getPlayerImage
@@ -22,7 +22,6 @@ class GuiSpec extends WordSpec with Matchers {
     }
   }
   "Every card" should {
-    new SFXPanel()
     "have an ImageView" in {
       val amount: Int = 52
       val cardStackSize: Int = amount / 4

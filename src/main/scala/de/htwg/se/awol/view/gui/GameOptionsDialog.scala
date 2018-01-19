@@ -20,8 +20,6 @@ class GameOptionsDialog extends Dialog {
 
   private val toggleGrp: ToggleGroup = new ToggleGroup()
 
-  println(Game.getDefaultPlayerCount)
-
   private val radioButton2Players: RadioButton = new RadioButton(LanguageTranslator.translate(MessageEnv.Menues.Players_2)) {
     toggleGroup = toggleGrp
     userData = "2"

@@ -1,10 +1,13 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.environmentController.Settings
+import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.languageComponents._
 import org.junit.runner.RunWith
 import org.scalatest._
 import org.scalatest.junit.JUnitRunner
+
+import scala.collection.mutable.ListBuffer
 
 @RunWith(classOf[JUnitRunner])
 class DeckSpec extends WordSpec with Matchers {
@@ -22,6 +25,14 @@ class DeckSpec extends WordSpec with Matchers {
     "contain 52 cards when initialized with it" in {
       val deck = new Deck(52)
       deck.getDeckSize should be(52)
+    }
+    "return the containing cards within a ListBuffer" in {
+      val deck = new Deck(4)
+      val cardList = new ListBuffer[Card]
+      deck.getCards.foreach(card => {
+        cardList.append(card)
+      })
+      deck.getCards should be(cardList)
     }
     "should throw an exception if the card amount in the deck is not dividable by four" in {
       an [IllegalArgumentException] should be thrownBy new Deck(43)

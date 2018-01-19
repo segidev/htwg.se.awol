@@ -382,7 +382,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     var i = 0
     controller.getLatestCardsOnTable.foreach(card => {
-      val cardImageView: ImageView = card.getMySFXImageView
+      val cardImageView: ImageView = GuiEnv.getCardImage(card)
       cardImageView.setTranslateX(0)
 
       i match {

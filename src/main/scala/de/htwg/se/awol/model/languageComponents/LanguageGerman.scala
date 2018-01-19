@@ -32,8 +32,8 @@ object LanguageGerman extends _LanguageHandler {
 
     MessageEnv.Warnings.DividableByFour -> "Anzahl der Karten muss durch 4 teilbar sein!",
     MessageEnv.Warnings.MaxAmountOfCards -> "Anzahl der Spielkarten muss zwischen 32 und 52 liegen.",
-    MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: ",
-    MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: ",
+    MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: %s",
+    MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Spieleranzahl von %d ist nicht gestattet!",
 
     MessageEnv.Menues.File -> "Datei",

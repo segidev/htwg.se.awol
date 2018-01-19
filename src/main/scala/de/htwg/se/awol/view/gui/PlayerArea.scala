@@ -45,7 +45,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
   }
 
   private val playerImage: ImageView = new ImageView {
-    image = GuiEnv.getImage(GuiEnv.Images.Image_Player)
+    image = GuiEnv.getPlayerImage
   }
 
   private val playerLabel: Label = new Label() {
@@ -108,7 +108,6 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     children = List(pickHint, buttonBox)
   }
   popup.getContent.add(popupMain)
-
 
   // Methods
   def setAsActive(active: Boolean): Unit = {
@@ -180,7 +179,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
 
       var translateCards = 0
       cardGroup.foreach(card => {
-        val cardImageView = card.getMySFXImageView
+        val cardImageView = GuiEnv.getCardImage(card)
 
         if (!cardGroupMap.contains(card.cardValue)) {
           cardGroupMap.put(card.cardValue, cardStack)

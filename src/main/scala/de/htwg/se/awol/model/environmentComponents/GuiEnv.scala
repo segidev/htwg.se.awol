@@ -1,9 +1,7 @@
 package de.htwg.se.awol.model.environmentComponents
 
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.GuiEnv.Images
 
-import scalafx.Includes.handle
 import scalafx.scene.image.{Image, ImageView}
 
 object GuiEnv {
@@ -73,29 +71,13 @@ object GuiEnv {
     "14_of_spades" -> new ImageView(new Image("file:assets/cards/ace_of_spades.png", dimCardWidth, dimCardWidth, true, true))
   )
 
-  object Images extends Enumeration {
-    val Image_Player: Images.Value = Value
-  }
-
-  private val images: Map[GuiEnv.Images.Value, Image] = Map (
-    Images.Image_Player -> imagePlayer
-  )
-
   def getCardSize: (Double, Double) = {
     (imageCardMap.head._2.getImage.getWidth, imageCardMap.head._2.getImage.getHeight)
   }
 
-  def getCardImage(card: Card): ImageView = {
-    imageCardMap.get(card.cardFilename) match {
-      case Some(img) => img
-      case _ => throw new MatchError("Card image " + card.cardFilename + " not found")
-    }
-  }
+  def getCardImage(card: Card): ImageView = imageCardMap.apply(card.cardFilename)
 
-  def getImage(img: Images.Value): Image = images.get(img) match {
-    case Some(i) => i
-    case _ => throw new MatchError("Image enumeration not found in imageCards!")
-  }
+  def getPlayerImage: Image = imagePlayer
 
   def getLeadingImageView: ImageView = imageViewLeading
 

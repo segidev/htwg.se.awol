@@ -23,11 +23,13 @@ class BotPlayerSpec extends WordSpec with Matchers {
     val player = new BotPlayer(0)
 
     "change it's rank to be a King and should be the König now" in {
+      Settings.setLanguage(LanguageGerman)
       player.setRank(PlayerEnv.Rank.King)
       player.getRank should be(PlayerEnv.Rank.King)
       player.getRankName should be("König")
     }
     "also become an Asshole what makes him an Arschloch" in {
+      Settings.setLanguage(LanguageGerman)
       player.setRank(PlayerEnv.Rank.Asshole)
       player.getRank should be(PlayerEnv.Rank.Asshole)
       player.getRankName should be("Arschloch")

@@ -19,6 +19,8 @@ class CardSpec extends WordSpec with Matchers {
       card.cardColorName should be("Kreuz")
     }
     "should have a value of Bube and be the Herz" in {
+      Settings.setLanguage(LanguageGerman)
+
       val card = new Card(CardEnv.Values.Jack, CardEnv.Colors.Hearts)
       card.cardName should be("Bube")
       card.cardValue should be(11)

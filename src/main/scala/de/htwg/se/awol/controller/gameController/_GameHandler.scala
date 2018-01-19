@@ -244,7 +244,7 @@ class _GameHandler() extends Publisher {
     }
   }
 
-  def humanPlaying(pickedCards: ListBuffer[Card]): Option[Any] = { // (Boolean, ListBuffer[Card])
+  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { // (Boolean, ListBuffer[Card])
     val player: Player = Game.getHumanPlayer
 
     player.pickAndDropCard(pickedCards) match {
@@ -263,37 +263,6 @@ class _GameHandler() extends Publisher {
         None
     }
   }
-
-  /*var usedCards: ListBuffer[Card] = ListBuffer()
-  if (pickedCards.isEmpty) { // Passed
-    if (Game.getActualCardCount == 0) {
-      (false, usedCards)
-    } else {
-      Game.addToPassCounter(1)
-
-      validatePostPlay(player)
-      (true, usedCards)
-    }
-  } else {
-    val pickedCardValue = pickedCards.head.cardValue
-    val pickedCardCount = pickedCards.length
-
-    if (Game.getActualCardCount == 0) {
-      usedCards = pickedCards.slice(0, pickedCardCount)
-    } else {
-      usedCards = pickedCards.slice(0, Game.getActualCardCount)
-    }
-
-    player.pickAndDropCard(usedCards) match {
-      case Some(pickedCards) =>
-        player.removeCardsFromMyStack(usedCards)
-        setLeadingValues(player, usedCards)
-        validatePostPlay(player)
-        (true, usedCards)
-      case _ =>
-        (false, usedCards)
-    }
-  }*/
 
   def botPlaying(player: Player): Unit = {
     val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)

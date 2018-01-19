@@ -73,7 +73,6 @@ class _GameHandler() extends Publisher {
     if (newPlayerCount < Game.getMinPlayers || newPlayerCount > Game.getMaxPlayers || newPlayerCount % 2 != 0) {
       throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.PlayerCountMismatch).format(newPlayerCount))
     }
-    println(newDeckSize)
     deck = new Deck(newDeckSize)
   }
 

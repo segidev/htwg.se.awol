@@ -54,7 +54,7 @@ object Game {
   def setActivePlayer(newLeadingPlayer: Player): Unit = activePlayer = newLeadingPlayer
 
   def getActualCardValue: Int = actualCardValue
-  def setActualCardValue(newCardValue: Int): Unit = actualCardValue = newCardValue
+  def setActualCardValue(newCardValue: Int): Unit = { actualCardValue = newCardValue }
 
   def getActualCardCount: Int = actualCardCount
   def setActualCardCount(newCardCount: Int): Unit = {

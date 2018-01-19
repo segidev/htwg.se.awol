@@ -92,6 +92,8 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.PhrasesHuman.PassForbidden -> "Man checks doch. Du kannsch jetzt net passen, Mongo.",
     MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "Dein Karten waren mit dem: %s",
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wiefiel vong Karten sollen gehen",
+    MessageEnv.PhrasesHuman.CommandNotAvailable -> "Des Kommando geht jetzt net.",
+    MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Kommando \"%s\" passt net für Karten",
 
     SettingEnv.Language.German -> "Kartoffelgelaber",
     SettingEnv.Language.English -> "Obamaland",

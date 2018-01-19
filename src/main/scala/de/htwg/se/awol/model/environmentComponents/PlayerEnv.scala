@@ -1,4 +1,5 @@
 package de.htwg.se.awol.model.environmentComponents
+import de.htwg.se.awol.model.environmentComponents.PlayerEnv.BotNames
 
 object PlayerEnv {
   object Rank extends Enumeration {
@@ -6,13 +7,13 @@ object PlayerEnv {
   }
 
   object BotNames extends Enumeration {
-    val Player_1 = Value("YOU")
-    val Player_2 = Value("Jan")
-    val Player_3 = Value("Ralph")
-    val Player_4 = Value("Marko")
-    val Player_5 = Value("Friedrich")
-    val Player_6 = Value("Jürgen")
-    val Player_7 = Value("Günther")
-    val Player_8 = Value("Homer")
+    val Player_1: BotNames.Value = Value("YOU")
+    val Player_2: BotNames.Value = Value("Jan")
+    val Player_3: BotNames.Value = Value("Ralph")
+    val Player_4: BotNames.Value = Value("Marko")
+    val Player_5: BotNames.Value = Value("Friedrich")
+    val Player_6: BotNames.Value = Value("Jürgen")
+    val Player_7: BotNames.Value = Value("Günther")
+    val Player_8: BotNames.Value = Value("Homer")
   }
 }

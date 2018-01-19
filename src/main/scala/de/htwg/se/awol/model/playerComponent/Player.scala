@@ -51,7 +51,7 @@ trait Player {
 
     getRank match {
       case PlayerEnv.Rank.King =>
-        for (_ <- 0 until 1) {
+        (0 until 1).foreach(_ => {
           swappedList.append((this, player.cards.last, player))
           swappedList.append((player, this.cards.head, this))
 
@@ -59,7 +59,7 @@ trait Player {
           this.cards = this.cards.sortBy(_.cardValue)
           player.cards.append(this.cards.remove(0))
           player.cards = player.cards.sortBy(_.cardValue)
-        }
+        })
       case _ => throw new MatchError("An illegal swap for a rank was tracked.")
     }
 
@@ -84,35 +84,6 @@ trait Player {
 
   def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]]
   def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]]
-
-  /*override def toString: String = {
-    var sb: StringBuilder = new StringBuilder
-
-    sb.append(getPlayerName).append(" - ").append(getRankName)
-
-    if (cards.nonEmpty) {
-      sb.append("\n")
-
-      var maxLength = 0
-      for(c <- cards) {
-        if (c.toString.length > maxLength) {
-          maxLength = c.toString.length
-        }
-      }
-
-      var i: Int = 0
-      for (card <- cards) {
-        sb.append(card).append(String.format("%" + (maxLength - card.toString.length + 5) + "s", ""))
-        if (i % Deck.amountOfColoredEquals == 3) {
-          sb.append("\n")
-        }
-
-        i += 1
-      }
-    }
-
-    sb.toString
-  }*/
 
   override def toString: String = s"$getPlayerName [$cardAmount card(s) left]"
 }

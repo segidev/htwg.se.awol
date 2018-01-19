@@ -5,7 +5,7 @@ import de.htwg.se.awol.model.environmentComponents.{CardEnv, GuiEnv}
 
 import scalafx.scene.image.{Image, ImageView}
 
-case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
+class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
   /**
     * Return the color name of the card
     * @return

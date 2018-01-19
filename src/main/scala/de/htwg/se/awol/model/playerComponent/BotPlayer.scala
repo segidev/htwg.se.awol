@@ -15,7 +15,7 @@ class BotPlayer(override protected val playerNumber: Int) extends Player {
       None
     } else {
       // Sort by key and pick the lowest beating cards
-      var myPickedCards = suitableCards.toSeq.sortBy(_._1).head._2
+      var myPickedCards = suitableCards.toSeq.minBy(_._1)._2
 
       // Pick only the necessary amount of cards if needed
       if (Game.getActualCardCount > 0) {

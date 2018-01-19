@@ -1,7 +1,8 @@
-package de.htwg.se.awol.model.cardComponents
+package de.htwg.se.awol.view
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
+import de.htwg.se.awol.model.cardComponents.Deck
 import de.htwg.se.awol.model.environmentComponents.SettingEnv
 import de.htwg.se.awol.model.languageComponents._
 import org.junit.runner.RunWith

@@ -15,7 +15,7 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
         Some(ListBuffer.empty)
       }
     } else {
-      var usedCards: ListBuffer[Card] = pickedCards
+      val usedCards: ListBuffer[Card] = pickedCards
 
       if (Game.getActualCardCount > 0) {
         //usedCards = pickedCards.slice(0, Game.getActualCardCount)
@@ -30,21 +30,6 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
         Some(usedCards)
       }
     }
-    /*if (pickedCardValue <= Game.getActualCardValue) {
-      println("Card value below/equal the actual one")
-      false
-    } else if (Game.getActualCardCount != 0 && pickedCardCount != Game.getActualCardCount) {
-      println("Amount of cards doesn't match actual of " + Game.getActualCardCount)
-      false
-    } else {
-      removeCardsFromMyStack(usedCards)
-
-      Game.setActualCardValue(pickedCardValue)
-      if (Game.getActualCardCount == 0) {
-        Game.setActualCardCount(pickedCardCount)
-      }
-      true
-    }*/
   }
 
   override def isHumanPlayer: Boolean = true

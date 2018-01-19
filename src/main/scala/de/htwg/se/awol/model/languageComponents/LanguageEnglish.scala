@@ -92,6 +92,8 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesHuman.PassForbidden -> "You are not allowed to pass. Please put some cards.",
     MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "You played those cards: %s",
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "How many cards do you want to play?",
+    MessageEnv.PhrasesHuman.CommandNotAvailable -> "Command not possible, please try another one.",
+    MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Command \"%s\" not available for cards",
 
     SettingEnv.Language.German -> "German",
     SettingEnv.Language.English -> "English",

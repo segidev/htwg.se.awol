@@ -18,7 +18,7 @@ object Arschloch {
   def main(args: Array[String]): Unit = {
     var input: String = ""
     do {
-      input = readLine()
+      input = readLine().trim
       Platform.runLater(tui.processInputLine(input))
     } while(input != "q")
     gui.close()

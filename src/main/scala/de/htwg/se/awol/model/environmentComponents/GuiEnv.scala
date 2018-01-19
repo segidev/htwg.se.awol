@@ -74,7 +74,7 @@ object GuiEnv {
   )
 
   object Images extends Enumeration {
-    val Image_Player = Value
+    val Image_Player: Images.Value = Value
   }
 
   private val images: Map[GuiEnv.Images.Value, Image] = Map (
@@ -97,9 +97,9 @@ object GuiEnv {
     case _ => throw new MatchError("Image enumeration not found in imageCards!")
   }
 
-  def getLeadingImageView(): ImageView = imageViewLeading
+  def getLeadingImageView: ImageView = imageViewLeading
 
-  def getTableImage(): Image = imageTable
+  def getTableImage: Image = imageTable
 
   object Layout extends Enumeration {
     val TOP, RIGHT, BOTTOM, LEFT = Value

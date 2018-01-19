@@ -2,6 +2,8 @@ package de.htwg.se.awol.model.environmentComponents
 
 import de.htwg.se.awol.controller.gameController.{BotPlayerPlaying, CardsWereSwapped, PronounceWinnerOfRound, ShowEndOfGame}
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
+import de.htwg.se.awol.model.cardComponents.Card
+import de.htwg.se.awol.model.environmentComponents.MessageEnv.Questions
 import de.htwg.se.awol.model.playerComponent.Player
 
 object MessageEnv {
@@ -10,7 +12,7 @@ object MessageEnv {
   }
 
   object Questions extends Enumeration {
-    val QuitGame = Value
+    val QuitGame: Questions.Value = Value
   }
 
   object PhrasesGeneral extends Enumeration {
@@ -24,7 +26,7 @@ object MessageEnv {
 
   object PhrasesHuman extends Enumeration {
     val WonTheRound, IsTheWinner, IsTheLooser, ReceivesCardFrom, SuitableCards, NoSuitableCards, IsPlayingNow,
-    Passed, PassForbidden, YouPlayedThoseCards, HowManyCardsToPlay = Value
+    Passed, PassForbidden, YouPlayedThoseCards, HowManyCardsToPlay, CommandNotAvailable, CardCommandNotAvailable = Value
   }
 
   object Titles extends Enumeration {
@@ -44,7 +46,11 @@ object MessageEnv {
     val sb: StringBuilder = new StringBuilder()
 
     sb.append(LanguageTranslator.translate(MessageEnv.Words.CardSwap))
-    for ((fromPlayer, card, toPlayer) <- event.swappedCards) {
+    event.swappedCards.foreach(eventData => {
+      val fromPlayer: Player = eventData._1
+      val card: Card = eventData._2
+      val toPlayer: Player = eventData._3
+
       if (fromPlayer.isHumanPlayer) {
         sb.append(LanguageTranslator.translate(MessageEnv.PhrasesHuman.ReceivesCardFrom).format(card, toPlayer.getPlayerName))
       } else if (toPlayer.isHumanPlayer) {
@@ -52,7 +58,7 @@ object MessageEnv {
       } else {
         sb.append(LanguageTranslator.translate(MessageEnv.PhrasesBot.ReceivesCardFrom).format(fromPlayer.getPlayerName, card, toPlayer.getPlayerName))
       }
-    }
+    })
 
     sb.toString()
   }

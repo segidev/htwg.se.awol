@@ -8,18 +8,17 @@ import scala.collection.mutable
 import scalafx.beans.property.StringProperty
 
 object LanguageTranslator {
-  var actualTranslated: mutable.Map[Any, StringProperty] = mutable.Map()
+  val actualTranslated: mutable.Map[Any, StringProperty] = mutable.Map()
 
   def updateTranslations(): Unit = {
-    for (transl <- Settings.getlanguage.translations) {
-      val key = transl._1
-      val text = transl._2
+    Settings.getlanguage.translations.foreach(translation => {
+      val translationIdentifier = translation._1
 
-      actualTranslated.get(key) match {
-        case Some(s) => s.update(translate(key))
-        case _ => actualTranslated.put(key, StringProperty(translate(key)))
+      actualTranslated.get(translationIdentifier) match {
+        case Some(s) => s.update(translate(translationIdentifier))
+        case _ => actualTranslated.put(translationIdentifier, StringProperty(translate(translationIdentifier)))
       }
-    }
+    })
   }
 
   def bindTranslation[T](word: T): Option[StringProperty] = actualTranslated.get(word) match {

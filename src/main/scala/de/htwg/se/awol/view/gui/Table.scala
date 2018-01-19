@@ -3,7 +3,7 @@ package de.htwg.se.awol.view.gui
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, SettingEnv}
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, PlayerEnv, SettingEnv}
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
 import de.htwg.se.awol.model.playerComponent.Player
 
@@ -25,10 +25,47 @@ import scalafx.scene.text.TextAlignment
 class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   listenTo(controller)
 
-  val playerAreaMap: mutable.HashMap[Player, PlayerArea] = mutable.HashMap()
-  var humanPlayerArea: PlayerArea = _
+  // Variables
+  private val playerAreaMap: mutable.HashMap[Player, PlayerArea] = mutable.HashMap()
+  private var humanPlayerArea: PlayerArea = _
+  private val (cardWidth, cardHeight) = GuiEnv.getCardSize
 
-  val globalMessage: Label = new Label {
+  // Player Layouts
+  private val playerTopRowLayout: GridPane = new GridPane {
+    minHeight = Table.minSizeBotArea
+  }
+  private val playerRightRowLayout: GridPane = new GridPane {
+    minWidth = Table.minSizeBotArea
+  }
+  private val playerBottomRowLayout: GridPane = new GridPane {
+    minHeight = Table.minSizeHumanArea
+  }
+  private val playerLeftRightLayout: GridPane = new GridPane {
+    minWidth = Table.minSizeBotArea
+  }
+
+  // Table Area
+  private val tableCard_1: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCard_2: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCard_3: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCard_4: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+
+  private val tableCardsLayout: HBox = new HBox {
+    alignment = Pos.Center
+    style = Table.styleTableArea
+    spacing = Table.spacingGap
+    children = List(tableCard_1, tableCard_2, tableCard_3, tableCard_4)
+  }
+
+  private val tablePlayersLayout: BorderPane = new BorderPane {
+    top = playerTopRowLayout
+    right = playerRightRowLayout
+    bottom = playerBottomRowLayout
+    left = playerLeftRightLayout
+    center = tableCardsLayout
+  }
+
+  private val globalMessage: Label = new Label {
     maxHeight = Double.PositiveInfinity
     maxWidth = Double.PositiveInfinity
     alignment = Pos.Center
@@ -42,55 +79,21 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
-  // Layout
-  val mainPane: VBox = new VBox() {
-    //alignment = Pos.Center
-  }
-
-  val contentPane: StackPane = new StackPane() {
+  private val mainPlayLayout: StackPane = new StackPane() {
+    children = List(tablePlayersLayout, globalMessage)
     vgrow = Priority.Always
     style= Table.styleBackgroundArea
   }
 
-  // Space for PlayerAreas
-  val topRow: GridPane = new GridPane {
-    //alignment = Pos.Center
-    minHeight = Table.minSizeBotArea
-  }
-  val rightRow: GridPane = new GridPane {
-    //alignment = Pos.Center
-    minWidth = Table.minSizeBotArea
-  }
-  val bottomRow: GridPane = new GridPane {
-    //alignment = Pos.Center
-    minHeight = Table.minSizeHumanArea
-  }
-  val leftRow: GridPane = new GridPane {
-    //alignment = Pos.Center
-    minWidth = Table.minSizeBotArea
+  private val mainLayout: VBox = new VBox() {
+    children = Seq(createMenuBar(), mainPlayLayout)
   }
 
-  // Table Area
-  val tableArea: HBox = new HBox {
-    alignment = Pos.Center
-    style = Table.styleTableArea
-    spacing = Table.spacingGap
+  scene = new Scene {
+    root = mainLayout
   }
 
-  val cardSize: (Double, Double) = GuiEnv.getCardSize
-  val tableCard_1: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
-  val tableCard_2: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
-  val tableCard_3: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
-  val tableCard_4: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardSize._1; maxHeight=cardSize._2}
-
-  val playPane: BorderPane = new BorderPane {
-    top = topRow
-    right = rightRow
-    bottom = bottomRow
-    left = leftRow
-    center = tableArea
-  }
-
+  // Methods
   def showGlobalMessage(msg: String): Unit = {
     controller.setGamePausedStatus(true)
     globalMessage.text = msg
@@ -117,7 +120,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
               text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.NewGame).get
               accelerator = KeyCombination.keyCombination("Ctrl + N")
               onAction = {
-                e: ActionEvent => showNewGameDialog()
+                _: ActionEvent => showNewGameDialog()
               }
             },
 
@@ -127,7 +130,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
               text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Quit).get
               accelerator = KeyCombination.keyCombination("Ctrl + Q")
               onAction = {
-                e: ActionEvent => exitApplication()
+                _: ActionEvent => exitApplication()
               }
             }
           )
@@ -144,19 +147,28 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
                   toggleGroup = languageOptionsGroup
                   selected = Settings.isLanguageActive(LanguageEnglish)
-                  onAction = handle { Settings.setLanguage(LanguageEnglish) }
+                  onAction = handle {
+                    Settings.setLanguage(LanguageEnglish)
+                    Settings.saveSettingsToJSON()
+                  }
                 },
                 new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.German)) {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.German).get
                   toggleGroup = languageOptionsGroup
                   selected = Settings.isLanguageActive(LanguageGerman)
-                  onAction = handle { Settings.setLanguage(LanguageGerman) }
+                  onAction = handle {
+                    Settings.setLanguage(LanguageGerman)
+                    Settings.saveSettingsToJSON()
+                  }
                 },
                 new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.Youth)) {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.Youth).get
                   toggleGroup = languageOptionsGroup
                   selected = Settings.isLanguageActive(LanguageYouth)
-                  onAction = handle { Settings.setLanguage(LanguageYouth) }
+                  onAction = handle {
+                    Settings.setLanguage(LanguageYouth)
+                    Settings.saveSettingsToJSON()
+                  }
                 }
               )
             },
@@ -169,18 +181,29 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Normal)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Normal).get
                   toggleGroup = speedOptionsGroup
-                  selected = true
-                  onAction = handle { Settings.setNormalSpeed() }
+                  selected = Settings.isNormalSpeedActive
+                  onAction = handle {
+                    Settings.setNormalSpeed()
+                    Settings.saveSettingsToJSON()
+                  }
                 },
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Fast)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Fast).get
                   toggleGroup = speedOptionsGroup
-                  onAction = handle { Settings.setFastSpeed()}
+                  selected = Settings.isFastSpeedActive
+                  onAction = handle {
+                    Settings.setFastSpeed()
+                    Settings.saveSettingsToJSON()
+                  }
                 },
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Slow)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Slow).get
                   toggleGroup = speedOptionsGroup
-                  onAction = handle { Settings.setSlowSpeed() }
+                  selected = Settings.isSlowSpeedActive
+                  onAction = handle {
+                    Settings.setSlowSpeed()
+                    Settings.saveSettingsToJSON()
+                  }
                 }
               )
             }
@@ -192,60 +215,58 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
   def addPlayerToTop(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.TOP)
-    topRow.add(playerArea, startIdx, 0)
+    playerTopRowLayout.add(playerArea, startIdx, 0)
   }
 
   def addPlayerToRight(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.RIGHT)
-    rightRow.add(playerArea, 0, startIdx)
+    playerRightRowLayout.add(playerArea, 0, startIdx)
   }
 
   def addPlayerToBottom(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.BOTTOM)
-    bottomRow.add(playerArea, startIdx, 0)
+    playerBottomRowLayout.add(playerArea, startIdx, 0)
   }
 
   def addPlayerToLeft(playerArea: PlayerArea, startIdx: Int): Unit = {
     playerArea.setLayout(GuiEnv.Layout.LEFT)
-    leftRow.add(playerArea, 0, startIdx)
+    playerLeftRightLayout.add(playerArea, 0, startIdx)
   }
 
   def resetLayoutAndVariables(): Unit = {
-    topRow.children.clear()
-    rightRow.children.clear()
-    bottomRow.children.clear()
-    leftRow.children.clear()
-    tableArea.children.clear()
+    playerTopRowLayout.children.clear()
+    playerRightRowLayout.children.clear()
+    playerBottomRowLayout.children.clear()
+    playerLeftRightLayout.children.clear()
 
     playerAreaMap.clear()
-
-    //humanPlayerArea = null
   }
 
   def createPlayerAreas(): Unit = {
     val playerList = controller.getPlayerList
 
     var i = 0
-    for (player: Player <- playerList) {
+    playerList.foreach(player => {
       val playerArea = new PlayerArea(player, controller)
 
       if (player.isHumanPlayer) {
-        humanPlayerArea = playerArea
-        humanPlayerArea.hidePlayerImage()
-      }
+      humanPlayerArea = playerArea
+      humanPlayerArea.hidePlayerImage()
+    }
 
       playerAreaMap.put(player, playerArea)
 
+      //noinspection ScalaStyle
       playerList.length match {
-        case 2 => assign2PlayerPositions(i, playerArea)
-        case 4 => assign4PlayerPositions(i, playerArea)
-        case 6 => assign6PlayerPositions(i, playerArea)
-        case 8 => assign8PlayerPositions(i, playerArea)
-        case _ => throw new MatchError("Illegal number of players: " + playerList.length)
-      }
+      case 2 => assign2PlayerPositions(i, playerArea)
+      case 4 => assign4PlayerPositions(i, playerArea)
+      case 6 => assign6PlayerPositions(i, playerArea)
+      case 8 => assign8PlayerPositions(i, playerArea)
+      case _ => throw new MatchError("Illegal number of players: " + playerList.length)
+    }
 
       i += 1
-    }
+    })
   }
 
   def clearCardsFromTable(): Unit = {
@@ -271,6 +292,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
+  //noinspection ScalaStyle
   def assign6PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
     idx match {
       case 0 => addPlayerToBottom(playerArea, 0)
@@ -282,6 +304,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
+  //noinspection ScalaStyle
   def assign8PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
     idx match {
       case 0 => addPlayerToBottom(playerArea, 0)
@@ -301,7 +324,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     diag.showAndWait() match {
       case Some(diag.buttonStart) =>
         controller.initNewGame(diag.getDeckSize, diag.getPlayerCount)
-
         true
       case _ => false
     }
@@ -333,12 +355,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   // Event driven methods
   def updatePlayerView(): Unit = {
     resetLayoutAndVariables()
-
-    tableArea.children.add(tableCard_1)
-    tableArea.children.add(tableCard_2)
-    tableArea.children.add(tableCard_3)
-    tableArea.children.add(tableCard_4)
-
     createPlayerAreas()
   }
 
@@ -365,7 +381,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     clearCardsFromTable()
 
     var i = 0
-    for (card <- controller.getLatestCardsOnTable) {
+    controller.getLatestCardsOnTable.foreach(card => {
       val cardImageView: ImageView = card.getMySFXImageView
       cardImageView.setTranslateX(0)
 
@@ -377,29 +393,29 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       }
 
       i += 1
-    }
+    })
   }
 
   def removeAllEventsAndEffectsFromCards(playerList: ListBuffer[Player]): Unit = {
-    for (player <- playerList) {
+    playerList.foreach(player => {
       playerAreaMap.get(player) match {
         case Some(playerArea) => playerArea.removeCardEventsAndEffects()
         case _ => throw new MatchError("Couldn't clear cards from player " + player.getPlayerName)
       }
-    }
+    })
   }
 
   // Listener
   reactions += {
-    case event: PlayersCreated => updatePlayerView()
+    case _: PlayersCreated => updatePlayerView()
 
-    case event: CardsHandedToPlayers => updateCardView()
+    case _: CardsHandedToPlayers => updateCardView()
 
     case event: CardsRemoveAllEventsAndEffects => removeAllEventsAndEffectsFromCards(event.playerList)
 
-    case event: PlayerStatusChanged => updatePlayerHints()
+    case _: PlayerStatusChanged => updatePlayerHints()
 
-    case event: CardsOnTableChanged => updateTableView()
+    case _: CardsOnTableChanged => updateTableView()
 
     case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)
 
@@ -426,22 +442,13 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
       showGlobalMessage(sb.toString())
 
-    case event: GameContinuedFromPause => hideGlobalMessage(globalMessage)
+    case _: GameContinuedFromPause => hideGlobalMessage(globalMessage)
 
-  }
-
-  // Initializations
-  mainPane.children = List(createMenuBar(), contentPane)
-
-  contentPane.children = List(playPane, globalMessage)
-
-  scene = new Scene {
-    root = mainPane
   }
 }
 
 object Table {
-  val styleTableArea = "-fx-background-image: url('file:assets/table/table.jpg'); -fx-background-size: 102%; -fx-border-color: grey; -fx-padding: 25px" // -fx-background-color: green;
+  val styleTableArea = "-fx-background-image: url('file:assets/table/table.jpg'); -fx-background-size: 102%; -fx-border-color: grey; -fx-padding: 25px"
   val styleBackgroundArea = "-fx-background-image: url('file:assets/table/floor.jpg');"
   val styleEmptyCardArea = "-fx-border-color: grey; -fx-border-style: segments(10, 10, 10, 10) line-cap round"
   val styleGlobalMessage = "-fx-background-color: rgba(0, 0, 0, 0.8); -fx-text-fill: white; -fx-font-size: 32px"

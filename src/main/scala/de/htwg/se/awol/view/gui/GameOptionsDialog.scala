@@ -1,5 +1,6 @@
 package de.htwg.se.awol.view.gui
 
+import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Deck
 import de.htwg.se.awol.model.environmentComponents.MessageEnv
@@ -14,27 +15,32 @@ class GameOptionsDialog extends Dialog {
   private val dialogLayout = new VBox()
 
   private val playerOptions: HBox = new HBox {
-    spacing = 5
+    spacing = GameOptionsDialog.spacing
   }
 
   private val toggleGrp: ToggleGroup = new ToggleGroup()
 
+  println(Game.getDefaultPlayerCount)
+
   private val radioButton2Players: RadioButton = new RadioButton(LanguageTranslator.translate(MessageEnv.Menues.Players_2)) {
     toggleGroup = toggleGrp
     userData = "2"
-    selected = true
+    selected = Game.getDefaultPlayerCount == 2
   }
   private val radioButton4Players: RadioButton = new RadioButton(LanguageTranslator.translate(MessageEnv.Menues.Players_4)) {
     userData = "4"
     toggleGroup = toggleGrp
+    selected = Game.getDefaultPlayerCount == 4
   }
   private val radioButton6Players: RadioButton = new RadioButton(LanguageTranslator.translate(MessageEnv.Menues.Players_6)) {
     userData = "6"
     toggleGroup = toggleGrp
+    selected = Game.getDefaultPlayerCount == 6
   }
   private val radioButton8Players: RadioButton = new RadioButton(LanguageTranslator.translate(MessageEnv.Menues.Players_8)) {
     userData = "8"
     toggleGroup = toggleGrp
+    selected = Game.getDefaultPlayerCount == 8
   }
 
   playerOptions.children = List(
@@ -46,17 +52,17 @@ class GameOptionsDialog extends Dialog {
 
   // Deck Options
   private val deckOptions: HBox = new HBox {
-    spacing = 5
+    spacing = GameOptionsDialog.spacing
     alignment = Pos.CenterLeft
-    style = "-fx-padding: 10 0 0 0"
+    style = GameOptionsDialog.styleDeckOptions
   }
 
   private val labelDeckSize: Label = new Label(LanguageTranslator.translate(MessageEnv.Menues.DeckSize))
-  private val spinnerDeckSize: Spinner[Int] = new Spinner(4, Deck.bigCardStackSize, 12, 4) // TODO: Anstatt der 4 links wieder: Deck.smallCardStackSize, 12 mit Deck.smallCardStackSize
+  private val spinnerDeckSize: Spinner[Int] = new Spinner(4, Deck.bigCardStackSize, Game.getDefaultDeckSize, GameOptionsDialog.cardSizeStep) // TODO: Anstatt der 4 links wieder: Deck.smallCardStackSize, 12 mit Deck.smallCardStackSize
 
-  spinnerDeckSize.value.onChange(checkValidation)
+  spinnerDeckSize.value.onChange(checkValidation())
 
-  def checkValidation: Unit = {
+  def checkValidation(): Unit = {
     radioButton6Players.disable = (spinnerDeckSize.getValue % 6) != 0
     radioButton8Players.disable = (spinnerDeckSize.getValue % 8) != 0
 
@@ -68,7 +74,7 @@ class GameOptionsDialog extends Dialog {
     }
   }
 
-  checkValidation
+  checkValidation()
 
   deckOptions.children = List(
     labelDeckSize,
@@ -93,4 +99,11 @@ class GameOptionsDialog extends Dialog {
 
   def getDeckSize: Int = spinnerDeckSize.getValue
   def getPlayerCount: Int = toggleGrp.selectedToggle.value.getUserData.toString.toInt
+}
+
+object GameOptionsDialog {
+  val spacing: Int = 5
+  val cardSizeStep: Int = 4
+
+  val styleDeckOptions: String = "-fx-padding: 10 0 0 0"
 }

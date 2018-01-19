@@ -16,19 +16,19 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   validateDeck()
 
   private val cardStackSize: Int = amount / Deck.amountOfColoredEquals
-  private var cards: Array[Card] = createCards(amount)
+  private val cards: Array[Card] = createCards(amount)
 
   private def createCards(amount: Int): Array[Card] = {
-    var cards = new Array[Card](amount)
+    val cards = new Array[Card](amount)
 
-    var startCard: Int = Deck.maxPlayerCardAmount - cardStackSize
+    val startCard: Int = Deck.maxPlayerCardAmount - cardStackSize
 
-    for (i <- 0 until amount) {
+    (0 until amount).foreach(i => {
       val cardNum = CardEnv.Values.apply(i % cardStackSize + startCard)
       val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
-      cards(i) = Card(cardNum, cardColor)
-    }
+      cards(i) = new Card(cardNum, cardColor)
+    })
 
     cards
   }
@@ -46,24 +46,24 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   }
 
   override def toString: String = {
-    var sb: StringBuilder = new StringBuilder
+    val sb: StringBuilder = new StringBuilder
 
     var maxLength = 0
-    for(c <- cards) {
-      if (c.toString.length > maxLength) {
-        maxLength = c.toString.length
+    cards.foreach(card => {
+      if (card.toString.length > maxLength) {
+        maxLength = card.toString.length
       }
-    }
+    })
 
     sb.append(getDeckSize + " cards\n")
-    for(i <- 0 until cardStackSize) {
+    (0 until cardStackSize).foreach(i => {
       sb.append("|   ")
       sb.append(cards(i)).append(String.format("%" + (maxLength - cards(i).toString.length + 5) + "s", ""))
         .append(cards(i + cardStackSize)).append(String.format("%" + (maxLength - cards(i + cardStackSize).toString.length + 5) + "s", ""))
         .append(cards(i + cardStackSize * 2)).append(String.format("%" + (maxLength - cards(i + cardStackSize * 2).toString.length + 5) + "s", ""))
         .append(cards(i + cardStackSize * 3))
         .append("\n")
-    }
+    })
 
     sb.toString()
   }

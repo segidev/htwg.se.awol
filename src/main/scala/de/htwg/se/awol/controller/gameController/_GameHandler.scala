@@ -18,9 +18,9 @@ class _GameHandler() extends Publisher {
   private var isGamePaused: Boolean = false //hehehe
   private var gameId: Double = 0.0
 
-  private var playerList: ListBuffer[Player] = ListBuffer()
+  private val playerList: ListBuffer[Player] = ListBuffer()
   private var activePlayerList: ListBuffer[Player] = ListBuffer()
-  private var rankedList: ListBuffer[Player] = ListBuffer()
+  private val rankedList: ListBuffer[Player] = ListBuffer()
   private var deck: Deck = _
 
   private var swapCardsNeeded: Boolean = false
@@ -29,15 +29,15 @@ class _GameHandler() extends Publisher {
   private var roundWinnersCount: Int = 0
 
   private var king: Option[Player] = None
-  private var viceroy: Option[Player] = None
-  private var viceasshole: Option[Player] = None
   private var asshole: Option[Player] = None
 
   // User controlled
-  private var starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
-  private var actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
+  private val starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+  private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
   private var totalPlayerCount: Int = _
+
+  Settings.loadSettingsFromJSON()
 
   // Game Handling
   /**
@@ -58,12 +58,12 @@ class _GameHandler() extends Publisher {
     actualPlayerNum = 0
 
     king = None
-    viceroy = None
-    viceasshole = None
     asshole = None
 
     deckSize = newDeckSize
     totalPlayerCount = newPlayerCount
+
+    Game.setGameSettings(deckSize, totalPlayerCount, doSave = true)
 
     Game.setGameState(Game.States.NewGame)
     callNextActionByState()
@@ -73,7 +73,6 @@ class _GameHandler() extends Publisher {
     if (newPlayerCount < Game.getMinPlayers || newPlayerCount > Game.getMaxPlayers || newPlayerCount % 2 != 0) {
       throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.PlayerCountMismatch).format(newPlayerCount))
     }
-    println(newDeckSize)
     deck = new Deck(newDeckSize)
   }
 
@@ -123,9 +122,9 @@ class _GameHandler() extends Publisher {
     Game.setHumanPlayer(HumanPlayer(0))
     playerList.append(Game.getHumanPlayer)
 
-    for (i <- 1 until totalPlayerCount) {
-      playerList.append(new BotPlayer(i))
-    }
+    (1 until totalPlayerCount).foreach(playerNumber => {
+      playerList.append(new BotPlayer(playerNumber))
+    })
 
     Game.setGameState(Game.States.HandOut)
   }
@@ -135,10 +134,10 @@ class _GameHandler() extends Publisher {
 
     activePlayerList = playerList.clone()
 
-    var deck = new Deck(deckSize)
+    val deck = new Deck(deckSize)
 
     // Get the original card stack
-    var cardHandOutList: ListBuffer[Card] = deck.getCards
+    val cardHandOutList: ListBuffer[Card] = deck.getCards
 
     // Assign every player a random card as long as cards exist
     var i = 0
@@ -340,31 +339,21 @@ class _GameHandler() extends Publisher {
   }
 
   def summarizeEndOfGame(): Unit = {
-    val arschloch: Player = playerList.filter(_.cardAmount != 0).head
+    assert(activePlayerList.length == 1, "activePlayerList should contain only one player now!")
+
+    val arschloch: Player = activePlayerList.remove(0) //playerList.filter(_.cardAmount != 0).head
     rankedList.append(arschloch)
 
-    playerList.foreach(_.resetRank())
+    playerList.foreach(player => {
+      player.resetRank()
+      player.clearCards()
+    })
 
     king = rankedList.headOption
     asshole = rankedList.lastOption
 
     king.get.setRank(PlayerEnv.Rank.King)
     asshole.get.setRank(PlayerEnv.Rank.Asshole)
-
-    rankedList.length match {
-      case 4 | 6 | 8 =>
-        viceroy = Option(rankedList(1))
-        viceasshole = Option(rankedList(rankedList.length - 2))
-
-        viceroy.get.setRank(PlayerEnv.Rank.Viceroy)
-        viceasshole.get.setRank(PlayerEnv.Rank.Viceasshole)
-      case _ =>
-    }
-
-    for (i <- rankedList.indices) {
-      val player: Player = rankedList(i)
-      player.clearCards()
-    }
 
     rankedList.clear()
     swapCardsNeeded = true

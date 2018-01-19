@@ -1,7 +1,10 @@
 package de.htwg.se.awol.controller.gameController
 
+import de.htwg.se.awol.controller.environmentController.Settings
+import de.htwg.se.awol.model.cardComponents.Deck
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scalafx.beans.property.BooleanProperty
 
@@ -40,6 +43,9 @@ object Game {
   private var actualCardValue: Int = 0
   private var passCounter: Int = 0
 
+  private var defaultDeckSize: Int = Deck.smallCardStackSize
+  private var defaultPlayerCount: Int = minPlayers
+
   def getPassCounter: Int = passCounter
   def addToPassCounter(i: Int): Unit = { passCounter += i }
   def setPassCounter(newPassCounter: Int): Unit = passCounter = newPassCounter
@@ -67,4 +73,19 @@ object Game {
 
   def getMinPlayers: Int = minPlayers
   def getMaxPlayers: Int = maxPlayers
+
+  def getDefaultDeckSize: Int = defaultDeckSize
+  def getDefaultPlayerCount: Int = defaultPlayerCount
+
+  def setGameSettings(newDeckSize: Int, newPlayerCount: Int, doSave: Boolean): Unit = {
+    println("Set settings, do save? %s".format(doSave))
+    defaultDeckSize = newDeckSize
+    defaultPlayerCount = newPlayerCount
+
+    if (doSave) {
+      Settings.saveSettingsToJSON()
+    }
+  }
+
+  def getGameSettings: (Int, Int) = (defaultDeckSize, defaultPlayerCount)
 }

@@ -29,7 +29,7 @@ class CardStack extends StackPane {
 
   def setDisabled(): Unit = {
     this.onMouseReleased = null
-    cardImageViews.foreach(_.opacity = 0.2)
+    cardImageViews.foreach(_.opacity = transparency)
   }
 
   def resetCards(): Unit = {
@@ -37,7 +37,7 @@ class CardStack extends StackPane {
     cardImageViews.foreach(_.opacity = 1)
   }
 
-  def getCardImageViews(): ListBuffer[ImageView] = {
+  def getCardImageViews: ListBuffer[ImageView] = {
     cardImageViews
   }
 

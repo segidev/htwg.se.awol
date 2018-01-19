@@ -92,6 +92,8 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.PassForbidden -> "Du kannst jetzt nicht passen. Bitte lege deine Karten.",
     MessageEnv.PhrasesHuman.YouPlayedThoseCards -> "Du hast folgende Karten gespielt: %s",
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wieviele Karten willst du spielen?",
+    MessageEnv.PhrasesHuman.CommandNotAvailable -> "Befehl nicht möglich, bitte versuche einen anderen.",
+    MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Befehl \"%s\" nicht möglich für Karten",
 
     SettingEnv.Language.German -> "Deutsch",
     SettingEnv.Language.English -> "Englisch",

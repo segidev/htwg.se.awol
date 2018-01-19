@@ -1,4 +1,4 @@
-package de.htwg.se.awol.model.cardComponents
+package de.htwg.se.awol.model.languageComponents
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
@@ -36,13 +36,13 @@ class LanguageSpec extends WordSpec with Matchers {
 
   "All languages" should {
     "have a translation for every key" in {
-      for (translationGroup <- LanguageEnglish.translationObjects) {
-        for (translation <- translationGroup.values) {
+      LanguageEnglish.translationObjects.foreach(translationGroup => {
+        translationGroup.values.foreach(translation => {
           withClue("English Language: ") { LanguageEnglish.translations should contain key translation }
           withClue("German Language: ") { LanguageGerman.translations should contain key translation }
           withClue("Youth Language: ") { LanguageYouth.translations should contain key translation }
-        }
-      }
+        })
+      })
     }
   }
 }

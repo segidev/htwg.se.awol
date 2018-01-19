@@ -258,7 +258,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
       val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue)
 
       controller.humanPlaying(pickedCards.take(cardAmount)) match {
-        case Some(usedCards: ListBuffer[Card]) =>
+        case Some(usedCards) =>
           resetPopup()
 
           if (cardStack.removeCards(usedCards)) {

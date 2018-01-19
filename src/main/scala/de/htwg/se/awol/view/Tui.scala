@@ -77,7 +77,7 @@ class Tui(controller: _GameHandler) extends Reactor {
         suitableCards.get(value) match {
           case Some(pickedCards) =>
             controller.humanPlaying(pickedCards.take(count)) match {
-              case Some(usedCards: ListBuffer[Card]) =>
+              case Some(usedCards) =>
                 println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.YouPlayedThoseCards).format(
                   "%dx %s [%d]".format(usedCards.length, usedCards.head.cardName, usedCards.head.cardValue)))
               case _ =>

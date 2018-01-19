@@ -28,12 +28,12 @@ class CardStack extends StackPane {
   }
 
   def setDisabled(): Unit = {
-    this.onMouseReleased = handle()
+    this.onMouseReleased = null
     cardImageViews.foreach(_.opacity = 0.2)
   }
 
   def resetCards(): Unit = {
-    this.onMouseReleased = handle()
+    this.onMouseReleased = null
     cardImageViews.foreach(_.opacity = 1)
   }
 

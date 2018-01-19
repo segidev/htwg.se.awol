@@ -32,8 +32,8 @@ object LanguageEnglish extends _LanguageHandler {
 
     MessageEnv.Warnings.DividableByFour -> "Amount of cards must be dividable by 4!",
     MessageEnv.Warnings.MaxAmountOfCards -> "Amount of cards must be in between 32 and 52",
-    MessageEnv.Warnings.MissingLanguage -> "The language you specified was not found: ",
-    MessageEnv.Warnings.MissingTranslation -> "No translation found for: ",
+    MessageEnv.Warnings.MissingLanguage -> "The language you specified was not found: %s",
+    MessageEnv.Warnings.MissingTranslation -> "No translation found for: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Player count of %d is not allowed!",
 
     MessageEnv.Menues.File -> "File",

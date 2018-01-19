@@ -45,6 +45,22 @@ class LanguageSpec extends WordSpec with Matchers {
       }
     }
   }
+
+  "If a word has no translation in any language it" should {
+    "return a warning" in {
+      Settings.setLanguage(LanguageGerman)
+
+      LanguageTranslator.translate("hallo") should be("No translation found for: hallo")
+    }
+  }
+
+  "Any language" should {
+    "have the same amount of translations" in {
+      LanguageGerman.translationCount should be(81)
+      LanguageEnglish.translationCount should be(81)
+      LanguageYouth.translationCount should be(81)
+    }
+  }
 }
 
 

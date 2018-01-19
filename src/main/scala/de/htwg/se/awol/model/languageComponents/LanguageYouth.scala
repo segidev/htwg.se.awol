@@ -32,8 +32,8 @@ object LanguageYouth extends _LanguageHandler {
 
     MessageEnv.Warnings.DividableByFour -> "Aldem, lern mal Matte du Spast",
     MessageEnv.Warnings.MaxAmountOfCards -> "Junge! Dein Kartem darf nur innen 32 und 54 sein oder so",
-    MessageEnv.Warnings.MissingLanguage -> "Deine Mongosprache spricht hier keiner: ",
-    MessageEnv.Warnings.MissingTranslation -> "Keine Übersetzung lan: ",
+    MessageEnv.Warnings.MissingLanguage -> "Deine Mongosprache spricht hier keiner: %s",
+    MessageEnv.Warnings.MissingTranslation -> "Keine Übersetzung lan: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Soviel Spieler sind fei net erlaubt!",
 
     MessageEnv.Menues.File -> "Hauptding",

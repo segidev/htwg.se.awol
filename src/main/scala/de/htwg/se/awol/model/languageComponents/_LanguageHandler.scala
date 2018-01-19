@@ -18,10 +18,7 @@ trait _LanguageHandler {
     case Some(t) => t
     case _ => LanguageEnglish.getTranslationWithOption(word) match {
       case Some(t) => t
-      case _ => LanguageEnglish.getTranslationWithOption(MessageEnv.Warnings.MissingTranslation) match {
-        case Some(t) => t + word.toString
-        case _ => throw new MatchError("Translation and fallback translation not available!")
-      }
+      case _ => LanguageEnglish.getTranslation(MessageEnv.Warnings.MissingTranslation).format(word.toString)
     }
   }
 

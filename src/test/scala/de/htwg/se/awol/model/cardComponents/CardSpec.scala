@@ -1,7 +1,7 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.model.environmentComponents.{CardEnv, SettingEnv}
+import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.languageComponents._
 import org.junit.runner.RunWith
 import org.scalatest._
@@ -28,7 +28,12 @@ class CardSpec extends WordSpec with Matchers {
     }
   }
 
-  //Settings.setLanguage(SettingsEnvironment.Language.English)
+  "A Card" should {
+    "have a file name with its image" in {
+      val card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
+      card.cardFilename should be("14_of_clubs")
+    }
+  }
 }
 
 

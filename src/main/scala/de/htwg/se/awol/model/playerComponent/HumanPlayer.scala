@@ -17,10 +17,6 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
     } else {
       val usedCards: ListBuffer[Card] = pickedCards
 
-      if (Game.getActualCardCount > 0) {
-        //usedCards = pickedCards.slice(0, Game.getActualCardCount)
-      }
-
       if (Game.getActualCardCount != 0 && usedCards.length != Game.getActualCardCount) {
         None
       } else if (usedCards.head.cardValue <= Game.getActualCardValue) {
@@ -34,5 +30,5 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
 
   override def isHumanPlayer: Boolean = true
 
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = ???
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = { None }
 }

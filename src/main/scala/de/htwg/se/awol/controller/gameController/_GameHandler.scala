@@ -112,7 +112,6 @@ class _GameHandler() extends Publisher {
         evaluateRound()
       case Game.States.EndOfGame =>
         summarizeEndOfGame()
-      case _ => throw new RuntimeException("Illegal Game State!")
     }
   }
 
@@ -229,7 +228,7 @@ class _GameHandler() extends Publisher {
   }
 
   def doPlay(player: Player): Unit = {
-    if (!(rankedList.contains(player) || activePlayerList.length == 1)) { // rankedList.lengthCompare(playerList.length - 1) == 0
+    if (!(rankedList.contains(player) || activePlayerList.length == 1)) {
       if (player.isHumanPlayer) {
         val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
 
@@ -341,19 +340,15 @@ class _GameHandler() extends Publisher {
   def summarizeEndOfGame(): Unit = {
     assert(activePlayerList.length == 1, "activePlayerList should contain only one player now!")
 
-    val arschloch: Player = activePlayerList.remove(0) //playerList.filter(_.cardAmount != 0).head
-    rankedList.append(arschloch)
+    appendArschlochToRankedList()
 
-    playerList.foreach(player => {
+    rankedList.foreach(player => {
       player.resetRank()
       player.clearCards()
     })
 
-    king = rankedList.headOption
-    asshole = rankedList.lastOption
-
-    king.get.setRank(PlayerEnv.Rank.King)
-    asshole.get.setRank(PlayerEnv.Rank.Asshole)
+    setKing(rankedList.headOption)
+    setAsshole(rankedList.lastOption)
 
     rankedList.clear()
     swapCardsNeeded = true
@@ -409,5 +404,29 @@ class _GameHandler() extends Publisher {
     }
     isGamePaused = bool
   }
+
   def getGamePausedStatus: Boolean = isGamePaused
+
+  def setKing(playerOption: Option[Player]): Unit = {
+    playerOption match {
+      case Some(player) =>
+        king = playerOption
+        player.setRank(PlayerEnv.Rank.King)
+      case _ => ""
+    }
+  }
+
+  def setAsshole(playerOption: Option[Player]): Unit = {
+    playerOption match {
+      case Some(player) =>
+        asshole = playerOption
+        player.setRank(PlayerEnv.Rank.Asshole)
+      case _ => ""
+    }
+  }
+
+  def appendArschlochToRankedList(): Unit = {
+    val arschloch: Player = activePlayerList.remove(0)
+    rankedList.append(arschloch)
+  }
 }

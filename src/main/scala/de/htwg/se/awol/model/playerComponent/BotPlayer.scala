@@ -31,5 +31,5 @@ class BotPlayer(override protected val playerNumber: Int) extends Player {
 
   override def isHumanPlayer: Boolean = false
 
-  override def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = ???
+  override def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { None }
 }

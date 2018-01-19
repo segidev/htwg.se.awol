@@ -78,7 +78,6 @@ object Game {
   def getDefaultPlayerCount: Int = defaultPlayerCount
 
   def setGameSettings(newDeckSize: Int, newPlayerCount: Int, doSave: Boolean): Unit = {
-    println("Set settings, do save? %s".format(doSave))
     defaultDeckSize = newDeckSize
     defaultPlayerCount = newPlayerCount
 

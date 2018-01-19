@@ -9,6 +9,8 @@ import net.liftweb.json.Serialization.{formats, read, write}
 
 import scala.collection.mutable
 import scala.reflect.io.{Directory, File, Path}
+import scalafx.beans.binding.BooleanBinding
+import scalafx.beans.property.{BooleanProperty, IntegerProperty}
 
 case class SettingsJSON(speed: Int, language: String, deckSize: Int, playerCount: Int)
 
@@ -22,18 +24,37 @@ object Settings {
 
   private var timeBetweenPlayerAction: Int = normalSpeed
 
-  def setNormalSpeed(): Unit = { timeBetweenPlayerAction = normalSpeed; }
-  def isNormalSpeedActive: Boolean = timeBetweenPlayerAction == normalSpeed
+  val isNormalSpeedActive: BooleanProperty = BooleanProperty(true)
+  isNormalSpeedActive.onChange {
+    (_, _, newVal) => if (newVal) timeBetweenPlayerAction = normalSpeed
+  }
 
-  def setFastSpeed(): Unit = { timeBetweenPlayerAction = fastSpeed; }
-  def isFastSpeedActive: Boolean = timeBetweenPlayerAction == fastSpeed
+  val isFastSpeedActive: BooleanProperty = BooleanProperty(false)
+  isFastSpeedActive.onChange {
+    (_, _, newVal) => if (newVal) timeBetweenPlayerAction = fastSpeed
+  }
 
-  def setSlowSpeed(): Unit = { timeBetweenPlayerAction = slowSpeed; }
-  def isSlowSpeedActive: Boolean = timeBetweenPlayerAction == slowSpeed
+  val isSlowSpeedActive: BooleanProperty = BooleanProperty(false)
+  isSlowSpeedActive.onChange {
+    (_, _, newVal) => if (newVal) timeBetweenPlayerAction = slowSpeed
+  }
 
-  def getTimeBetweenPlayerAction: Int = timeBetweenPlayerAction
+  def getGameSpeed: Int = timeBetweenPlayerAction
 
   // Language settings
+  val isGermanActive: BooleanProperty = BooleanProperty(false)
+  isGermanActive.onChange(
+    (_, _, newVal) => if (newVal) setLanguage(LanguageGerman)
+  )
+  val isEnglishActive: BooleanProperty = BooleanProperty(false)
+  isEnglishActive.onChange(
+    (_, _, newVal) => if (newVal) setLanguage(LanguageEnglish)
+  )
+  val isYouthActive: BooleanProperty = BooleanProperty(false)
+  isYouthActive.onChange(
+    (_, _, newVal) => if (newVal) setLanguage(LanguageYouth)
+  )
+
   private var actualLanguage: _LanguageHandler = LanguageGerman
 
   def isLanguageActive(language: _LanguageHandler): Boolean = { actualLanguage == language }
@@ -45,68 +66,74 @@ object Settings {
     LanguageTranslator.updateTranslations()
   }
   def setLanguageFromString(langStr: String): Unit = langStr match {
-    case "German" => setLanguage(LanguageGerman)
-    case "English" => setLanguage(LanguageEnglish)
-    case "Youth" => setLanguage(LanguageYouth)
+    case "German" => isGermanActive.update(true)
+    case "English" => isEnglishActive.update(true)
+    case "Youth" => isYouthActive.update(true)
   }
 
   // Saving
   implicit val formats: DefaultFormats.type = DefaultFormats
 
-  def createAndGetSettingsPaths: Option[File] = {
-    sys.props.get("user.home") match {
-      case Some(dir) =>
-        val outputDir = Path(dir).resolve(".awol")
+  def getSettingsPath: File = {
+    Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
+  }
 
-        if (outputDir.exists) {
-          val outputFullPath = outputDir.resolve(Path("settings.ini")).createFile()
+  def createSettingsFile: Option[File] = {
+    val fullSettingsPath: File = getSettingsPath
+    val directorySettingsPath: Directory = fullSettingsPath.parent
 
-          if (outputFullPath.exists) {
-            Option(outputFullPath)
-          } else {
-            None
-          }
-        } else {
-          None
-        }
-      case _ => None
+    directorySettingsPath.createDirectory()
+
+    if (directorySettingsPath.exists) {
+      val writeFile: File = fullSettingsPath.createFile()
+
+      if (writeFile.exists) {
+        Option(writeFile)
+      } else {
+        None
+      }
+    } else {
+      None
     }
   }
 
   def saveSettingsToJSON(): Boolean = {
     val (deckSize, playerCount) = Game.getGameSettings
 
-    val jsonSettingsClass = SettingsJSON(timeBetweenPlayerAction, actualLanguage.getLanguageCode.toString,
+    val jsonSettingsClass = SettingsJSON(getGameSpeed, actualLanguage.getLanguageCode.toString,
       deckSize, playerCount)
 
     val jsonString = write(jsonSettingsClass)
 
-    createAndGetSettingsPaths match {
-      case Some(savePath) =>
-        savePath.writeAll(jsonString)
+    createSettingsFile match {
+      case Some(writeFile) =>
+        writeFile.writeAll(jsonString)
         true
       case _ => false
     }
   }
 
-  def loadSettingsFromJSON(): Unit = {
-    createAndGetSettingsPaths match {
-      case Some(savePath) =>
-        try {
-          val jsonSettingsClass = read[SettingsJSON](savePath.bufferedReader())
-          println(jsonSettingsClass)
+  def loadSettingsFromJSON(): Boolean = {
+    val fullSettingsPath: File = getSettingsPath
 
-          jsonSettingsClass.speed match {
-            case `normalSpeed` => setNormalSpeed()
-            case `fastSpeed` => setFastSpeed()
-            case `slowSpeed` => setSlowSpeed()
-          }
-          setLanguageFromString(jsonSettingsClass.language)
-          Game.setGameSettings(jsonSettingsClass.deckSize, jsonSettingsClass.playerCount, doSave = false)
-        } catch {
-          case e: Exception => println("Settings couldn't be loaded!\n%s".format(e.getMessage))
+    if (fullSettingsPath.exists) {
+      try {
+        val jsonSettingsClass = read[SettingsJSON](fullSettingsPath.bufferedReader())
+
+        jsonSettingsClass.speed match {
+          case `normalSpeed` => isNormalSpeedActive.update(true)
+          case `fastSpeed` => isFastSpeedActive.update(true)
+          case `slowSpeed` => isSlowSpeedActive.update(true)
         }
-      case _ =>
+        setLanguageFromString(jsonSettingsClass.language)
+        Game.setGameSettings(jsonSettingsClass.deckSize, jsonSettingsClass.playerCount, doSave = false)
+
+        true
+      } catch {
+        case _: Exception => false
+      }
+    } else {
+      true
     }
   }
 }

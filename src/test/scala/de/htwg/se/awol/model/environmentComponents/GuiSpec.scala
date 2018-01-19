@@ -12,7 +12,7 @@ import scalafx.scene.image.{Image, ImageView}
 @RunWith(classOf[JUnitRunner])
 class GuiSpec extends WordSpec with Matchers {
   new SFXPanel()
-  
+
   "All getter mehthods" should {
     "work if GUI is initialized" in {
       val tableImage: Image = GuiEnv.getTableImage
@@ -31,7 +31,7 @@ class GuiSpec extends WordSpec with Matchers {
         val cardNum = CardEnv.Values.apply(i % cardStackSize + starterCard)
         val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
-        GuiEnv.getCardImage(new Card(cardNum, cardColor))
+        GuiEnv.getCardImage(Card(cardNum, cardColor))
       }
     }
   }

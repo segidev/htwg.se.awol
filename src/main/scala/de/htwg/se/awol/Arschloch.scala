@@ -9,11 +9,12 @@ import scala.io.StdIn.readLine
 import scalafx.application.Platform
 
 object Arschloch {
-  Settings.setLanguage(LanguageGerman)
+  Settings.isGermanActive.set(true)
 
   val controller: _GameHandler = new _GameHandler()
   val tui: Tui = new Tui(controller)
   val gui: Gui = new Gui(controller)
+  Platform.runLater(controller.loadSettings())
 
   def main(args: Array[String]): Unit = {
     var input: String = ""

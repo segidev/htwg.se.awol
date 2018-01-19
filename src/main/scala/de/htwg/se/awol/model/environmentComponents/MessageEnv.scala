@@ -8,7 +8,8 @@ import de.htwg.se.awol.model.playerComponent.Player
 
 object MessageEnv {
   object Warnings extends Enumeration {
-    val DividableByFour, MaxAmountOfCards, MissingLanguage, MissingTranslation, PlayerCountMismatch = Value
+    val DividableByFour, MaxAmountOfCards, MissingLanguage, MissingTranslation, PlayerCountMismatch,
+    LoadSettingsFailed, WriteSettingsFailed = Value
   }
 
   object Questions extends Enumeration {

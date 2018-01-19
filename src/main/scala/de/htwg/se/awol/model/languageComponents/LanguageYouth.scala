@@ -35,6 +35,8 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.Warnings.MissingLanguage -> "Deine Mongosprache spricht hier keiner: %s",
     MessageEnv.Warnings.MissingTranslation -> "Keine Übersetzung lan: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Soviel Spieler sind fei net erlaubt!",
+    MessageEnv.Warnings.LoadSettingsFailed -> "Scheisse! Ganze config weg!",
+    MessageEnv.Warnings.WriteSettingsFailed -> "Eine Stellung wurde nicht gespeichert!",
 
     MessageEnv.Menues.File -> "Hauptding",
     MessageEnv.Menues.NewGame -> "Neu",

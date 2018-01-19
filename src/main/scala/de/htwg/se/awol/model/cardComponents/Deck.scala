@@ -48,7 +48,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   override def toString: String = {
     var sb: StringBuilder = new StringBuilder
 
-    var maxLength = 0;
+    var maxLength = 0
     for(c <- cards) {
       if (c.toString.length > maxLength) {
         maxLength = c.toString.length

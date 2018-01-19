@@ -24,6 +24,7 @@ class LanguageSpec extends WordSpec with Matchers {
       Settings.getLanguageAsString should be("English")
     }
     "should return the English message for \"viceasshole\"" in {
+      Settings.setLanguage(LanguageEnglish)
       LanguageTranslator.translate(PlayerEnv.Rank.Viceasshole) should be("Viceasshole")
     }
     "should return the German message for \"viceasshole\"" in {

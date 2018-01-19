@@ -46,12 +46,14 @@ trait Player {
 
   def setRank(newRank: PlayerEnv.Rank.Value): Unit = { rank = newRank }
 
-  def swapWith(player: Player): Unit = {
+  def swapWith(player: Player): ListBuffer[(Player, Card, Player)] = {
+    val swappedList: ListBuffer[(Player, Card, Player)] = ListBuffer()
+
     getRank match {
       case PlayerEnv.Rank.King =>
         for (_ <- 0 until 1) {
-          println(getRankName + " receives " + player.cards.last + " from " + player.getRankName)
-          println(player.getRankName + " receives " + cards.head + " from " + getRankName)
+          swappedList.append((this, player.cards.last, player))
+          swappedList.append((player, this.cards.head, this))
 
           this.cards.append(player.cards.remove(player.cards.length - 1))
           this.cards = this.cards.sortBy(_.cardValue)
@@ -60,6 +62,8 @@ trait Player {
         }
       case _ => throw new MatchError("An illegal swap for a rank was tracked.")
     }
+
+    swappedList
   }
 
   def findSuitableCards(actualCardVal: Int, actualCardCount: Int): Map[Int, ListBuffer[Card]] = {
@@ -78,10 +82,10 @@ trait Player {
 
   def isHumanPlayer: Boolean
 
-  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])]
-  def pickAndDropCard(pickedCardCount: Int, pickedCardValue: Int): Boolean
+  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]]
+  def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]]
 
-  override def toString: String = {
+  /*override def toString: String = {
     var sb: StringBuilder = new StringBuilder
 
     sb.append(getPlayerName).append(" - ").append(getRankName)
@@ -108,5 +112,7 @@ trait Player {
     }
 
     sb.toString
-  }
+  }*/
+
+  override def toString: String = s"$getPlayerName [$cardAmount card(s) left]"
 }

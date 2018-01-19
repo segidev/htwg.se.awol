@@ -15,17 +15,14 @@ class Prints extends WordSpec with Matchers {
     "print in german" in {
       Settings.setLanguage(LanguageGerman)
       val deck = new Deck(32)
-      print(deck)
     }
     "print in english" in {
       Settings.setLanguage(LanguageEnglish)
       val deck = new Deck(32)
-      print(deck)
     }
     "print in youth talk" in {
       Settings.setLanguage(LanguageYouth)
       val deck = new Deck(32)
-      print(deck)
     }
   }
 

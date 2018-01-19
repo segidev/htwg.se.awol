@@ -38,7 +38,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   def getDeckSize: Int = cards.length
 
   def validateDeck(): Unit = {
-    if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
+    if (amount < 4 || amount > Deck.bigCardStackSize) { // TODO: Anstatt der 4 links wieder: Deck.smallCardStackSize
       throw new IndexOutOfBoundsException(LanguageTranslator.translate(MessageEnv.Warnings.MaxAmountOfCards))
     } else if (amount % Deck.amountOfColoredEquals != 0) {
       throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.DividableByFour))
@@ -48,7 +48,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   override def toString: String = {
     var sb: StringBuilder = new StringBuilder
 
-    var maxLength = 0;
+    var maxLength = 0
     for(c <- cards) {
       if (c.toString.length > maxLength) {
         maxLength = c.toString.length

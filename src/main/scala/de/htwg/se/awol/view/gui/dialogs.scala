@@ -52,7 +52,7 @@ class GameOptionsDialog extends Dialog {
   }
 
   private val labelDeckSize: Label = new Label(LanguageTranslator.translate(MessageEnv.Menues.DeckSize))
-  private val spinnerDeckSize: Spinner[Int] = new Spinner(Deck.smallCardStackSize, Deck.bigCardStackSize, Deck.smallCardStackSize, 4)
+  private val spinnerDeckSize: Spinner[Int] = new Spinner(4, Deck.bigCardStackSize, 12, 4) // TODO: Anstatt der 4 links wieder: Deck.smallCardStackSize, 12 mit Deck.smallCardStackSize
 
   spinnerDeckSize.value.onChange(checkValidation)
 

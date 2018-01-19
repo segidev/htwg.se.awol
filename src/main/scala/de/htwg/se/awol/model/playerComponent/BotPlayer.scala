@@ -10,12 +10,12 @@ import scala.util.Random
 
 class BotPlayer(override protected val playerNumber: Int) extends Player {
   // Playing
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[(Int, ListBuffer[Card])] = {
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
     if (suitableCards.isEmpty) {
       None
     } else {
       // Sort by key and pick the lowest beating cards
-      var (myValuePick, myPickedCards) = suitableCards.toSeq.sortBy(_._1).head
+      var myPickedCards = suitableCards.toSeq.sortBy(_._1).head._2
 
       // Pick only the necessary amount of cards if needed
       if (Game.getActualCardCount > 0) {
@@ -25,12 +25,11 @@ class BotPlayer(override protected val playerNumber: Int) extends Player {
       // Remove cards from my stack
       removeCardsFromMyStack(myPickedCards)
 
-      Option(myValuePick, myPickedCards)
+      Option(myPickedCards)
     }
   }
 
   override def isHumanPlayer: Boolean = false
 
-  override def pickAndDropCard(pickedCardCount: Int, pickedCardValue: Int): Boolean = ???
-
+  override def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = ???
 }

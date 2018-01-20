@@ -35,6 +35,8 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.Warnings.MissingLanguage -> "The language you specified was not found: %s",
     MessageEnv.Warnings.MissingTranslation -> "No translation found for: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Player count of %d is not allowed!",
+    MessageEnv.Warnings.LoadSettingsFailed -> "Couldn't load settings!",
+    MessageEnv.Warnings.WriteSettingsFailed -> "Settings couldn't be saved!",
 
     MessageEnv.Menues.File -> "File",
     MessageEnv.Menues.NewGame -> "New Game",

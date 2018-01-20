@@ -35,6 +35,8 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.Warnings.MissingLanguage -> "Die gewünschte Sprache wurde nicht gefunden: %s",
     MessageEnv.Warnings.MissingTranslation -> "Es gibt keine Übersetzung für: %s",
     MessageEnv.Warnings.PlayerCountMismatch -> "Spieleranzahl von %d ist nicht gestattet!",
+    MessageEnv.Warnings.LoadSettingsFailed -> "Einstellungen konnten nicht geladen werden!",
+    MessageEnv.Warnings.WriteSettingsFailed -> "Einstellungen konnten nicht gespeichert werden!",
 
     MessageEnv.Menues.File -> "Datei",
     MessageEnv.Menues.NewGame -> "Neues Spiel",

@@ -14,6 +14,7 @@ import scala.swing.Publisher
 import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
 
+//noinspection ScalaStyle
 class _GameHandler() extends Publisher {
   private var isGamePaused: Boolean = false //hehehe
   private var gameId: Double = 0.0
@@ -32,12 +33,17 @@ class _GameHandler() extends Publisher {
   private var asshole: Option[Player] = None
 
   // User controlled
-  private val starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+  private val starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
   private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
   private var totalPlayerCount: Int = _
 
-  Settings.loadSettingsFromJSON()
+
+  def loadSettings(): Unit = {
+    if (!Settings.loadSettingsFromJSON()) {
+      publish(SettingsLoadFailed())
+    }
+  }
 
   // Game Handling
   /**
@@ -159,8 +165,7 @@ class _GameHandler() extends Publisher {
       case Some(p1) => setCardLeadingPlayer(p1)
       case _ => playerList.find(_.hasCard(starterCard)) match {
         case Some(p2) => setCardLeadingPlayer(p2)
-        case _ => setCardLeadingPlayer(playerList.head)
-          //throw new MatchError("No player holds the starter card: " + starterCard) // TODO: Exception wieder reinmachen
+        case _ => throw new MatchError("No player holds the starter card: " + starterCard)
       }
     }
 
@@ -213,7 +218,7 @@ class _GameHandler() extends Publisher {
     } else {
       val f = Future[Double] {
         val useId = gameId
-        Thread.sleep(Settings.getTimeBetweenPlayerAction)
+        Thread.sleep(Settings.getGameSpeed)
         useId
       }
 
@@ -314,7 +319,7 @@ class _GameHandler() extends Publisher {
   }
 
   def checkForEndOfRound(): Boolean = {
-    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount) {
+    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount || (Game.getActualCardValue == 14 && Game.getPassCounter > 0)) {
       roundNumber += 1
 
       if (rankedList.lengthCompare(playerList.length - 1) >= 0) {

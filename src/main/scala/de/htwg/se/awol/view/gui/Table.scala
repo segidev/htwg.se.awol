@@ -11,6 +11,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
+import scalafx.beans.binding.Bindings
 import scalafx.embed.swing.SFXPanel
 import scalafx.event.ActionEvent
 import scalafx.geometry.{HPos, Pos, VPos}
@@ -45,16 +46,16 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   // Table Area
-  private val tableCard_1: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
-  private val tableCard_2: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
-  private val tableCard_3: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
-  private val tableCard_4: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCardOneLayout: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCardTwoLayout: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCardThreeLayout: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
+  private val tableCardFourLayout: VBox = new VBox() {style=Table.styleEmptyCardArea; minWidth=cardWidth; maxHeight=cardHeight}
 
   private val tableCardsLayout: HBox = new HBox {
     alignment = Pos.Center
     style = Table.styleTableArea
     spacing = Table.spacingGap
-    children = List(tableCard_1, tableCard_2, tableCard_3, tableCard_4)
+    children = List(tableCardOneLayout, tableCardTwoLayout, tableCardThreeLayout, tableCardFourLayout)
   }
 
   private val tablePlayersLayout: BorderPane = new BorderPane {
@@ -143,32 +144,23 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
             new Menu() {
               text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.GameLanguage).get
               items = List(
-                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.English)) {
-                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
-                  toggleGroup = languageOptionsGroup
-                  selected = Settings.isLanguageActive(LanguageEnglish)
-                  onAction = handle {
-                    Settings.setLanguage(LanguageEnglish)
-                    Settings.saveSettingsToJSON()
-                  }
-                },
                 new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.German)) {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.German).get
                   toggleGroup = languageOptionsGroup
-                  selected = Settings.isLanguageActive(LanguageGerman)
-                  onAction = handle {
-                    Settings.setLanguage(LanguageGerman)
-                    Settings.saveSettingsToJSON()
-                  }
+                  selected <==> Settings.isGermanActive
+                  onAction = handle(saveSettings())
+                },
+                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.English)) {
+                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
+                  toggleGroup = languageOptionsGroup
+                  selected <==> Settings.isEnglishActive
+                  onAction = handle(saveSettings())
                 },
                 new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.Youth)) {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.Youth).get
                   toggleGroup = languageOptionsGroup
-                  selected = Settings.isLanguageActive(LanguageYouth)
-                  onAction = handle {
-                    Settings.setLanguage(LanguageYouth)
-                    Settings.saveSettingsToJSON()
-                  }
+                  selected <==> Settings.isYouthActive
+                  onAction = handle(saveSettings())
                 }
               )
             },
@@ -181,29 +173,20 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Normal)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Normal).get
                   toggleGroup = speedOptionsGroup
-                  selected = Settings.isNormalSpeedActive
-                  onAction = handle {
-                    Settings.setNormalSpeed()
-                    Settings.saveSettingsToJSON()
-                  }
+                  selected <==> Settings.isNormalSpeedActive
+                  onAction = handle(saveSettings())
                 },
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Fast)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Fast).get
                   toggleGroup = speedOptionsGroup
-                  selected = Settings.isFastSpeedActive
-                  onAction = handle {
-                    Settings.setFastSpeed()
-                    Settings.saveSettingsToJSON()
-                  }
+                  selected <==> Settings.isFastSpeedActive
+                  onAction = handle(saveSettings())
                 },
               new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Slow)) {
                   text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Slow).get
                   toggleGroup = speedOptionsGroup
-                  selected = Settings.isSlowSpeedActive
-                  onAction = handle {
-                    Settings.setSlowSpeed()
-                    Settings.saveSettingsToJSON()
-                  }
+                  selected <==> Settings.isSlowSpeedActive
+                  onAction = handle(saveSettings())
                 }
               )
             }
@@ -270,10 +253,10 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   def clearCardsFromTable(): Unit = {
-    tableCard_1.children.clear()
-    tableCard_2.children.clear()
-    tableCard_3.children.clear()
-    tableCard_4.children.clear()
+    tableCardOneLayout.children.clear()
+    tableCardTwoLayout.children.clear()
+    tableCardThreeLayout.children.clear()
+    tableCardFourLayout.children.clear()
   }
 
   def assign2PlayerPositions(idx: Int, playerArea: PlayerArea): Unit = {
@@ -352,6 +335,12 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     }
   }
 
+  def saveSettings(): Unit = {
+    if (!Settings.saveSettingsToJSON()) {
+      showSettingsWriteError()
+    }
+  }
+
   // Event driven methods
   def updatePlayerView(): Unit = {
     resetLayoutAndVariables()
@@ -386,10 +375,10 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       cardImageView.setTranslateX(0)
 
       i match {
-        case 0 => tableCard_1.children.add(cardImageView)
-        case 1 => tableCard_2.children.add(cardImageView)
-        case 2 => tableCard_3.children.add(cardImageView)
-        case 3 => tableCard_4.children.add(cardImageView)
+        case 0 => tableCardOneLayout.children.add(cardImageView)
+        case 1 => tableCardTwoLayout.children.add(cardImageView)
+        case 2 => tableCardThreeLayout.children.add(cardImageView)
+        case 3 => tableCardFourLayout.children.add(cardImageView)
       }
 
       i += 1
@@ -403,6 +392,18 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
         case _ => throw new MatchError("Couldn't clear cards from player " + player.getPlayerName)
       }
     })
+  }
+
+  def showSettingsLoadError(): Unit = {
+    new Alert(AlertType.Warning) {
+      headerText = LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed)
+    }.showAndWait()
+  }
+
+  def showSettingsWriteError(): Unit = {
+    new Alert(AlertType.Warning) {
+      headerText = LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed)
+    }.showAndWait()
   }
 
   // Listener
@@ -432,7 +433,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     case event: PronounceWinnerOfRound =>
       showGlobalMessage(MessageEnv.getPronounceWinnerOfRoundText(event))
 
-      humanPlayerArea.removeCardEventsAndEffects() // TODO: Bessere Lösung um Karten Events und Effekte zurückzusetzen
+      humanPlayerArea.removeCardEventsAndEffects()
 
     case event: ShowEndOfGame =>
       val sb: StringBuilder = new StringBuilder()
@@ -443,6 +444,10 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       showGlobalMessage(sb.toString())
 
     case _: GameContinuedFromPause => hideGlobalMessage(globalMessage)
+
+    case _: SettingsLoadFailed => showSettingsLoadError()
+
+    case _: SettingsWriteFailed => showSettingsWriteError()
 
   }
 }

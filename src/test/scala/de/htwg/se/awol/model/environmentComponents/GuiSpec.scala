@@ -31,7 +31,7 @@ class GuiSpec extends WordSpec with Matchers {
         val cardNum = CardEnv.Values.apply(i % cardStackSize + starterCard)
         val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
-        GuiEnv.getCardImage(new Card(cardNum, cardColor))
+        GuiEnv.getCardImage(Card(cardNum, cardColor))
       }
     }
   }

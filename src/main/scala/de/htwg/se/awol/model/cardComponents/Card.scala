@@ -3,7 +3,7 @@ package de.htwg.se.awol.model.cardComponents
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 
-class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
+case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
 
   def cardColorName: String = LanguageTranslator.translate(color)
 

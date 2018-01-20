@@ -16,6 +16,7 @@ class Tui(controller: _GameHandler) extends Reactor {
   val setMyCards: Regex = "([1-4]) ([2-9]|1[0-4])".trim.r
   val emptyCommand: Regex = "^\\s*$".r
 
+  //noinspection ScalaStyle
   def processInputLine(input: String): Unit = {
     if (processDefaultInput(input)) {
       Game.getGameState match {
@@ -126,5 +127,8 @@ class Tui(controller: _GameHandler) extends Reactor {
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.HitEnterToContinue))
 
       println(sb.toString())
+
+    case _: SettingsLoadFailed => println(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed))
+    case _: SettingsWriteFailed => println(LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed))
   }
 }

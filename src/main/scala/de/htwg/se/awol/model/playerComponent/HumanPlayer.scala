@@ -2,12 +2,11 @@ package de.htwg.se.awol.model.playerComponent
 
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.CardEnv
 
 import scala.collection.mutable.ListBuffer
 
 case class HumanPlayer(override protected val playerNumber: Int) extends Player {
-  override def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = {
+  def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = {
     if (pickedCards.isEmpty) {
       if (Game.getActualCardCount == 0) {
         None
@@ -33,6 +32,4 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
   }
 
   override def isHumanPlayer: Boolean = true
-
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = ???
 }

@@ -2,7 +2,7 @@ package de.htwg.se.awol.controller.gameController
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.model.cardComponents.Deck
-import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

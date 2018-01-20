@@ -2,12 +2,13 @@ package de.htwg.se.awol.model.environmentComponents
 
 import de.htwg.se.awol.controller.gameController.{BotPlayerPlaying, CardsWereSwapped, PronounceWinnerOfRound, ShowEndOfGame}
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman}
+import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
 
 import scala.collection.mutable.ListBuffer
 import scala.swing.Publisher

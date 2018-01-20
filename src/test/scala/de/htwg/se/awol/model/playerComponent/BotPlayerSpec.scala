@@ -3,6 +3,7 @@ package de.htwg.se.awol.model.playerComponent
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.model.environmentComponents.{PlayerEnv, SettingEnv}
 import de.htwg.se.awol.model.languageComponents._
+import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
 import org.junit.runner.RunWith
 import org.scalatest._
 import org.scalatest.junit.JUnitRunner

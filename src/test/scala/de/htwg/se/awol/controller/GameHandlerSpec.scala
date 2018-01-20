@@ -1,5 +1,6 @@
 package de.htwg.se.awol.controller
-import de.htwg.se.awol.controller.gameController.{Game, _GameHandler}
+import de.htwg.se.awol.controller.gameController.Game
+import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner

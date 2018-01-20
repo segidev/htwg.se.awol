@@ -3,7 +3,7 @@ package de.htwg.se.awol.view
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.{JFrame, WindowConstants}
 
-import de.htwg.se.awol.controller.gameController._GameHandler
+import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
 import de.htwg.se.awol.view.gui.Table
 
 import scala.swing.Dimension

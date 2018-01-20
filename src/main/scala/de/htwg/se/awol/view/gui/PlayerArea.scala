@@ -1,6 +1,7 @@
 package de.htwg.se.awol.view.gui
 
-import de.htwg.se.awol.controller.gameController.{Game, _GameHandler}
+import de.htwg.se.awol.controller.gameController.Game
+import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}

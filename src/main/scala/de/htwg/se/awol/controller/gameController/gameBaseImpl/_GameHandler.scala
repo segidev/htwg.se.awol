@@ -1,10 +1,12 @@
-package de.htwg.se.awol.controller.gameController
+package de.htwg.se.awol.controller.gameController.gameBaseImpl
 
 import de.htwg.se.awol.controller.environmentController.Settings
+import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
 import de.htwg.se.awol.model.environmentComponents.{CardEnv, MessageEnv, PlayerEnv}
-import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
+import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -408,11 +410,11 @@ class _GameHandler() extends Publisher {
   def getPlayerCount: Int = totalPlayerCount
   def setPlayerCount(count: Int): Unit = { totalPlayerCount = count }
 
+  def getGamePausedStatus: Boolean = isGamePaused
   def setGamePausedStatus(bool: Boolean): Unit = {
     if (!bool) {
       publish(GameContinuedFromPause())
     }
     isGamePaused = bool
   }
-  def getGamePausedStatus: Boolean = isGamePaused
 }

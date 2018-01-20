@@ -38,7 +38,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   def getDeckSize: Int = cards.length
 
   def validateDeck(): Unit = {
-    if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
+    if (amount < 4 || amount > Deck.bigCardStackSize) { //TODO: Deck.smallCardStackSize wieder einfügen
       throw new IndexOutOfBoundsException(LanguageTranslator.translate(MessageEnv.Warnings.MaxAmountOfCards))
     } else if (amount % Deck.amountOfColoredEquals != 0) {
       throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.DividableByFour))

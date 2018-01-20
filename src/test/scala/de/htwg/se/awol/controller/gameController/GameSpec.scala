@@ -1,10 +1,9 @@
-package de.htwg.se.awol.controller
+package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
 import org.junit.runner.RunWith
-import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{Matchers, WordSpec}
 
 @RunWith(classOf[JUnitRunner])
 class GameSpec extends WordSpec with Matchers {
@@ -61,6 +60,16 @@ class GameSpec extends WordSpec with Matchers {
     "be 2 and 8" in {
       Game.getMinPlayers should be(2)
       Game.getMaxPlayers should be(8)
+    }
+  }
+  "The default deck size" should {
+    "be 32" in {
+      Game.getDefaultDeckSize should be(32)
+    }
+  }
+  "The default player count" should {
+    "be 2" in {
+      Game.getDefaultPlayerCount should be(2)
     }
   }
 }

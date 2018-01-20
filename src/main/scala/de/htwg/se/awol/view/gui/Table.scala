@@ -3,8 +3,7 @@ package de.htwg.se.awol.view.gui
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, PlayerEnv, SettingEnv}
-import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, SettingEnv}
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
@@ -154,12 +153,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
                   text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
                   toggleGroup = languageOptionsGroup
                   selected <==> Settings.isEnglishActive
-                  onAction = handle(saveSettings())
-                },
-                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.Youth)) {
-                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.Youth).get
-                  toggleGroup = languageOptionsGroup
-                  selected <==> Settings.isYouthActive
                   onAction = handle(saveSettings())
                 }
               )

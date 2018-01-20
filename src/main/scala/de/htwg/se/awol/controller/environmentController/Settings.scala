@@ -3,7 +3,7 @@ package de.htwg.se.awol.controller.environmentController
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.SettingEnv
-import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth, _LanguageHandler}
+import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, _LanguageHandler}
 import net.liftweb.json.DefaultFormats
 import net.liftweb.json.Serialization.{read, write}
 
@@ -48,10 +48,6 @@ object Settings {
   isEnglishActive.onChange(
     (_, _, newVal) => if (newVal) setLanguage(LanguageEnglish)
   )
-  val isYouthActive: BooleanProperty = BooleanProperty(false)
-  isYouthActive.onChange(
-    (_, _, newVal) => if (newVal) setLanguage(LanguageYouth)
-  )
 
   private var actualLanguage: _LanguageHandler = LanguageGerman
 
@@ -66,7 +62,6 @@ object Settings {
   def setLanguageFromString(langStr: String): Unit = langStr match {
     case "German" => isGermanActive.update(true)
     case "English" => isEnglishActive.update(true)
-    case "Youth" => isYouthActive.update(true)
   }
 
   // Saving

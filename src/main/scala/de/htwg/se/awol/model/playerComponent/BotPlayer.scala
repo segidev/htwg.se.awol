@@ -10,7 +10,7 @@ import scala.util.Random
 
 class BotPlayer(override protected val playerNumber: Int) extends Player {
   // Playing
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
+  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
     if (suitableCards.isEmpty) {
       None
     } else {
@@ -30,6 +30,4 @@ class BotPlayer(override protected val playerNumber: Int) extends Player {
   }
 
   override def isHumanPlayer: Boolean = false
-
-  override def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { None }
 }

@@ -18,10 +18,6 @@ class HumanPlayerSpec extends WordSpec with Matchers {
     val lowcard: Card = new Card(CardEnv.Values.Two, CardEnv.Colors.Diamonds)
     val oneCard: ListBuffer[Card] = new ListBuffer()
     oneCard.append(highcard)
-    "not use the pickAndDrop function for bots" in {
-      val map: Map[Int, ListBuffer[Card]] = Map[Int, ListBuffer[Card]]()
-      human.pickAndDropCard(map) should be(None)
-    }
     "choose no cards if he has to play" in {
       Game.setActualCardCount(0)
       human.pickAndDropCard(empty) should be(None)
@@ -45,10 +41,22 @@ class HumanPlayerSpec extends WordSpec with Matchers {
       oneCard.append(lowcard)
       human.pickAndDropCard(oneCard)
     }
+    "not swap cards without being king or asshole" in {
+      val bot: BotPlayer = new BotPlayer(1)
+      an [MatchError] should be thrownBy human.swapWith(bot)
+    }
   }
   "A Human Player" should {
     "be human" in {
       human.isHumanPlayer should be(true)
+    }
+    "have a toString method" in {
+      val cardsLeft: Int = human.getCards.size
+      val string: String = "Ich [%d card(s) left]".format(cardsLeft)
+      human.toString should be(string)
+    }
+    "have player number 0" in {
+      human.getPlayerNumber should be(0)
     }
   }
 

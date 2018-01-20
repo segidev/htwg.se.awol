@@ -98,8 +98,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Befehl \"%s\" nicht möglich für Karten",
 
     SettingEnv.Language.German -> "Deutsch",
-    SettingEnv.Language.English -> "Englisch",
-    SettingEnv.Language.Youth -> "Jugendsprache"
+    SettingEnv.Language.English -> "Englisch"
   )
 
   override def getLanguageCode: SettingEnv.Language.Value = SettingEnv.Language.German

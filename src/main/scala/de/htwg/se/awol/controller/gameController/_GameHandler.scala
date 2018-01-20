@@ -165,7 +165,9 @@ class _GameHandler() extends Publisher {
       case Some(p1) => setCardLeadingPlayer(p1)
       case _ => playerList.find(_.hasCard(starterCard)) match {
         case Some(p2) => setCardLeadingPlayer(p2)
-        case _ => throw new MatchError("No player holds the starter card: " + starterCard)
+        case _ =>
+          setCardLeadingPlayer(playerList.head) // TODO: Entfernen
+          //throw new MatchError("No player holds the starter card: " + starterCard) TODO: Kommentar weg
       }
     }
 

@@ -1,11 +1,11 @@
-package de.htwg.se.awol.controller
-import de.htwg.se.awol.controller.gameController.{Game, _GameHandler}
+package de.htwg.se.awol.controller.gameController
+
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
-import de.htwg.se.awol.model.playerComponent.{BotPlayer, HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.Player
 import org.junit.runner.RunWith
-import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{Matchers, WordSpec}
 
 import scala.collection.mutable.ListBuffer
 
@@ -322,6 +322,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
   }
 
+  //TODO: finish tests for triggerNextPlay() / loadJSON()
 
 
 }

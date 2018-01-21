@@ -4,8 +4,6 @@ import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.model.cardComponents.Deck
 import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 import scalafx.beans.property.BooleanProperty
 
 /**

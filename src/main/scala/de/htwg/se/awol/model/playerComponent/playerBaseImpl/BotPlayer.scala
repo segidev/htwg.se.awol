@@ -7,8 +7,20 @@ import de.htwg.se.awol.model.playerComponent.Player
 import scala.collection.mutable.ListBuffer
 
 class BotPlayer(override protected val playerNumber: Int) extends Player {
-  // Playing
-  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
+
+  def pickFromSuitableCards(suitableCards: Map[Int, ListBuffer[Card]]): ListBuffer[Card] = {
+    if (suitableCards.isEmpty) {
+      ListBuffer.empty
+    } else {
+
+    }
+  }
+
+  override def getCardsToDrop(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]] = {
+
+  }
+
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
     if (suitableCards.isEmpty) {
       None
     } else {

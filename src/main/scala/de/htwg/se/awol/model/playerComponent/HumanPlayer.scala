@@ -6,9 +6,9 @@ import de.htwg.se.awol.model.cardComponents.Card
 import scala.collection.mutable.ListBuffer
 
 case class HumanPlayer(override protected val playerNumber: Int) extends Player {
-  def pickAndDropCard(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = {
+  override def getCardsToDrop(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]] = {
     if (pickedCards.isEmpty) {
-      if (Game.getActualCardCount == 0) {
+      if (actualCardCount == 0) {
         None
       } else {
         Some(ListBuffer.empty)
@@ -16,13 +16,9 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
     } else {
       val usedCards: ListBuffer[Card] = pickedCards
 
-      if (Game.getActualCardCount > 0) {
-        //usedCards = pickedCards.slice(0, Game.getActualCardCount)
-      }
-
-      if (Game.getActualCardCount != 0 && usedCards.length != Game.getActualCardCount) {
+      if (actualCardCount != 0 && usedCards.length != actualCardCount) {
         None
-      } else if (usedCards.head.cardValue <= Game.getActualCardValue) {
+      } else if (usedCards.head.cardValue <= actualCardValue) {
         None
       } else {
         removeCardsFromMyStack(usedCards)
@@ -32,4 +28,6 @@ case class HumanPlayer(override protected val playerNumber: Int) extends Player 
   }
 
   override def isHumanPlayer: Boolean = true
+
+  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = ???
 }

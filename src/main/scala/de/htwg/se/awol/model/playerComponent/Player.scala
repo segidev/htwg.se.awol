@@ -80,6 +80,9 @@ trait Player {
     cards.--=(removingCards)
   }
 
+  def getCardsToDrop(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]]
+  def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]]
+
   def isHumanPlayer: Boolean
 
   override def toString: String = s"$getPlayerName [$cardAmount card(s) left]"

@@ -253,7 +253,7 @@ class _GameHandler() extends Publisher {
   def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { // (Boolean, ListBuffer[Card])
     val player: Player = Game.getHumanPlayer
 
-    player.pickAndDropCard(pickedCards) match {
+    player.getCardsToDrop(pickedCards, Game.getActualCardCount, Game.getActualCardValue) match {
       case Some(usedCards: ListBuffer[Card]) =>
         if (usedCards.isEmpty) {
           Game.addToPassCounter(1)
@@ -272,6 +272,8 @@ class _GameHandler() extends Publisher {
 
   def botPlaying(player: Player): Unit = {
     val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
+
+    player.pickFromSuitableCards()
 
     player.pickAndDropCard(suitableCards) match {
       case Some(pickedCards: ListBuffer[Card]) =>

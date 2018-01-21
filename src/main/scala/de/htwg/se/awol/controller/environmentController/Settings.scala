@@ -4,18 +4,15 @@ import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.SettingEnv
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth, _LanguageHandler}
-import net.liftweb.json.{DefaultFormats, NoTypeHints, Serialization}
-import net.liftweb.json.Serialization.{formats, read, write}
+import net.liftweb.json.DefaultFormats
+import net.liftweb.json.Serialization.{read, write}
 
-import scala.collection.mutable
 import scala.reflect.io.{Directory, File, Path}
-import scalafx.beans.binding.BooleanBinding
-import scalafx.beans.property.{BooleanProperty, IntegerProperty}
+import scalafx.beans.property.BooleanProperty
 
 case class SettingsJSON(speed: Int, language: String, deckSize: Int, playerCount: Int)
 
 object Settings {
-
 
   // Game Settings
   private val normalSpeed: Int = 2000

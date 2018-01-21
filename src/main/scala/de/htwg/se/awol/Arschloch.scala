@@ -2,7 +2,6 @@ package de.htwg.se.awol
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
-import de.htwg.se.awol.model.languageComponents.LanguageGerman
 import de.htwg.se.awol.view.{Gui, Tui}
 
 import scala.io.StdIn.readLine

@@ -208,16 +208,15 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
   }
 
   //noinspection ScalaStyle
-  def highlightSuitableCards(suitableCards: Map[Int, ListBuffer[Card]]): Unit = {
+  def highlightSuitableCards(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int): Unit = {
     cardGroupMap.foreach(cardGroup => {
       val cardValue: Int = cardGroup._1
       val cardStack: CardStack = cardGroup._2
-      val cardAmount = Game.getActualCardCount
 
       if (suitableCards.contains(cardValue)) {
         cardStack.onMouseReleased = handle {
 
-          if (Game.getActualCardCount == 0) {
+          if (actualCardCount == 0) {
             if (cardStack.getCardImageViews.length == 1) {
               putCards(suitableCards, cardStack, 1, cardValue)
             } else {
@@ -242,7 +241,7 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
               }
             }
           } else {
-            putCards(suitableCards, cardStack, cardAmount, cardValue)
+            putCards(suitableCards, cardStack, actualCardCount, cardValue)
           }
         }
       } else {

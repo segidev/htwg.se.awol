@@ -229,7 +229,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.initNewGame(8,2)
       val player: Player = controller.getPlayerList.head
       player.getCards.foreach(card => {
-        player.getCardsToDrop(ListBuffer(card))
+        player.validatePick(ListBuffer(card), Game.getActualCardCount, Game.getActualCardValue)
       })
       controller.checkForPlayerFinished(player) should be(true)
     }
@@ -257,7 +257,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.head
       player.getCards.foreach(card => {
-        player.getCardsToDrop(ListBuffer(card))
+        player.validatePick(ListBuffer(card), Game.getActualCardCount, Game.getActualCardValue)
       })
       Game.addToPassCounter(1)
       controller.validatePostPlay(player)
@@ -295,20 +295,20 @@ class GameHandlerSpec extends WordSpec with Matchers {
     "refuse to choose cards" in {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(8, 4)
-      controller.humanValidation(ListBuffer())
+      controller.humanPlaying(ListBuffer())
     }
     "choose cards that he doesn't own" in {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(8, 4)
       controller.callNextActionByState()
       val card: Card = new Card(CardEnv.Values.Eight, CardEnv.Colors.Diamonds)
-      controller.humanValidation(ListBuffer(card))
+      controller.humanPlaying(ListBuffer(card))
     }
     "choose to pass" in {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(8, 4)
       Game.setActualCardCount(1)
-      controller.humanValidation(ListBuffer())
+      controller.humanPlaying(ListBuffer())
     }
   }
 

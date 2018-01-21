@@ -14,7 +14,7 @@ case class CardsOnTableChanged() extends Event
 case class CardsRemoveAllEventsAndEffects(playerList: ListBuffer[Player]) extends Event
 case class PronounceWinnerOfRound(player: Player) extends Event
 case class ShowEndOfGame(king: Player, asshole: Player) extends Event
-case class HumanPlayerPlaying(suitableCards: Map[Int, ListBuffer[Card]]) extends Event
+case class HumanPlayerPlaying(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) extends Event
 case class BotPlayerPlaying(player: Player, pickedCards: ListBuffer[Card]) extends Event
 case class CardsWereSwapped(swappedCards: ListBuffer[(Player, Card, Player)]) extends Event
 

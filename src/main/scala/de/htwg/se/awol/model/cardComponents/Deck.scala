@@ -5,13 +5,6 @@ import de.htwg.se.awol.model.environmentComponents.{CardEnv, MessageEnv}
 
 import scala.collection.mutable.ListBuffer
 
-case object Deck {
-  val smallCardStackSize: Int = 32
-  val bigCardStackSize: Int = 52
-  val maxPlayerCardAmount: Int = 15
-  val amountOfColoredEquals: Int = 4
-}
-
 case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   validateDeck()
 
@@ -67,4 +60,11 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
 
     sb.toString()
   }
+}
+
+case object Deck {
+  val smallCardStackSize: Int = 32
+  val bigCardStackSize: Int = 52
+  val maxPlayerCardAmount: Int = 15
+  val amountOfColoredEquals: Int = 4
 }

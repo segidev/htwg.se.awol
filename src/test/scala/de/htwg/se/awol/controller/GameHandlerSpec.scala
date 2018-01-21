@@ -16,7 +16,6 @@ class GameHandlerSpec extends WordSpec with Matchers {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(32, 4)
       controller.callNextActionByState
-      println(Game.getGameState)
       controller.startNewRound
     }
   }

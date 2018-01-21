@@ -419,7 +419,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     case _: CardsOnTableChanged => updateTableView()
 
-    case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards)
+    case event: HumanPlayerPlaying => humanPlayerArea.highlightSuitableCards(event.suitableCards, event.actualCardCount)
 
     case event: BotPlayerPlaying => playerAreaMap.apply(event.player).updatePlayerLabel()
 

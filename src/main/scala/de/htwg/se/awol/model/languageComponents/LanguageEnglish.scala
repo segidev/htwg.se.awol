@@ -1,6 +1,6 @@
 package de.htwg.se.awol.model.languageComponents
 
-import de.htwg.se.awol.model.environmentComponents.{SettingEnv, _}
+import de.htwg.se.awol.model.environmentComponents._
 
 object LanguageEnglish extends _LanguageHandler {
   override val translations: Map[Any, String] = Map(

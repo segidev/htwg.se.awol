@@ -6,21 +6,6 @@ import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 
 import scalafx.beans.property.BooleanProperty
 
-/**
-  * *** States ***
-  * NewGame: In diesem Zustand wird das Kartendeck erstellt und die Anfangskarte wird festgelegt
-  *
-  * HandOut: Die Karten werden an die Spieler verteilt und der Spieler der anfangen darf wird festgelegt
-  *
-  * Playing: Die Spieler werfen ihre Karten in die Arena, dabei sind natürlich Regeln zu beachten.
-  *
-  * Evaluation: Die Auswertung der Runde. Der Spieler der den Stich gewonnen hat, wird die nächste Runde beginnen. Zurück zu [Playing]
-  *
-  * EndOfGame: Den Spielern werden ihre jeweiligen Ränge zugewiesen. Das Arschloch wird den ersten Zug machen dürfen. Zurück zu [HandOut]
-  *
-  * CardSwap: Die Spieler tauschen ihre höchsten/niedrigsten Karten mit den jeweiligen Rängen. Zurück zu [Playing] [Erfordert ein Spieler als Arschloch]
-  * *** End of States ***
-  */
 object Game {
 
   val isPassingAllowed: BooleanProperty = BooleanProperty(false)

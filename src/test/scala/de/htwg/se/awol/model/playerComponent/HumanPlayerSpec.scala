@@ -3,6 +3,7 @@ package de.htwg.se.awol.model.playerComponent
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
+import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner
@@ -20,26 +21,26 @@ class HumanPlayerSpec extends WordSpec with Matchers {
     oneCard.append(highcard)
     "choose no cards if he has to play" in {
       Game.setActualCardCount(0)
-      human.getCardsToDrop(empty) should be(None)
+      human.validatePick(empty, Game.getActualCardCount, Game.getActualCardValue) should be(None)
     }
     "choose to pass" in {
       Game.setActualCardCount(1)
-      human.getCardsToDrop(empty) should be(Some(ListBuffer.empty))
+      human.validatePick(empty, Game.getActualCardCount, Game.getActualCardValue) should be(Some(ListBuffer.empty))
     }
     "choose a wrong amount of cards" in {
       Game.setActualCardCount(2)
-      human.getCardsToDrop(oneCard)
+      human.validatePick(oneCard, Game.getActualCardCount, Game.getActualCardValue)
     }
     "choose valid cards" in {
       Game.setActualCardValue(13)
       Game.setActualCardCount(1)
-      human.getCardsToDrop(oneCard)
+      human.validatePick(oneCard, Game.getActualCardCount, Game.getActualCardValue)
     }
     "choose a value below the last played card value" in {
       Game.setActualCardValue(10)
       oneCard.clear()
       oneCard.append(lowcard)
-      human.getCardsToDrop(oneCard)
+      human.validatePick(oneCard, Game.getActualCardCount, Game.getActualCardValue)
     }
     "not swap cards without being king or asshole" in {
       val bot: BotPlayer = new BotPlayer(1)

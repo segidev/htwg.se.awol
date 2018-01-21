@@ -18,10 +18,10 @@ import scalafx.application.Platform
 
 //noinspection ScalaStyle
 class _GameHandler() extends Publisher {
-  private var isGamePaused: Boolean = false //hehehe
+  private var isGamePaused: Boolean = false
   private var gameId: Double = 0.0
 
-  private val playerList: ListBuffer[Player] = ListBuffer()
+  protected val playerList: ListBuffer[Player] = ListBuffer()
   private var activePlayerList: ListBuffer[Player] = ListBuffer()
   private val rankedList: ListBuffer[Player] = ListBuffer()
   private var deck: Deck = _
@@ -38,21 +38,8 @@ class _GameHandler() extends Publisher {
   private val starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
   private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
-  private var totalPlayerCount: Int = _
+  protected var totalPlayerCount: Int = _
 
-
-  def loadSettings(): Unit = {
-    if (!Settings.loadSettingsFromJSON()) {
-      publish(SettingsLoadFailed())
-    }
-  }
-
-  // Game Handling
-  /**
-    * Called from GUI or TUI
-    * @param newDeckSize qwe
-    * @param newPlayerCount wqeqwe
-    */
   def initNewGame(newDeckSize: Int, newPlayerCount: Int): Unit = {
     validateNewGame(newDeckSize, newPlayerCount)
 
@@ -236,11 +223,11 @@ class _GameHandler() extends Publisher {
   }
 
   def doPlay(player: Player): Unit = {
-    if (!(rankedList.contains(player) || activePlayerList.length == 1)) { // rankedList.lengthCompare(playerList.length - 1) == 0
+    if (!(rankedList.contains(player) || activePlayerList.lengthCompare(1) == 0)) { // rankedList.lengthCompare(playerList.length - 1) == 0
       if (player.isHumanPlayer) {
         val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
 
-        publish(HumanPlayerPlaying(suitableCards))
+        publish(HumanPlayerPlaying(suitableCards, Game.getActualCardCount))
       } else {
         botPlaying(player)
       }
@@ -253,15 +240,15 @@ class _GameHandler() extends Publisher {
   def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { // (Boolean, ListBuffer[Card])
     val player: Player = Game.getHumanPlayer
 
-    player.getCardsToDrop(pickedCards, Game.getActualCardCount, Game.getActualCardValue) match {
+    player.validatePick(pickedCards, Game.getActualCardCount, Game.getActualCardValue) match {
       case Some(usedCards: ListBuffer[Card]) =>
         if (usedCards.isEmpty) {
           Game.addToPassCounter(1)
           validatePostPlay(player)
           Some(ListBuffer.empty)
         } else {
-          setLeadingValues(player, usedCards)
           Game.setPassCounter(0)
+          setLeadingValues(player, usedCards)
           validatePostPlay(player)
           Some(usedCards)
         }
@@ -273,19 +260,21 @@ class _GameHandler() extends Publisher {
   def botPlaying(player: Player): Unit = {
     val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
 
-    player.pickFromSuitableCards()
+    val pickedCards: ListBuffer[Card] = player.pickFromSuitableCards(suitableCards, Game.getActualCardCount)
 
-    player.pickAndDropCard(suitableCards) match {
+    player.validatePick(pickedCards, Game.getActualCardCount, Game.getActualCardValue) match {
       case Some(pickedCards: ListBuffer[Card]) =>
-        setLeadingValues(player, pickedCards)
-
-        publish(BotPlayerPlaying(player, pickedCards))
-
-        Game.setPassCounter(0)
+        if (pickedCards.isEmpty) {
+          Game.addToPassCounter(1)
+          publish(BotPlayerPlaying(player, ListBuffer.empty))
+        } else {
+          Game.setPassCounter(0)
+          setLeadingValues(player, pickedCards)
+          publish(BotPlayerPlaying(player, pickedCards))
+        }
       case _ =>
-        publish(BotPlayerPlaying(player, ListBuffer.empty))
-
         Game.addToPassCounter(1)
+        publish(BotPlayerPlaying(player, ListBuffer.empty))
     }
 
     validatePostPlay(player)
@@ -324,7 +313,7 @@ class _GameHandler() extends Publisher {
   }
 
   def checkForEndOfRound(): Boolean = {
-    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount || (Game.getActualCardValue == 14 && Game.getPassCounter > 0)) {
+    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount || (Game.getActualCardValue == CardEnv.Values.Ace.id && Game.getPassCounter > 0)) {
       roundNumber += 1
 
       if (rankedList.lengthCompare(playerList.length - 1) >= 0) {
@@ -348,7 +337,7 @@ class _GameHandler() extends Publisher {
   }
 
   def summarizeEndOfGame(): Unit = {
-    assert(activePlayerList.length == 1, "activePlayerList should contain only one player now!")
+    assert(activePlayerList.lengthCompare(1) == 0, "activePlayerList should contain only one player now!")
 
     val arschloch: Player = activePlayerList.remove(0) //playerList.filter(_.cardAmount != 0).head
     rankedList.append(arschloch)
@@ -397,6 +386,12 @@ class _GameHandler() extends Publisher {
     publish(CardsOnTableChanged())
   }
 
+  def loadSettings(): Unit = {
+    if (!Settings.loadSettingsFromJSON()) {
+      publish(SettingsLoadFailed())
+    }
+  }
+
   // Getter - Setter
   def getLatestCardsOnTable: ListBuffer[Card] = {
     actualCardsOnTable.headOption match {
@@ -418,5 +413,28 @@ class _GameHandler() extends Publisher {
       publish(GameContinuedFromPause())
     }
     isGamePaused = bool
+  }
+
+  def setKing(playerOption: Option[Player]): Unit = {
+    playerOption match {
+      case Some(player) =>
+        king = playerOption
+        player.setRank(PlayerEnv.Rank.King)
+      case _ =>
+    }
+  }
+
+  def setAsshole(playerOption: Option[Player]): Unit = {
+    playerOption match {
+      case Some(player) =>
+        asshole = playerOption
+        player.setRank(PlayerEnv.Rank.Asshole)
+      case _ =>
+    }
+  }
+
+  def appendArschlochToRankedList(): Unit = {
+    val arschloch: Player = activePlayerList.remove(0)
+    rankedList.append(arschloch)
   }
 }

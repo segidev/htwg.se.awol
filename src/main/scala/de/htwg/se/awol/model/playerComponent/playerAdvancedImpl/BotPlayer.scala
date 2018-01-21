@@ -6,6 +6,5 @@ import de.htwg.se.awol.model.playerComponent.playerBaseImpl.{BotPlayer => BaseBo
 import scala.collection.mutable.ListBuffer
 
 class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(playerNumber) {
-  // Playing
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = ???
+  override def pickFromSuitableCards(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int): ListBuffer[Card] = ???
 }

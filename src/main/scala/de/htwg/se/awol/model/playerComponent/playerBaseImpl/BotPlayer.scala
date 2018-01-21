@@ -1,6 +1,5 @@
 package de.htwg.se.awol.model.playerComponent.playerBaseImpl
 
-import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents._
 import de.htwg.se.awol.model.playerComponent.Player
 
@@ -8,34 +7,36 @@ import scala.collection.mutable.ListBuffer
 
 class BotPlayer(override protected val playerNumber: Int) extends Player {
 
-  def pickFromSuitableCards(suitableCards: Map[Int, ListBuffer[Card]]): ListBuffer[Card] = {
+  override def pickFromSuitableCards(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int): ListBuffer[Card] = {
     if (suitableCards.isEmpty) {
       ListBuffer.empty
     } else {
+      var pickedCards = suitableCards.toSeq.minBy(_._1)._2
 
+      if (actualCardCount > 0) {
+        pickedCards = pickedCards.take(actualCardCount)
+      }
+
+      pickedCards
     }
   }
 
-  override def getCardsToDrop(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]] = {
-
-  }
-
-  override def pickAndDropCard(suitableCards: Map[Int, ListBuffer[Card]]): Option[ListBuffer[Card]] = {
-    if (suitableCards.isEmpty) {
-      None
-    } else {
-      // Sort by key and pick the lowest beating cards
-      var myPickedCards = suitableCards.toSeq.minBy(_._1)._2
-
-      // Pick only the necessary amount of cards if needed
-      if (Game.getActualCardCount > 0) {
-        myPickedCards = myPickedCards.slice(0, Game.getActualCardCount)
+  override def validatePick(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]] = {
+    if (pickedCards.isEmpty) {
+      if (actualCardCount == 0) {
+        None
+      } else {
+        Some(ListBuffer.empty)
       }
-
-      // Remove cards from my stack
-      removeCardsFromMyStack(myPickedCards)
-
-      Option(myPickedCards)
+    } else {
+      if (actualCardCount != 0 && pickedCards.lengthCompare(actualCardCount) != 0) {
+        None
+      } else if (pickedCards.head.cardValue <= actualCardValue) {
+        None
+      } else {
+        removeCardsFromMyStack(pickedCards)
+        Some(pickedCards)
+      }
     }
   }
 

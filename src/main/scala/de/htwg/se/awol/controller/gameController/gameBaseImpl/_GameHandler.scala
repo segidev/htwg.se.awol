@@ -21,7 +21,7 @@ class _GameHandler() extends Publisher {
   private var isGamePaused: Boolean = false
   private var gameId: Double = 0.0
 
-  protected val playerList: ListBuffer[Player] = ListBuffer()
+  private val playerList: ListBuffer[Player] = ListBuffer()
   private var activePlayerList: ListBuffer[Player] = ListBuffer()
   private val rankedList: ListBuffer[Player] = ListBuffer()
   private var deck: Deck = _
@@ -38,7 +38,7 @@ class _GameHandler() extends Publisher {
   private val starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
   private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
-  protected var totalPlayerCount: Int = _
+  private var totalPlayerCount: Int = _
 
   def initNewGame(newDeckSize: Int, newPlayerCount: Int): Unit = {
     validateNewGame(newDeckSize, newPlayerCount)

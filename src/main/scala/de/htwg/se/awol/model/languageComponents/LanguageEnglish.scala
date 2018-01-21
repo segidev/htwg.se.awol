@@ -73,7 +73,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesGeneral.GameHasStarted -> "The game has started",
     MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Every play received cards",
 
-    MessageEnv.PhrasesBot.WonTheRound -> "%s has won the round!",
+    MessageEnv.PhrasesBot.WonTheRound -> "%s has won the round!\n",
     MessageEnv.PhrasesBot.IsTheWinner -> "%s ist the winner and ranks as %s\n",
     MessageEnv.PhrasesBot.IsTheLooser -> "%s lost and is the new %s\n",
     MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s receives %s from %s\n",

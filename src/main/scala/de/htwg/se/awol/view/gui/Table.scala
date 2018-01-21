@@ -432,7 +432,12 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
       showGlobalMessage(sb.toString())
 
     case event: PronounceWinnerOfRound =>
-      showGlobalMessage(MessageEnv.getPronounceWinnerOfRoundText(event))
+      val sb: StringBuilder = new StringBuilder()
+
+      sb.append(MessageEnv.getPronounceWinnerOfRoundText(event))
+      sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.ClickAnywhereToContinue))
+
+      showGlobalMessage(sb.toString())
 
       humanPlayerArea.removeCardEventsAndEffects()
 

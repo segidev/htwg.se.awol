@@ -83,7 +83,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesBot.UsedTheseCards -> "\n%s hat folgende Karten gespielt: %s",
     MessageEnv.PhrasesBot.HasCardsLeft -> "\n%s hat %d Karten übrig",
 
-    MessageEnv.PhrasesHuman.WonTheRound -> "Du hast die Runde gewonnen! Super :)",
+    MessageEnv.PhrasesHuman.WonTheRound -> "Du hast die Runde gewonnen! Super :)\n",
     MessageEnv.PhrasesHuman.IsTheWinner -> "Du bist der Gewinner und somit %s\n",
     MessageEnv.PhrasesHuman.IsTheLooser -> "Du hast verloren und bist das neue %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "Du erhälst %s von %s\n",

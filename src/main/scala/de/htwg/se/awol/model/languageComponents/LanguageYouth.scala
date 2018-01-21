@@ -73,7 +73,7 @@ object LanguageYouth extends _LanguageHandler {
     MessageEnv.PhrasesGeneral.GameHasStarted -> "Die Party hat begonnen!",
     MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Jeder Junkie hat sein Koks erhalten",
 
-    MessageEnv.PhrasesBot.WonTheRound -> "%s hat alle kaputt gef****!",
+    MessageEnv.PhrasesBot.WonTheRound -> "%s hat alle kaputt gef****!\n",
     MessageEnv.PhrasesBot.IsTheWinner -> "%s isch Killer und %s\n",
     MessageEnv.PhrasesBot.IsTheLooser -> "%s hat verkackt und ist %s\n",
     MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s snatcht %s vong %s\n",

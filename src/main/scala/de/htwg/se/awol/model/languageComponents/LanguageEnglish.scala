@@ -83,7 +83,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesBot.UsedTheseCards -> "\n%s played those cards: %s",
     MessageEnv.PhrasesBot.HasCardsLeft -> "\n%s has %d card(s) left",
 
-    MessageEnv.PhrasesHuman.WonTheRound -> "You have won the round! Nice :)",
+    MessageEnv.PhrasesHuman.WonTheRound -> "You have won the round! Nice :)\n",
     MessageEnv.PhrasesHuman.IsTheWinner -> "You are the winner and you rank as %s\n",
     MessageEnv.PhrasesHuman.IsTheLooser -> "You have lost, that makes you the %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "You receive %s from %s\n",
@@ -98,8 +98,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Command \"%s\" not available for cards",
 
     SettingEnv.Language.German -> "German",
-    SettingEnv.Language.English -> "English",
-    SettingEnv.Language.Youth -> "Youngster Talk"
+    SettingEnv.Language.English -> "English"
   )
 
   override def getLanguageCode: SettingEnv.Language.Value = SettingEnv.Language.English

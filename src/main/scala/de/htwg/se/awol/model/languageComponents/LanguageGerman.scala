@@ -73,7 +73,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesGeneral.GameHasStarted -> "Das Spiel hat begonnen",
     MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Jeder Spieler hat seine Karten erhalten",
 
-    MessageEnv.PhrasesBot.WonTheRound -> "%s hat die Runde gewonnen!",
+    MessageEnv.PhrasesBot.WonTheRound -> "%s hat die Runde gewonnen!\n",
     MessageEnv.PhrasesBot.IsTheWinner -> "%s ist der Gewinner und somit %s\n",
     MessageEnv.PhrasesBot.IsTheLooser -> "%s hat verloren und ist das neue %s\n",
     MessageEnv.PhrasesBot.ReceivesCardFrom -> "%s erhält %s von %s\n",
@@ -98,8 +98,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Befehl \"%s\" nicht möglich für Karten",
 
     SettingEnv.Language.German -> "Deutsch",
-    SettingEnv.Language.English -> "Englisch",
-    SettingEnv.Language.Youth -> "Jugendsprache"
+    SettingEnv.Language.English -> "Englisch"
   )
 
   override def getLanguageCode: SettingEnv.Language.Value = SettingEnv.Language.German

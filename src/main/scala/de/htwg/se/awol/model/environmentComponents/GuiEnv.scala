@@ -75,11 +75,11 @@ object GuiEnv {
     (imageCardMap.head._2.getImage.getWidth, imageCardMap.head._2.getImage.getHeight)
   }
 
-  def getCardImage(card: Card): ImageView = imageCardMap.apply(card.cardFilename)
-
-  def getPlayerImage: Image = imagePlayer
+  def getCardImageView(card: Card): ImageView = imageCardMap.apply(card.cardFilename)
 
   def getLeadingImageView: ImageView = imageViewLeading
+
+  def getPlayerImage: Image = imagePlayer
 
   def getTableImage: Image = imageTable
 

@@ -3,7 +3,6 @@ package de.htwg.se.awol.model.environmentComponents
 import de.htwg.se.awol.controller.gameController.{BotPlayerPlaying, CardsWereSwapped, PronounceWinnerOfRound, ShowEndOfGame}
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.MessageEnv.Questions
 import de.htwg.se.awol.model.playerComponent.Player
 
 object MessageEnv {
@@ -105,7 +104,7 @@ object MessageEnv {
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesBot.Passed).format(event.player.getPlayerName))
     } else {
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesBot.UsedTheseCards).format(event.player.getPlayerName,
-        "%dx %s".format(event.pickedCards.length, event.pickedCards.head.cardName)))
+        "%dx %s".format(event.pickedCards.length, event.pickedCards.head.cardValueName)))
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesBot.HasCardsLeft).format(event.player.getPlayerName,
         event.player.cardAmount))
     }

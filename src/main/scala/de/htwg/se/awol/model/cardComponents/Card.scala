@@ -7,11 +7,20 @@ case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
 
   def cardColorName: String = LanguageTranslator.translate(color)
 
-  def cardName: String = LanguageTranslator.translate(value)
+  def cardValueName: String = LanguageTranslator.translate(value)
 
-  def cardFilename: String = cardValue + "_of_" + CardEnv.CardFileColorMap.apply(color.id)
+  def cardFilename: String = cardValue + "_of_" + Card.CardFileColorMap.apply(color.id)
 
   def cardValue: Int = value.id
 
-  override def toString: String = cardName + " [" + cardColorName + "]"
+  override def toString: String = cardValueName + " [" + cardColorName + "]"
+}
+
+object Card {
+  val CardFileColorMap: Map[Int, String] = Map(
+    0 -> "clubs",
+    1 -> "spades",
+    2 -> "hearts",
+    3 -> "diamonds"
+  )
 }

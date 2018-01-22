@@ -4,23 +4,19 @@ import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv, PlayerEnv, SettingEnv}
-import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, LanguageYouth}
+import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scalafx.Includes._
-import scalafx.beans.binding.Bindings
 import scalafx.embed.swing.SFXPanel
-import scalafx.event.ActionEvent
-import scalafx.geometry.{HPos, Pos, VPos}
-import scalafx.scene.{Scene, layout}
+import scalafx.geometry.Pos
+import scalafx.scene.Scene
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control._
 import scalafx.scene.image.ImageView
-import scalafx.scene.input.KeyCombination
 import scalafx.scene.layout._
 import scalafx.scene.text.TextAlignment
 
@@ -88,7 +84,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   }
 
   private val mainLayout: VBox = new VBox() {
-    children = Seq(createMenuBar(), mainPlayLayout)
+    children = Seq(new MainMenuBar(Table.this), mainPlayLayout)
   }
 
   scene = new Scene {
@@ -105,96 +101,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
   def hideGlobalMessage(globalMessage: Label): Unit = {
     globalMessage.text = ""
     globalMessage.visible = false
-  }
-
-  //noinspection ScalaStyle
-  def createMenuBar(): MenuBar = {
-    val languageOptionsGroup = new ToggleGroup()
-    val speedOptionsGroup = new ToggleGroup()
-
-    new MenuBar {
-      menus = List(
-        // File Menu
-        new Menu() {
-          text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.File).get
-          items = List(
-            new MenuItem(LanguageTranslator.translate(MessageEnv.Menues.NewGame)) {
-              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.NewGame).get
-              accelerator = KeyCombination.keyCombination("Ctrl + N")
-              onAction = {
-                _: ActionEvent => showNewGameDialog()
-              }
-            },
-
-            new SeparatorMenuItem(),
-
-            new MenuItem(LanguageTranslator.translate(MessageEnv.Menues.Quit)) {
-              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Quit).get
-              accelerator = KeyCombination.keyCombination("Ctrl + Q")
-              onAction = {
-                _: ActionEvent => exitApplication()
-              }
-            }
-          )
-        },
-
-        // Options Menu
-        new Menu() {
-          text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Options).get
-          items = List(
-            new Menu() {
-              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.GameLanguage).get
-              items = List(
-                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.German)) {
-                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.German).get
-                  toggleGroup = languageOptionsGroup
-                  selected <==> Settings.isGermanActive
-                  onAction = handle(saveSettings())
-                },
-                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.English)) {
-                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.English).get
-                  toggleGroup = languageOptionsGroup
-                  selected <==> Settings.isEnglishActive
-                  onAction = handle(saveSettings())
-                },
-                new RadioMenuItem(LanguageTranslator.translate(SettingEnv.Language.Youth)) {
-                  text <== LanguageTranslator.bindTranslation(SettingEnv.Language.Youth).get
-                  toggleGroup = languageOptionsGroup
-                  selected <==> Settings.isYouthActive
-                  onAction = handle(saveSettings())
-                }
-              )
-            },
-
-            new SeparatorMenuItem(),
-
-            new Menu() {
-              text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.GameSpeed).get
-              items = List(
-              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Normal)) {
-                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Normal).get
-                  toggleGroup = speedOptionsGroup
-                  selected <==> Settings.isNormalSpeedActive
-                  onAction = handle(saveSettings())
-                },
-              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Fast)) {
-                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Fast).get
-                  toggleGroup = speedOptionsGroup
-                  selected <==> Settings.isFastSpeedActive
-                  onAction = handle(saveSettings())
-                },
-              new RadioMenuItem(LanguageTranslator.translate(MessageEnv.Menues.Slow)) {
-                  text <== LanguageTranslator.bindTranslation(MessageEnv.Menues.Slow).get
-                  toggleGroup = speedOptionsGroup
-                  selected <==> Settings.isSlowSpeedActive
-                  onAction = handle(saveSettings())
-                }
-              )
-            }
-          )
-        }
-      )
-    }
   }
 
   def addPlayerToTop(playerArea: PlayerArea, startIdx: Int): Unit = {
@@ -240,7 +146,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
       playerAreaMap.put(player, playerArea)
 
-      //noinspection ScalaStyle
       playerList.length match {
       case 2 => assign2PlayerPositions(i, playerArea)
       case 4 => assign4PlayerPositions(i, playerArea)
@@ -372,7 +277,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     var i = 0
     controller.getLatestCardsOnTable.foreach(card => {
-      val cardImageView: ImageView = GuiEnv.getCardImage(card)
+      val cardImageView: ImageView = GuiEnv.getCardImageView(card)
       cardImageView.setTranslateX(0)
 
       i match {

@@ -10,10 +10,6 @@ trait _LanguageHandler {
     MessageEnv.Questions, MessageEnv.Titles, MessageEnv.Words, SettingEnv.Language
   )
 
-  val translations: Map[Any, String]
-
-  def getLanguageCode: SettingEnv.Language.Value
-
   def getTranslation(word: Any): String = translations.get(word) match {
     case Some(t) => t
     case _ => LanguageEnglish.getTranslationWithOption(word) match {
@@ -28,4 +24,8 @@ trait _LanguageHandler {
   }
 
   def translationCount: Int = translations.size
+
+  val translations: Map[Any, String]
+
+  def getLanguageCode: SettingEnv.Language.Value
 }

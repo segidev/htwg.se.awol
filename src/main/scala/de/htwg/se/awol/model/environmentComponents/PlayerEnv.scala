@@ -1,5 +1,4 @@
 package de.htwg.se.awol.model.environmentComponents
-import de.htwg.se.awol.model.environmentComponents.PlayerEnv.BotNames
 
 object PlayerEnv {
   object Rank extends Enumeration {

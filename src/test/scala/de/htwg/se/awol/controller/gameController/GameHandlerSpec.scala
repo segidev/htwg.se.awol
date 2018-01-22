@@ -153,7 +153,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.setGameState(Game.States.EndOfGame)
-      controller.appendArschlochToRankedList()
+      controller.appendAssholeToRankedList()
       controller.callNextActionByState()
     }
     "change swap cards to be true" in {
@@ -162,7 +162,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.setGameState(Game.States.EndOfGame)
-      controller.appendArschlochToRankedList()
+      controller.appendAssholeToRankedList()
       controller.callNextActionByState()
       Game.setGameState(Game.States.FindStartingPlayer)
       controller.findStartingPlayer()
@@ -211,7 +211,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.addToPassCounter(1)
-      controller.appendArschlochToRankedList()
+      controller.appendAssholeToRankedList()
       controller.checkForEndOfRound() should be(true)
     }
     "be false if the round has not ended yet" in {
@@ -286,7 +286,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
       controller.callNextActionByState()
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.head
-      controller.appendArschlochToRankedList()
+      controller.appendAssholeToRankedList()
       controller.doPlay(player)
     }
   }

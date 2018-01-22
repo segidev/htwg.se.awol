@@ -1,7 +1,7 @@
 package de.htwg.se.awol.model.playerComponent
 
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
-import de.htwg.se.awol.model.cardComponents.{Card, Deck}
+import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.PlayerEnv
 
 import scala.collection.mutable.ListBuffer

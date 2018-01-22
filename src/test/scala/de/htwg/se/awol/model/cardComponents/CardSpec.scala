@@ -14,7 +14,7 @@ class CardSpec extends WordSpec with Matchers {
       Settings.setLanguage(LanguageGerman)
 
       val card = Card(CardEnv.Values.Eight, CardEnv.Colors.Clubs)
-      card.cardName should be("8")
+      card.cardValueName should be("8")
       card.cardValue should be(8)
       card.cardColorName should be("Kreuz")
     }
@@ -22,7 +22,7 @@ class CardSpec extends WordSpec with Matchers {
       Settings.setLanguage(LanguageGerman)
 
       val card = Card(CardEnv.Values.Jack, CardEnv.Colors.Hearts)
-      card.cardName should be("Bube")
+      card.cardValueName should be("Bube")
       card.cardValue should be(11)
       card.cardColorName should be("Herz")
     }

@@ -9,18 +9,19 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   validateDeck()
 
   private val cardStackSize: Int = amount / Deck.amountOfColoredEquals
+  private var lowestCardValue: Int = 2
   private val cards: ListBuffer[Card] = createCards(amount)
 
   private def createCards(amount: Int): ListBuffer[Card] = {
     val cards = new ListBuffer[Card]()
 
-    val startCard: Int = Deck.maxPlayerCardAmount - cardStackSize
+    val lowestCardValue: Int = Deck.maxPlayerCardAmount - cardStackSize
 
     (0 until amount).foreach(i => {
-      val cardNum = CardEnv.Values.apply(i % cardStackSize + startCard)
+      val cardValue = CardEnv.Values.apply(i % cardStackSize + lowestCardValue)
       val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
-      cards.append(Card(cardNum, cardColor))
+      cards.append(Card(cardValue, cardColor))
     })
 
     cards
@@ -30,8 +31,10 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
 
   def getDeckSize: Int = cards.length
 
+  def getLowestCardValue: Int = lowestCardValue
+
   def validateDeck(): Unit = {
-    if (amount < Deck.smallCardStackSize || amount > Deck.bigCardStackSize) {
+    if (amount < 4 || amount > Deck.bigCardStackSize) { //TODO: Deck.smallCardStackSize wieder einfügen
       throw new IndexOutOfBoundsException(LanguageTranslator.translate(MessageEnv.Warnings.MaxAmountOfCards))
     } else if (amount % Deck.amountOfColoredEquals != 0) {
       throw new IllegalArgumentException(LanguageTranslator.translate(MessageEnv.Warnings.DividableByFour))

@@ -28,7 +28,7 @@ class _GameHandler() extends Publisher {
 
   private var swapCardsNeeded: Boolean = false
   private var roundNumber: Int = 1
-  private var actualPlayerNum: Int = 0
+  private var actualPlayerNumber: Int = 0
   private var roundWinnersCount: Int = 0
 
   private var king: Option[Player] = None
@@ -50,7 +50,7 @@ class _GameHandler() extends Publisher {
     rankedList.clear()
     roundNumber = 1
     swapCardsNeeded = false
-    actualPlayerNum = 0
+    actualPlayerNumber = 0
 
     king = None
     asshole = None
@@ -107,7 +107,6 @@ class _GameHandler() extends Publisher {
         evaluateRound()
       case Game.States.EndOfGame =>
         summarizeEndOfGame()
-      case _ => throw new RuntimeException("Illegal Game State!")
     }
   }
 
@@ -129,12 +128,9 @@ class _GameHandler() extends Publisher {
 
     activePlayerList = playerList.clone()
 
-    val deck = new Deck(deckSize)
+    val newDeck = new Deck(deckSize)
+    val cardHandOutList: ListBuffer[Card] = newDeck.getCards
 
-    // Get the original card stack
-    val cardHandOutList: ListBuffer[Card] = deck.getCards
-
-    // Assign every player a random card as long as cards exist
     var i = 0
     while (cardHandOutList.nonEmpty) {
       val player: Player = getPlayerByIndex(i)
@@ -155,7 +151,9 @@ class _GameHandler() extends Publisher {
       case Some(p1) => setCardLeadingPlayer(p1)
       case _ => playerList.find(_.hasCard(starterCard)) match {
         case Some(p2) => setCardLeadingPlayer(p2)
-        case _ => throw new MatchError("No player holds the starter card: " + starterCard)
+        case _ =>
+          setCardLeadingPlayer(playerList.head) // TODO: Entfernen
+          //throw new MatchError("No player holds the starter card: " + starterCard) TODO: Kommentar weg
       }
     }
 
@@ -181,17 +179,14 @@ class _GameHandler() extends Publisher {
   def startNewRound(): Unit = {
     assert(Game.getGameState == Game.States.Playing, "Start playing in wrong game state!")
 
-    // Reset some values
     Game.setActualCardValue(0)
     Game.setActualCardCount(0)
     Game.setPassCounter(0)
 
-    // Tell Gui that cards have changed
-    actualCardsOnTable.clear()
-    publish(new CardsOnTableChanged)
+    clearCardsOnTable()
 
     if (Game.getLeadingPlayer.cardAmount > 0) {
-      actualPlayerNum = activePlayerList.indexOf(Game.getLeadingPlayer)
+      actualPlayerNumber = activePlayerList.indexOf(Game.getLeadingPlayer)
     }
 
     triggerNextPlay(Game.getLeadingPlayer)
@@ -201,7 +196,7 @@ class _GameHandler() extends Publisher {
     publish(CardsRemoveAllEventsAndEffects(playerList))
     markNextActivePlayer()
 
-    val nextPlayer: Player = getPlayerByIndex(actualPlayerNum)
+    val nextPlayer: Player = getPlayerByIndex(actualPlayerNumber)
 
     if (nextPlayer.isHumanPlayer) {
       doPlay(nextPlayer)
@@ -223,7 +218,7 @@ class _GameHandler() extends Publisher {
   }
 
   def doPlay(player: Player): Unit = {
-    if (!(rankedList.contains(player) || activePlayerList.lengthCompare(1) == 0)) { // rankedList.lengthCompare(playerList.length - 1) == 0
+    if (!(rankedList.contains(player) || activePlayerList.lengthCompare(1) == 0)) {
       if (player.isHumanPlayer) {
         val suitableCards: Map[Int, ListBuffer[Card]] = player.findSuitableCards(Game.getActualCardValue, Game.getActualCardCount)
 
@@ -237,21 +232,19 @@ class _GameHandler() extends Publisher {
     }
   }
 
-  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = { // (Boolean, ListBuffer[Card])
+  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = {
     val player: Player = Game.getHumanPlayer
 
     player.validatePick(pickedCards, Game.getActualCardCount, Game.getActualCardValue) match {
       case Some(usedCards: ListBuffer[Card]) =>
         if (usedCards.isEmpty) {
           Game.addToPassCounter(1)
-          validatePostPlay(player)
-          Some(ListBuffer.empty)
         } else {
           Game.setPassCounter(0)
           setLeadingValues(player, usedCards)
-          validatePostPlay(player)
-          Some(usedCards)
         }
+        validatePostPlay(player)
+        Some(usedCards)
       case _ =>
         None
     }
@@ -266,12 +259,11 @@ class _GameHandler() extends Publisher {
       case Some(pickedCards: ListBuffer[Card]) =>
         if (pickedCards.isEmpty) {
           Game.addToPassCounter(1)
-          publish(BotPlayerPlaying(player, ListBuffer.empty))
         } else {
           Game.setPassCounter(0)
           setLeadingValues(player, pickedCards)
-          publish(BotPlayerPlaying(player, pickedCards))
         }
+        publish(BotPlayerPlaying(player, pickedCards))
       case _ =>
         Game.addToPassCounter(1)
         publish(BotPlayerPlaying(player, ListBuffer.empty))
@@ -290,7 +282,7 @@ class _GameHandler() extends Publisher {
 
   def validatePostPlay(player: Player): Unit = {
     if (!checkForPlayerFinished(player)) {
-      actualPlayerNum = (actualPlayerNum + 1) % activePlayerList.length
+      actualPlayerNumber = (actualPlayerNumber + 1) % activePlayerList.length
     } else {
       roundWinnersCount += 1
     }
@@ -313,7 +305,8 @@ class _GameHandler() extends Publisher {
   }
 
   def checkForEndOfRound(): Boolean = {
-    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount || (Game.getActualCardValue == CardEnv.Values.Ace.id && Game.getPassCounter > 0)) {
+    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount ||
+      (Game.getActualCardValue == CardEnv.Values.Ace.id && Game.getPassCounter > 0)) {
       roundNumber += 1
 
       if (rankedList.lengthCompare(playerList.length - 1) >= 0) {
@@ -339,19 +332,15 @@ class _GameHandler() extends Publisher {
   def summarizeEndOfGame(): Unit = {
     assert(activePlayerList.lengthCompare(1) == 0, "activePlayerList should contain only one player now!")
 
-    val arschloch: Player = activePlayerList.remove(0) //playerList.filter(_.cardAmount != 0).head
-    rankedList.append(arschloch)
+    appendAssholeToRankedList()
 
-    playerList.foreach(player => {
+    rankedList.foreach(player => {
       player.resetRank()
       player.clearCards()
     })
 
-    king = rankedList.headOption
-    asshole = rankedList.lastOption
-
-    king.get.setRank(PlayerEnv.Rank.King)
-    asshole.get.setRank(PlayerEnv.Rank.Asshole)
+    setKing(rankedList.headOption)
+    setAsshole(rankedList.lastOption)
 
     rankedList.clear()
     swapCardsNeeded = true
@@ -363,7 +352,7 @@ class _GameHandler() extends Publisher {
 
   // Event Triggers
   def markNextActivePlayer(): Unit = {
-    val player: Player = getPlayerByIndex(actualPlayerNum)
+    val player: Player = getPlayerByIndex(actualPlayerNumber)
 
     Game.setActivePlayer(player)
     publish(PlayerStatusChanged())
@@ -433,7 +422,7 @@ class _GameHandler() extends Publisher {
     }
   }
 
-  def appendArschlochToRankedList(): Unit = {
+  def appendAssholeToRankedList(): Unit = {
     val arschloch: Player = activePlayerList.remove(0)
     rankedList.append(arschloch)
   }

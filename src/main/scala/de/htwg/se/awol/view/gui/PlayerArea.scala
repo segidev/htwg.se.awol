@@ -17,7 +17,6 @@ import scalafx.scene.effect.{DropShadow, Effect}
 import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
-import scalafx.stage.Popup
 
 class PlayerArea(private val player: Player, controller: _GameHandler) extends GridPane {
   alignment = Pos.Center
@@ -33,8 +32,8 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
   private val inactiveEffect: Effect = null.asInstanceOf[javafx.scene.effect.DropShadow]
   private val cardGlowEffect: Effect = new DropShadow() {
     color = Color.White
-    spread = PlayerArea.cardGlowEffectSpread // 0.2
-    radius = PlayerArea.cardGlowEffectRadius // 15
+    spread = PlayerArea.cardGlowEffectSpread
+    radius = PlayerArea.cardGlowEffectRadius
   }
 
   private var direction: GuiEnv.Layout.Value = _
@@ -81,34 +80,8 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     vgrow = Priority.Always
   }
 
-  // POPUP
-  private val popup = new Popup
-  popup.onAutoHide = handle(resetPopup())
-  popup.autoHide_=(true)
-
-
-  private val pickHint: Label = new Label() {
-    text <== LanguageTranslator.bindTranslation(MessageEnv.PhrasesHuman.HowManyCardsToPlay).get
-    style = PlayerArea.stylePopupHint
-  }
-  private val pickOneCardButton: Button = new Button("1")
-  private val pickTwoCardButton: Button = new Button("2")
-  private val pickThreeCardButton: Button = new Button("3")
-  private val pickFourCardButton: Button = new Button("4")
-
-  private val buttonBox = new HBox {
-    spacing = PlayerArea.smallSpacing
-    alignment = Pos.Center
-    children = List(pickOneCardButton, pickTwoCardButton, pickThreeCardButton, pickFourCardButton)
-  }
-
-  private val popupMain = new VBox {
-    spacing = PlayerArea.smallSpacing
-    alignment = Pos.Center
-    style = PlayerArea.stylePopup
-    children = List(pickHint, buttonBox)
-  }
-  popup.getContent.add(popupMain)
+  // Popup
+  private val popup = new CardAmountPopup(this)
 
   // Methods
   def setAsActive(active: Boolean): Unit = {
@@ -180,14 +153,14 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
 
       var translateCards = 0
       cardGroup.foreach(card => {
-        val cardImageView = GuiEnv.getCardImage(card)
+        val cardImageView = GuiEnv.getCardImageView(card)
 
         if (!cardGroupMap.contains(card.cardValue)) {
           cardGroupMap.put(card.cardValue, cardStack)
         }
 
         cardStack.onMouseEntered = handle {
-          tooltip.setText(cardStack.getCardImageViews.length + "x " + card.cardName)
+          tooltip.setText(cardStack.getCardImageViews.length + "x " + card.cardValueName)
           val pos = cardStack.localToScreen(cardStack.getBoundsInLocal)
           tooltip.show(cardStack, pos.getMinX, pos.getMaxY)
           cardStack.setEffect(cardGlowEffect)
@@ -207,7 +180,6 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     })
   }
 
-  //noinspection ScalaStyle
   def highlightSuitableCards(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int): Unit = {
     cardGroupMap.foreach(cardGroup => {
       val cardValue: Int = cardGroup._1
@@ -217,28 +189,10 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
         cardStack.onMouseReleased = handle {
 
           if (actualCardCount == 0) {
-            if (cardStack.getCardImageViews.length == 1) {
+            if (cardStack.getCardImageViews.lengthCompare(1) == 0) {
               putCards(suitableCards, cardStack, 1, cardValue)
             } else {
-              pickOneCardButton.disable = cardStack.getCardImageViews.length < 1
-              pickTwoCardButton.disable = cardStack.getCardImageViews.length < 2
-              pickThreeCardButton.disable = cardStack.getCardImageViews.length < 3
-              pickFourCardButton.disable =  cardStack.getCardImageViews.length < 4
-
-              popup.show(cardStack, cardStack.localToScreen(cardStack.getBoundsInLocal).getMinX, cardStack.localToScreen(cardStack.getBoundsInLocal).getMinY - 50)
-
-              pickOneCardButton.onAction = handle {
-                putCards(suitableCards, cardStack, 1, cardValue)
-              }
-              pickTwoCardButton.onAction = handle {
-                putCards(suitableCards, cardStack, 2, cardValue)
-              }
-              pickThreeCardButton.onAction = handle {
-                putCards(suitableCards, cardStack, 3, cardValue)
-              }
-              pickFourCardButton.onAction = handle {
-                putCards(suitableCards, cardStack, 4, cardValue)
-              }
+              popup.init(cardStack, suitableCards, cardValue)
             }
           } else {
             putCards(suitableCards, cardStack, actualCardCount, cardValue)
@@ -250,22 +204,13 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
     })
   }
 
-  def resetPopup(): Unit = {
-    popup.hide()
-
-    pickOneCardButton.onAction = null
-    pickTwoCardButton.onAction = null
-    pickThreeCardButton.onAction = null
-    pickFourCardButton.onAction = null
-  }
-
   def putCards(suitableCards: Map[Int, ListBuffer[Card]], cardStack: CardStack, cardAmount: Int, cardValue: Int): Boolean = {
     if (cardAmount != -1) {
       val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue)
 
       controller.humanPlaying(pickedCards.take(cardAmount)) match {
         case Some(usedCards) =>
-          resetPopup()
+          popup.resetPopup()
 
           if (cardStack.removeCards(usedCards)) {
             cardStack.setVisible(false)

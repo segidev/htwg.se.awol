@@ -1,5 +1,6 @@
 package de.htwg.se.awol.view
 
+import com.typesafe.scalalogging.LazyLogging
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
@@ -10,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scala.util.matching.Regex
 
-class Tui(controller: _GameHandler) extends Reactor {
+class Tui(controller: _GameHandler) extends Reactor with LazyLogging {
   listenTo(controller)
 
   val newGameWithAmount: Regex = "s\\s+(\\d+)\\s+(\\d+)".r
@@ -19,10 +20,11 @@ class Tui(controller: _GameHandler) extends Reactor {
 
   //noinspection ScalaStyle
   def processInputLine(input: String): Unit = {
+    logger.debug(s"Input: $input")
     if (processDefaultInput(input)) {
       Game.getGameState match {
         case Game.States.Playing => processPlayingInput(input)
-        case _ => println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.CommandNotAvailable))
+        case _ => logger.warn(LanguageTranslator.translate(MessageEnv.PhrasesHuman.CommandNotAvailable))
       }
     }
   }
@@ -39,7 +41,7 @@ class Tui(controller: _GameHandler) extends Reactor {
           controller.initNewGame(cardCount, playerCount)
           controller.callNextActionByState()
         } catch {
-          case e: Exception => println(e.getMessage)
+          case e: Exception => logger.error(e.getMessage)
         }
         false
       case emptyCommand() =>
@@ -60,9 +62,9 @@ class Tui(controller: _GameHandler) extends Reactor {
       case "p" =>
         controller.humanPlaying(ListBuffer.empty) match {
           case Some(_) =>
-            println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.Passed))
+            logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.Passed))
           case _ =>
-            println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.PassForbidden))
+            logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.PassForbidden))
         }
 
       case setMyCards(a, b) =>
@@ -79,36 +81,36 @@ class Tui(controller: _GameHandler) extends Reactor {
           case Some(pickedCards) =>
             controller.humanPlaying(pickedCards.take(count)) match {
               case Some(usedCards) =>
-                println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.YouPlayedThoseCards).format(
-                  "%dx %s [%d]".format(usedCards.length, usedCards.head.cardName, usedCards.head.cardValue)))
+                logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.YouPlayedThoseCards).format(
+                  "%dx %s [%d]".format(usedCards.length, usedCards.head.cardValueName, usedCards.head.cardValue)))
               case _ =>
-                println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NoSuitableCards))
+                logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NoSuitableCards))
             }
           case _ =>
-            println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NoSuitableCards))
-            println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
-            suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardName, f._1)).mkString(", ")))
+            logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NoSuitableCards))
+            logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
+            suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardValueName, f._1)).mkString(", ")))
         }
 
-      case _ => println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.CardCommandNotAvailable).format(input))
+      case _ => logger.warn(LanguageTranslator.translate(MessageEnv.PhrasesHuman.CardCommandNotAvailable).format(input))
     }
   }
 
   //noinspection ScalaStyle
   reactions += {
     case _: PlayersCreated =>
-      println(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.GameHasStarted))
+      logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.GameHasStarted))
 
     case _: CardsHandedToPlayers =>
-      println(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers))
+      logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers))
 
     case event: HumanPlayerPlaying =>
-      println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.IsPlayingNow))
-      println(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
-        event.suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardName, f._1)).mkString(", ")))
+      logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.IsPlayingNow))
+      logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
+        event.suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardValueName, f._1)).mkString(", ")))
 
     case event: BotPlayerPlaying =>
-      println(MessageEnv.getBotPlayerPlaying(event))
+      logger.debug(MessageEnv.getBotPlayerPlaying(event))
 
     case event: CardsWereSwapped =>
       val sb: StringBuilder = new StringBuilder()
@@ -116,10 +118,15 @@ class Tui(controller: _GameHandler) extends Reactor {
       sb.append(MessageEnv.getCardsWereSwappedText(event))
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.HitEnterToContinue))
 
-      println(sb.toString())
+      logger.debug(sb.toString())
 
     case event: PronounceWinnerOfRound =>
-      println(MessageEnv.getPronounceWinnerOfRoundText(event))
+      val sb: StringBuilder = new StringBuilder()
+
+      sb.append(MessageEnv.getPronounceWinnerOfRoundText(event))
+      sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.HitEnterToContinue))
+
+      logger.debug(sb.toString())
 
     case event: ShowEndOfGame =>
       val sb: StringBuilder = new StringBuilder()
@@ -127,9 +134,9 @@ class Tui(controller: _GameHandler) extends Reactor {
       sb.append(MessageEnv.getShowEndOfGameText(event))
       sb.append(LanguageTranslator.translate(MessageEnv.PhrasesGeneral.HitEnterToContinue))
 
-      println(sb.toString())
+      logger.debug(sb.toString())
 
-    case _: SettingsLoadFailed => println(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed))
-    case _: SettingsWriteFailed => println(LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed))
+    case _: SettingsLoadFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed))
+    case _: SettingsWriteFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed))
   }
 }

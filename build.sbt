@@ -1,7 +1,7 @@
 name          := "Arschloch Extended"
 organization  := "de.htwg.se"
 version       := "1.0.0"
-scalaVersion  := "2.11.8"
+scalaVersion  := "2.11.11"
 scalacOptions := Seq("-unchecked", "-feature", "-deprecation", "-encoding", "utf8")
 
 resolvers += Resolver.jcenterRepo
@@ -22,3 +22,4 @@ libraryDependencies += "org.scalafx" %% "scalafx" % "8.0.92-R10"
 libraryDependencies += "net.liftweb" % "lift-json_2.11" % "3.2.0-RC1"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.2"
+libraryDependencies += "com.google.inject" % "guice" % "4.1.0"

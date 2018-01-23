@@ -8,12 +8,16 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.layout.StackPane
 
 class CardStack extends StackPane {
+  private var translateCards = 0
   private val transparency: Double = 0.2
   private val cards: ListBuffer[Card] = ListBuffer()
   private val cardImageViews: ListBuffer[ImageView] = ListBuffer()
 
   def addCard(card: Card, cardImageView: ImageView): Unit = {
     children.append(cardImageView)
+    cardImageView.setTranslateX(translateCards)
+    translateCards += 6
+
     cardImageViews.append(cardImageView)
 
     cards.append(card)

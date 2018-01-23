@@ -61,6 +61,7 @@ object Settings {
   def setLanguageFromString(langStr: String): Unit = langStr match {
     case "German" => isGermanActive.update(true)
     case "English" => isEnglishActive.update(true)
+    case _ => isGermanActive.update(true)
   }
 
   // Saving
@@ -105,7 +106,7 @@ object Settings {
     }
   }
 
-  def loadSettingsFromJSON(): Boolean = {
+  def loadSettingsFromJSON(): Option[String] = {
     val fullSettingsPath: File = getSettingsPath
 
     if (fullSettingsPath.exists) {
@@ -120,12 +121,12 @@ object Settings {
         setLanguageFromString(jsonSettingsClass.language)
         Game.setGameSettings(jsonSettingsClass.deckSize, jsonSettingsClass.playerCount, doSave = false)
 
-        true
+        None
       } catch {
-        case _: Exception => false
+        case e: Exception => Some(e.getMessage)
       }
     } else {
-      true
+      None
     }
   }
 }

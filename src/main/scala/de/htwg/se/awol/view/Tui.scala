@@ -1,8 +1,10 @@
 package de.htwg.se.awol.view
 
+import com.google.inject.Inject
 import com.typesafe.scalalogging.LazyLogging
 import de.htwg.se.awol.controller.gameController._
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
+import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.MessageEnv
@@ -11,7 +13,7 @@ import scala.collection.mutable.ListBuffer
 import scala.swing.Reactor
 import scala.util.matching.Regex
 
-class Tui(controller: _GameHandler) extends Reactor with LazyLogging {
+class Tui @Inject()(controller: _TGameHandler) extends Reactor with LazyLogging {
   listenTo(controller)
 
   val newGameWithAmount: Regex = "s\\s+(\\d+)\\s+(\\d+)".r
@@ -106,8 +108,12 @@ class Tui(controller: _GameHandler) extends Reactor with LazyLogging {
 
     case event: HumanPlayerPlaying =>
       logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.IsPlayingNow))
-      logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
-        event.suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardValueName, f._1)).mkString(", ")))
+      if (event.suitableCards.isEmpty) {
+        logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NotSuitableCards))
+      } else {
+        logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
+          event.suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardValueName, f._1)).mkString(", ")))
+      }
 
     case event: BotPlayerPlaying =>
       logger.debug(MessageEnv.getBotPlayerPlaying(event))
@@ -136,7 +142,7 @@ class Tui(controller: _GameHandler) extends Reactor with LazyLogging {
 
       logger.debug(sb.toString())
 
-    case _: SettingsLoadFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed))
+    case event: SettingsLoadFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed) + "\n%s".format(event.error))
     case _: SettingsWriteFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed))
   }
 }

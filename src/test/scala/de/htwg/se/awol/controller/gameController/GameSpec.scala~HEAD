@@ -1,6 +1,6 @@
 package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
+import de.htwg.se.awol.model.playerComponent.bot.playerBaseImpl.BotPlayer
 import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

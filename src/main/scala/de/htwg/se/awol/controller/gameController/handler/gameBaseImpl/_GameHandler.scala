@@ -1,12 +1,16 @@
-package de.htwg.se.awol.controller.gameController.gameBaseImpl
+package de.htwg.se.awol.controller.gameController.handler.gameBaseImpl
 
+import com.google.inject.Guice
+import de.htwg.se.awol.ArschlochModule
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.{Card, Deck}
 import de.htwg.se.awol.model.environmentComponents.{CardEnv, MessageEnv, PlayerEnv}
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
-import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent._
+import de.htwg.se.awol.model.playerComponent.bot.TBotFactory
+import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -17,7 +21,7 @@ import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
 
 //noinspection ScalaStyle
-class _GameHandler() extends Publisher {
+class _GameHandler() extends _TGameHandler {
   private var isGamePaused: Boolean = false
   private var gameId: Double = 0.0
 
@@ -116,8 +120,10 @@ class _GameHandler() extends Publisher {
     Game.setHumanPlayer(HumanPlayer(0))
     playerList.append(Game.getHumanPlayer)
 
+    val injector = Guice.createInjector(new ArschlochModule())
     (1 until totalPlayerCount).foreach(playerNumber => {
-      playerList.append(new BotPlayer(playerNumber))
+      val botPlayer = injector.getInstance(classOf[TBotFactory]).create(playerNumber)
+      playerList.append(botPlayer)
     })
 
     Game.setGameState(Game.States.HandOut)
@@ -376,8 +382,9 @@ class _GameHandler() extends Publisher {
   }
 
   def loadSettings(): Unit = {
-    if (!Settings.loadSettingsFromJSON()) {
-      publish(SettingsLoadFailed())
+    Settings.loadSettingsFromJSON() match {
+      case Some(error) => publish(SettingsLoadFailed(error))
+      case _ =>
     }
   }
 
@@ -426,4 +433,6 @@ class _GameHandler() extends Publisher {
     val arschloch: Player = activePlayerList.remove(0)
     rankedList.append(arschloch)
   }
+
+  override def getImplType: String = "Base _GameHandler implementation"
 }

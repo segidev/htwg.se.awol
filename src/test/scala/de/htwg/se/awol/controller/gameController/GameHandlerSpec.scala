@@ -1,6 +1,6 @@
 package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.playerComponent.Player

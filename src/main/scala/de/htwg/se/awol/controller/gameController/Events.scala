@@ -18,5 +18,5 @@ case class HumanPlayerPlaying(suitableCards: Map[Int, ListBuffer[Card]], actualC
 case class BotPlayerPlaying(player: Player, pickedCards: ListBuffer[Card]) extends Event
 case class CardsWereSwapped(swappedCards: ListBuffer[(Player, Card, Player)]) extends Event
 
-case class SettingsLoadFailed() extends Event
+case class SettingsLoadFailed(error: String) extends Event
 case class SettingsWriteFailed() extends Event

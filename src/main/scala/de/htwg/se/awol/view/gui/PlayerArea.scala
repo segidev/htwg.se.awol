@@ -1,7 +1,7 @@
 package de.htwg.se.awol.view.gui
 
 import de.htwg.se.awol.controller.gameController.Game
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
@@ -18,7 +18,7 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 
-class PlayerArea(private val player: Player, controller: _GameHandler) extends GridPane {
+class PlayerArea(private val player: Player, controller: _TGameHandler) extends GridPane {
   alignment = Pos.Center
   hgrow = Priority.Always
   vgrow = Priority.Always
@@ -151,7 +151,6 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
 
       val cardStack = new CardStack()
 
-      var translateCards = 0
       cardGroup.foreach(card => {
         val cardImageView = GuiEnv.getCardImageView(card)
 
@@ -171,9 +170,6 @@ class PlayerArea(private val player: Player, controller: _GameHandler) extends G
         }
 
         cardStack.addCard(card, cardImageView)
-        cardImageView.setTranslateX(translateCards)
-
-        translateCards += 6
       })
 
       playerActionArea.children.add(cardStack)

@@ -1,9 +1,7 @@
-package de.htwg.se.awol.model.playerComponent.playerAdvancedImpl
-
-import java.util.NoSuchElementException
+package de.htwg.se.awol.model.playerComponent.bot.advancedImpl
 
 import de.htwg.se.awol.model.cardComponents._
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.{BotPlayer => BaseBotPlayer}
+import de.htwg.se.awol.model.playerComponent.bot.baseImpl.{BotPlayer => BaseBotPlayer}
 
 import scala.collection.mutable.ListBuffer
 

@@ -1,7 +1,8 @@
 package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
-import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.bot.baseImpl.BotPlayer
+import de.htwg.se.awol.model.playerComponent.Player
+import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{Matchers, WordSpec}

@@ -358,8 +358,6 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     case _: SettingsLoadFailed => showSettingsLoadError()
 
-    case _: SettingsWriteFailed => showSettingsWriteError()
-
   }
 }
 

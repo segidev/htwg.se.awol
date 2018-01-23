@@ -1,10 +1,10 @@
 - Pro Thema ungefähr zwei Folien:
 
-Scrum, GIT, layers MVC, Code Coverage, Cost Estimation, Design Patterns
+Scrum, GIT, layers MVC, Code Coverage, Design Patterns
 
 - Spiel erklären
-- in GIT Contributers Diagramme etc.
-- Scrum Burndown Chart, Board
+- GIT Burndown Chart 2
+- Scrum Burndown Chart 2
 - Model-View-Architektur
 - Code Coverage Diagramme
 - Build Management

@@ -14,21 +14,22 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
     } else {
       safeWinScenario(suitableCards, actualCardCount) match {
         case Some(buffer) => buffer
-        case _ => ???
+        case _ => {}
       }
       threeStepScenario(suitableCards, actualCardCount) match {
-        case Some(buffer) => ???
-        case _ => ???
+        case Some(buffer) => buffer
+        case _ => {}
       }
-
       if (actualCardCount == 0) {
-        // Spieler fängt an
-        val amount: Int = findHighestPairOccurence(suitableCards, actualCardCount)
-        ???
+        val amount: Int = findHighestTupleOccurence(suitableCards, actualCardCount)
+        suitableCards.valuesIterator.foreach( buffer => { // TODO: korrigieren (niedrigsten ListBuffer wählen, der Prädikat erfüllt
+          buffer.size >= actualCardCount
+        })
       } else {
-        ???
-        // Spieler fängt nicht an
+        var pickedCards = suitableCards.toSeq.minBy(_._1)._2
+        pickedCards.take(actualCardCount)
       }
+      ListBuffer.empty
     }
   }
 
@@ -73,8 +74,17 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
     None
   }
 
-  def findHighestPairOccurence(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Int = {
-    2
-    // Die Anzahl an Karten spielen, die auf der Hand dominiert. Bei Gleichstand: höhere Anzahl legen
+  def findHighestTupleOccurence(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Int = {
+    var max: Int = 0
+    var count:Array[Int] = new Array[Int](4)
+    suitableCards.valuesIterator.foreach( buffer => {
+      count(buffer.size - 1) += 1
+    })
+    count.foreach( amount => {
+      if (amount >= max) {
+        max = amount
+      }
+    })
+    max
   }
 }

@@ -14,13 +14,13 @@ case class Card(value: CardEnv.Values.Value, color: CardEnv.Colors.Value){
   def cardValue: Int = value.id
 
   override def toString: String = cardValueName + " [" + cardColorName + "]"
+  object Card {
+    val CardFileColorMap: Map[Int, String] = Map(
+      0 -> "clubs",
+      1 -> "spades",
+      2 -> "hearts",
+      3 -> "diamonds"
+    )
+  }
 }
 
-object Card {
-  val CardFileColorMap: Map[Int, String] = Map(
-    0 -> "clubs",
-    1 -> "spades",
-    2 -> "hearts",
-    3 -> "diamonds"
-  )
-}

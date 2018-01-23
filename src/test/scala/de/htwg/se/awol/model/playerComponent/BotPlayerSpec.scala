@@ -3,7 +3,7 @@ package de.htwg.se.awol.model.playerComponent
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv, SettingEnv}
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
 import de.htwg.se.awol.model.languageComponents._
 import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
 import org.junit.runner.RunWith
@@ -22,7 +22,7 @@ class BotPlayerSpec extends WordSpec with Matchers {
       bot.getRank should be(PlayerEnv.Rank.Mob)
       bot.getRankName should be("Pöbel")
     }
-    "have a name" in {
+    "with index 2 should have the name Ralph" in {
       bot.getPlayerNameObject should be(PlayerEnv.BotNames.Player_3)
     }
   }
@@ -48,7 +48,7 @@ class BotPlayerSpec extends WordSpec with Matchers {
     }
     "have no suitable cards to play" in {
       val noSuitableCards: Map[Int, ListBuffer[Card]] = Map[Int, ListBuffer[Card]]()
-      bot.pickFromSuitableCards(noSuitableCards, Game.getActualCardCount) should be(None)
+      bot.pickFromSuitableCards(noSuitableCards, Game.getActualCardCount) should be(ListBuffer())
     }
     "be able to play" in {
       Game.setActualCardCount(1)
@@ -57,7 +57,20 @@ class BotPlayerSpec extends WordSpec with Matchers {
         2 -> ListBuffer(suitableCard)
       )
       bot.pickFromSuitableCards(suitableCards, Game.getActualCardCount)
-
+    }
+    "not pick no cards if he is starting the round" in {
+      val pickedCards: ListBuffer[Card] = ListBuffer.empty
+      bot.validatePick(pickedCards, 0, 0) should be(None)
+    }
+    "not pick less cards than needed" in {
+      val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
+      val pickedCards: ListBuffer[Card] = ListBuffer(card)
+      bot.validatePick(pickedCards, 2, 10) should be(None)
+    }
+    "not pick cards with lower value than needed" in {
+      val card: Card = new Card(CardEnv.Values.Seven, CardEnv.Colors.Clubs)
+      val pickedCards: ListBuffer[Card] = ListBuffer(card)
+      bot.validatePick(pickedCards, 1, 10) should be(None)
     }
   }
 

@@ -10,12 +10,11 @@ import org.scalatest.{Matchers, WordSpec}
 class GameSpec extends WordSpec with Matchers {
   "The pass counter" should {
     "be able to be set and added to" in {
+      Game.setPassCounter(0)
       val passCounter: Int = Game.getPassCounter
       passCounter should be(0)
       Game.addToPassCounter(1)
       Game.getPassCounter should be(1)
-      Game.setPassCounter(5)
-      Game.getPassCounter should be(5)
     }
   }
   "The Human Player" should {
@@ -70,7 +69,7 @@ class GameSpec extends WordSpec with Matchers {
   }
   "The default player count" should {
     "be 2" in {
-      Game.getDefaultPlayerCount should be(2)
+      Game.getDefaultPlayerCount should be(4)
     }
   }
 }

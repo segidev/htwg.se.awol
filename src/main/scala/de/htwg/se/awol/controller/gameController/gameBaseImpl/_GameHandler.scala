@@ -11,10 +11,11 @@ import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.swing.Publisher
 import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
+import scala.concurrent.duration._
 
 //noinspection ScalaStyle
 class _GameHandler() extends Publisher {
@@ -192,7 +193,7 @@ class _GameHandler() extends Publisher {
     triggerNextPlay(Game.getLeadingPlayer)
   }
 
-  def triggerNextPlay(player: Player): Unit = {
+  def triggerNextPlay(player: Player): Option[Future[Double]] = {
     publish(CardsRemoveAllEventsAndEffects(playerList))
     markNextActivePlayer()
 
@@ -200,20 +201,26 @@ class _GameHandler() extends Publisher {
 
     if (nextPlayer.isHumanPlayer) {
       doPlay(nextPlayer)
+      None
     } else {
       val f = Future[Double] {
         val useId = gameId
         Thread.sleep(Settings.getGameSpeed)
-        useId
+
+        if (useId != gameId) {
+          throw new Exception
+        } else {
+          useId
+        }
       }
 
       f.onComplete {
         case Success(id) =>
-          if (id == gameId) {
-            Platform.runLater(doPlay(nextPlayer))
-          }
-        case Failure(e) => throw e
+          Platform.runLater(doPlay(nextPlayer))
+        case Failure(e) =>
       }
+
+      Some(f)
     }
   }
 
@@ -376,7 +383,7 @@ class _GameHandler() extends Publisher {
   }
 
   def loadSettings(): Unit = {
-    if (!Settings.loadSettingsFromJSON()) {
+    if (!Settings.loadSettingsFromJSON(Settings.getSettingsPath)) {
       publish(SettingsLoadFailed())
     }
   }
@@ -395,6 +402,8 @@ class _GameHandler() extends Publisher {
 
   def getPlayerCount: Int = totalPlayerCount
   def setPlayerCount(count: Int): Unit = { totalPlayerCount = count }
+
+  def getGameId: Double = gameId
 
   def getGamePausedStatus: Boolean = isGamePaused
   def setGamePausedStatus(bool: Boolean): Unit = {

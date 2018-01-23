@@ -1,7 +1,6 @@
 package de.htwg.se.awol.model.cardComponents
 
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.languageComponents._
 import org.junit.runner.RunWith
 import org.scalatest._
@@ -48,6 +47,10 @@ class DeckSpec extends WordSpec with Matchers {
       testString should include("Dame")
       testString should include("Karo")
       testString should include("Herz")
+    }
+    "have 2 as lowest possible card value" in {
+      val deck = new Deck()
+      deck.getLowestCardValue should be(2)
     }
   }
 

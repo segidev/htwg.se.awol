@@ -1,7 +1,5 @@
 package de.htwg.se.awol.model.playerComponent.playerAdvancedImpl
 
-import java.util.NoSuchElementException
-
 import de.htwg.se.awol.model.cardComponents._
 import de.htwg.se.awol.model.playerComponent.playerBaseImpl.{BotPlayer => BaseBotPlayer}
 
@@ -13,18 +11,18 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
       ListBuffer.empty
     } else {
       safeWinScenario(suitableCards, actualCardCount) match {
-        case Some(buffer) => buffer
+        case Some(buffer) => return buffer
         case _ =>
       }
       threeStepScenario(suitableCards, actualCardCount) match {
-        case Some(buffer) => buffer
+        case Some(buffer) => return buffer
         case _ =>
       }
       if (actualCardCount == 0) {
         val amount: Int = findHighestTupleOccurence(suitableCards, actualCardCount)
-        suitableCards.filter(_._2.length == amount).toSeq.minBy(_._1)._2
+        suitableCards.filter(_._2.size == amount).toSeq.minBy(_._1)._2
       } else {
-        var pickedCards = suitableCards.toSeq.minBy(_._1)._2
+        val pickedCards = suitableCards.toSeq.minBy(_._1)._2
         pickedCards.take(actualCardCount)
       }
     }
@@ -32,47 +30,42 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
 
   def safeWinScenario(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Option[ListBuffer[Card]] = {
     if (suitableCards.keySet.size == 2) {
-      suitableCards.get(suitableCards.keySet.last) match {
-        case Some(buffer) => {
-          if (buffer.head.cardValue == 14 && buffer.size >= actualCardCount) {
-            if (actualCardCount > 0) {
-            Some(buffer.take(actualCardCount))
-            } else {
-              Some(buffer)
-            }
-          }
+      val buffer: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.last)
+      if (buffer.head.cardValue == 14 && buffer.size >= actualCardCount) {
+        if (actualCardCount > 0) {
+        return Some(buffer.take(actualCardCount))
+        } else {
+          return Some(buffer)
         }
-        case _ => None
       }
     }
     None
   }
 
-
   def threeStepScenario(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Option[ListBuffer[Card]] = {
     if (suitableCards.keySet.size == 3) {
-      suitableCards.get(suitableCards.keySet.last) match {
-        case Some(buffer1) =>
-          if (buffer1.head.cardValue == 14) {
-            suitableCards.get(suitableCards.keySet.tail.head) match {
-              case Some(buffer2) =>
-                if(buffer2.size == actualCardCount) {
-                  Some(buffer2.take(actualCardCount))
-                } else if (actualCardCount == 0) {
-                  Some(buffer2)
-                }
-              case _ => None
-            }
-          }
+      val buffer1: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.last)
+      if (buffer1.head.cardValue == 14) {
+        val buffer2: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.tail.head)
+        if(buffer2.size == actualCardCount) {
+          Some(buffer2.take(actualCardCount))
+        } else if (actualCardCount == 0) {
+          Some(buffer2)
+        } else {
+          None
+        }
+      } else {
+        None
       }
+    } else {
+      None
     }
-    None
   }
 
   def findHighestTupleOccurence(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Int = {
     var max: Int = 0
     var index: Int = 0
-    var count:Array[Int] = new Array[Int](4)
+    val count:Array[Int] = new Array[Int](4)
     suitableCards.valuesIterator.foreach( buffer => {
       count(buffer.size - 1) += 1
     })
@@ -82,6 +75,6 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
         index = i
       }
     }
-    index
+    index + 1
   }
 }

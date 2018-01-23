@@ -52,7 +52,7 @@ class MessageSpec extends WordSpec with Matchers {
       val botWinner: Player = new BotPlayer(1)
       val humanMessage: String = MessageEnv.getPronounceWinnerOfRoundText(PronounceWinnerOfRound(humanWinner))
       val botMessage: String = MessageEnv.getPronounceWinnerOfRoundText(PronounceWinnerOfRound(botWinner))
-      humanMessage should be("You have won the round! Nice :)")
+      humanMessage should be("You have won the round! Nice :)\n")
       botMessage should be("Jan has won the round!\n")
     }
   }

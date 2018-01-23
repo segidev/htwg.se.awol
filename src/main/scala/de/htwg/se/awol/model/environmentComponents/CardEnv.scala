@@ -5,7 +5,6 @@ object CardEnv {
     val Clubs, Spades, Hearts, Diamonds = Value
   }
 
-  //noinspection ScalaStyle
   object Values extends Enumeration{
     val Two: Values.Value = Value(2)
     val Three: Values.Value = Value(3)

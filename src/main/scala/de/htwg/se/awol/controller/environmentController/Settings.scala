@@ -1,5 +1,6 @@
 package de.htwg.se.awol.controller.environmentController
 
+import de.htwg.se.awol.controller.environmentController.settings.SettingsJSON
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.SettingEnv
@@ -9,8 +10,6 @@ import net.liftweb.json.Serialization.{read, write}
 
 import scala.reflect.io.{Directory, File, Path}
 import scalafx.beans.property.BooleanProperty
-
-case class SettingsJSON(speed: Int, language: String, deckSize: Int, playerCount: Int)
 
 object Settings {
 
@@ -53,11 +52,11 @@ object Settings {
   def isLanguageActive(language: _LanguageHandler): Boolean = { actualLanguage == language }
   def getlanguage: _LanguageHandler = actualLanguage
   def getLanguageCode: SettingEnv.Language.Value = actualLanguage.getLanguageCode
-  def getLanguageAsString: String = LanguageTranslator.translate(getLanguageCode)
   def setLanguage(lang: _LanguageHandler): Unit = {
     actualLanguage = lang
     LanguageTranslator.updateTranslations()
   }
+  def getLanguageAsString: String = LanguageTranslator.translate(getLanguageCode)
   def setLanguageFromString(langStr: String): Unit = langStr match {
     case "German" => isGermanActive.update(true)
     case "English" => isEnglishActive.update(true)
@@ -70,26 +69,24 @@ object Settings {
     Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
   }
 
-  def createSettingsFile: Option[File] = {
-    val fullSettingsPath: File = getSettingsPath
+  def createSettingsFile(fullSettingsPath: File): Option[File] = {
     val directorySettingsPath: Directory = fullSettingsPath.parent
 
     directorySettingsPath.createDirectory()
-
     if (directorySettingsPath.exists) {
-      val writeFile: File = fullSettingsPath.createFile()
-
-      if (writeFile.exists) {
+      try {
+        val writeFile: File = fullSettingsPath.createFile()
+        if (!writeFile.exists) throw new Exception
         Option(writeFile)
-      } else {
-        None
+      } catch {
+        case _: Exception => None
       }
     } else {
       None
     }
   }
 
-  def saveSettingsToJSON(): Boolean = {
+  def saveSettingsToJSON(fullSettingsPath: File): Boolean = {
     val (deckSize, playerCount) = Game.getGameSettings
 
     val jsonSettingsClass = SettingsJSON(getGameSpeed, actualLanguage.getLanguageCode.toString,
@@ -97,7 +94,7 @@ object Settings {
 
     val jsonString = write(jsonSettingsClass)
 
-    createSettingsFile match {
+    createSettingsFile(fullSettingsPath) match {
       case Some(writeFile) =>
         writeFile.writeAll(jsonString)
         true
@@ -105,9 +102,7 @@ object Settings {
     }
   }
 
-  def loadSettingsFromJSON(): Boolean = {
-    val fullSettingsPath: File = getSettingsPath
-
+  def loadSettingsFromJSON(fullSettingsPath: File): Boolean = {
     if (fullSettingsPath.exists) {
       try {
         val jsonSettingsClass = read[SettingsJSON](fullSettingsPath.bufferedReader())

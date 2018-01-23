@@ -30,8 +30,29 @@ class CardSpec extends WordSpec with Matchers {
 
   "A Card" should {
     "have a file name with its image" in {
-      val card = Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
-      card.cardFilename should be("14_of_clubs")
+      val card1 = Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
+      val card2 = Card(CardEnv.Values.Ace, CardEnv.Colors.Hearts)
+      val card3 = Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
+      val card4 = Card(CardEnv.Values.Ace, CardEnv.Colors.Spades)
+      card1.cardFilename should be("14_of_clubs")
+      card2.cardFilename should be("14_of_hearts")
+      card3.cardFilename should be("14_of_diamonds")
+      card4.cardFilename should be("14_of_spades")
+    }
+  }
+
+  "Object CardEnv" should { //TODO: remove if not needed
+    "be callable" in {
+      CardEnv.Colors.Hearts
+      CardEnv.Colors.Spades
+      CardEnv.Colors.Diamonds
+      CardEnv.Colors.Clubs
+      for(i <- 0 until 12) {
+        CardEnv.Values.values.foreach(value => {
+
+        })
+      }
+      CardEnv
     }
   }
 }

@@ -14,22 +14,19 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
     } else {
       safeWinScenario(suitableCards, actualCardCount) match {
         case Some(buffer) => buffer
-        case _ => {}
+        case _ =>
       }
       threeStepScenario(suitableCards, actualCardCount) match {
         case Some(buffer) => buffer
-        case _ => {}
+        case _ =>
       }
       if (actualCardCount == 0) {
         val amount: Int = findHighestTupleOccurence(suitableCards, actualCardCount)
-        suitableCards.valuesIterator.foreach( buffer => { // TODO: korrigieren (niedrigsten ListBuffer wählen, der Prädikat erfüllt
-          buffer.size >= actualCardCount
-        })
+        suitableCards.filter(_._2.length == amount).toSeq.minBy(_._1)._2
       } else {
         var pickedCards = suitableCards.toSeq.minBy(_._1)._2
         pickedCards.take(actualCardCount)
       }
-      ListBuffer.empty
     }
   }
 
@@ -55,20 +52,18 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
   def threeStepScenario(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Option[ListBuffer[Card]] = {
     if (suitableCards.keySet.size == 3) {
       suitableCards.get(suitableCards.keySet.last) match {
-        case Some(buffer1) => {
+        case Some(buffer1) =>
           if (buffer1.head.cardValue == 14) {
             suitableCards.get(suitableCards.keySet.tail.head) match {
-              case Some(buffer2) => {
+              case Some(buffer2) =>
                 if(buffer2.size == actualCardCount) {
                   Some(buffer2.take(actualCardCount))
                 } else if (actualCardCount == 0) {
                   Some(buffer2)
                 }
-              }
               case _ => None
             }
           }
-        }
       }
     }
     None
@@ -76,15 +71,17 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
 
   def findHighestTupleOccurence(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Int = {
     var max: Int = 0
+    var index: Int = 0
     var count:Array[Int] = new Array[Int](4)
     suitableCards.valuesIterator.foreach( buffer => {
       count(buffer.size - 1) += 1
     })
-    count.foreach( amount => {
-      if (amount >= max) {
-        max = amount
+    for (i <- 0 until 4) {
+      if (count(i) >= max) {
+        max = count(i)
+        index = i
       }
-    })
-    max
+    }
+    index
   }
 }

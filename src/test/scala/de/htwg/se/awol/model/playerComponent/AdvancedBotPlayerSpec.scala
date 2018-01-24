@@ -102,6 +102,17 @@ class AdvancedBotPlayerSpec extends WordSpec with Matchers {
       Game.setActualCardCount(1)
       bot.pickFromSuitableCards(suitableCards, Game.getActualCardCount) should be(ListBuffer(lowCard))
     }
+    "use the default strategy if he cant win but only has one suitable card" in {
+      val bot: BotPlayer = new BotPlayer(0)
+      bot.addCard(lowCard)
+      bot.addCard(middleCard)
+      bot.addCard(highCard)
+      val suitableCards: Map[Int, ListBuffer[Card]] = Map(
+        14 -> ListBuffer(highCard)
+      )
+      Game.setActualCardCount(1)
+      bot.pickFromSuitableCards(suitableCards, Game.getActualCardCount) should be(ListBuffer(highCard))
+    }
   }
 
 }

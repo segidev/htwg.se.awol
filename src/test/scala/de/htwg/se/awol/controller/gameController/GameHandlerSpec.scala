@@ -368,7 +368,7 @@ class GameHandlerSpec extends WordSpec with Matchers with ScalaFutures {
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
-  implicit val defaultPatience = PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
+  implicit val defaultPatience = PatienceConfig(timeout = Span(5, Seconds), interval = Span(1500, Millis))
 
   test("A valid message should be returned to a valid name") {
     val controller: _GameHandler = new _GameHandler()

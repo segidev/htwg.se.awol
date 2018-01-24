@@ -15,3 +15,5 @@ libraryDependencies += "net.liftweb" % "lift-json_2.11" % "3.2.0-RC1"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.2.3"
 libraryDependencies += "com.google.inject" % "guice" % "4.1.0"
+
+parallelExecution in Test := false

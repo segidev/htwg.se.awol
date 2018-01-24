@@ -16,7 +16,6 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.swing.Publisher
 import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
 
@@ -198,7 +197,7 @@ class _GameHandler() extends _TGameHandler {
     triggerNextPlay(Game.getLeadingPlayer)
   }
 
-  def triggerNextPlay(player: Player): Unit = {
+  def triggerNextPlay(player: Player): Option[Future[Double]] = {
     publish(CardsRemoveAllEventsAndEffects(playerList))
     markNextActivePlayer()
 
@@ -206,20 +205,26 @@ class _GameHandler() extends _TGameHandler {
 
     if (nextPlayer.isHumanPlayer) {
       doPlay(nextPlayer)
+      None
     } else {
       val f = Future[Double] {
         val useId = gameId
         Thread.sleep(Settings.getGameSpeed)
-        useId
+
+        if (useId != gameId) {
+          throw new Exception
+        } else {
+          useId
+        }
       }
 
       f.onComplete {
         case Success(id) =>
-          if (id == gameId) {
-            Platform.runLater(doPlay(nextPlayer))
-          }
-        case Failure(e) => throw e
+          Platform.runLater(doPlay(nextPlayer))
+        case Failure(e) =>
       }
+
+      Some(f)
     }
   }
 
@@ -382,7 +387,7 @@ class _GameHandler() extends _TGameHandler {
   }
 
   def loadSettings(): Unit = {
-    Settings.loadSettingsFromJSON() match {
+    Settings.loadSettingsFromJSON(Settings.getSettingsPath) match {
       case Some(error) => publish(SettingsLoadFailed(error))
       case _ =>
     }
@@ -402,6 +407,8 @@ class _GameHandler() extends _TGameHandler {
 
   def getPlayerCount: Int = totalPlayerCount
   def setPlayerCount(count: Int): Unit = { totalPlayerCount = count }
+
+  def getGameId: Double = gameId
 
   def getGamePausedStatus: Boolean = isGamePaused
   def setGamePausedStatus(bool: Boolean): Unit = {

@@ -25,6 +25,8 @@ trait Player  {
 
   def getCards: ListBuffer[Card] = cards
 
+  def getCardGroups: Set[Int] = cards.groupBy(_.cardValue).keySet
+
   def getPlayerNumber: Int = playerNumber
 
   def getPlayerNameObject: PlayerEnv.BotNames.Value = PlayerEnv.BotNames.apply(playerNumber)

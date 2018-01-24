@@ -6,6 +6,7 @@ import de.htwg.se.awol.model.playerComponent.Player
 import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Future
 
 //noinspection ScalaStyle
 class _GameHandler() extends _TGameHandler {
@@ -30,11 +31,11 @@ class _GameHandler() extends _TGameHandler {
 
   def startNewRound(): Unit = {}
 
-  def triggerNextPlay(player: Player): Unit = {}
+  def triggerNextPlay(player: Player): Option[Future[Double]] = None
 
   def doPlay(player: Player): Unit = {}
 
-  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = None // Option(ListBuffer())
+  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = None
 
   def botPlaying(player: Player): Unit = {}
 

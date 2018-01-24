@@ -4,6 +4,7 @@ import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Future
 import scala.swing.Publisher
 
 trait _TGameHandler extends Publisher {
@@ -29,7 +30,7 @@ trait _TGameHandler extends Publisher {
 
   def startNewRound(): Unit
 
-  def triggerNextPlay(player: Player): Unit
+  def triggerNextPlay(player: Player): Option[Future[Double]]
 
   def doPlay(player: Player): Unit
 

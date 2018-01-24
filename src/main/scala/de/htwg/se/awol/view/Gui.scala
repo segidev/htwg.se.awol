@@ -5,7 +5,6 @@ import javax.swing.{JFrame, WindowConstants}
 
 import com.google.inject.Inject
 import de.htwg.se.awol.controller.gameController.handler._TGameHandler
-import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.view.gui.Table
 
 import scala.swing.Dimension

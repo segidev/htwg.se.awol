@@ -243,7 +243,7 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
   }
 
   def saveSettings(): Unit = {
-    if (!Settings.saveSettingsToJSON()) {
+    if (!Settings.saveSettingsToJSON(Settings.getSettingsPath)) {
       showSettingsWriteError()
     }
   }
@@ -358,8 +358,6 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
     case _: GameContinuedFromPause => hideGlobalMessage(globalMessage)
 
     case event: SettingsLoadFailed => showSettingsLoadError(event.error)
-
-    case _: SettingsWriteFailed => showSettingsWriteError()
 
   }
 }

@@ -1,27 +1,33 @@
 package de.htwg.se.awol.controller.gameController
 
+import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.playerComponent.Player
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{FunSuite, Matchers, WordSpec}
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Await
+import scala.reflect.io.Path
+import scala.concurrent.duration._
+import org.scalatest.concurrent.ScalaFutures
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerSpec extends WordSpec with Matchers {
   "Starting a new round" should {
     "not work in the wrong state" in {
       val controller: _GameHandler = new _GameHandler()
+      controller.initNewGame(32, 4)
       an [AssertionError] should be thrownBy controller.startNewRound()
     }
     "work in the correct state" in {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(32, 4)
-      controller.callNextActionByState
-      controller.startNewRound
+      controller.callNextActionByState()
+      controller.startNewRound()
     }
   }
 
@@ -313,17 +319,68 @@ class GameHandlerSpec extends WordSpec with Matchers {
   }
 
   "A bot player" can {
-    "play suitable cards" in {
       val controller: _GameHandler = new _GameHandler()
       controller.initNewGame(8, 4)
       controller.callNextActionByState()
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.tail.head
+    "play suitable cards" in {
+      controller.botPlaying(player)
+    }
+    "pass" in {
+      Game.setActualCardValue(14)
+      Game.setActualCardCount(0)
       controller.botPlaying(player)
     }
   }
 
-  //TODO: finish tests for triggerNextPlay() / loadJSON()
+  "Loading an invalid JSON String" should {
+    "lead publish an event that it failed loading the file" in {
+      val controller: _GameHandler = new _GameHandler()
+      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
+      val settings: String = path.toFile.bufferedReader().readLine()
+      path.delete()
+      path.createFile().writeAll("[asdsadasd, asqwe - asd}")
+      controller.loadSettings()
+      path.delete()
+      path.createFile().writeAll(settings)
+    }
+  }
 
+  "bla" should {
+    ".." in {
+      val controller: _GameHandler = new _GameHandler()
+      controller.initNewGame(32, 4)
+      controller.callNextActionByState()
+      Settings.isFastSpeedActive.update(true)
+      //val result = Await.result(controller.triggerNextPlay(controller.getPlayerList.tail.head), 10000 millis)
+      controller.triggerNextPlay(controller.getPlayerList.tail.head)
 
+    }
+  }
+}
+
+@RunWith(classOf[JUnitRunner])
+class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
+  test("A valid message should be returned to a valid name") {
+    val controller: _GameHandler = new _GameHandler()
+    controller.initNewGame(32, 4)
+    controller.callNextActionByState()
+    controller.triggerNextPlay(controller.getPlayerList.last) match {
+      case Some(f) =>
+        whenReady(f, timeout = timeout(3000 millis)) { result =>
+          result.leftSideValue shouldBe controller.getGameId
+        }
+        case _=>
+    }
+
+    controller.triggerNextPlay(controller.getPlayerList.last) match {
+      case Some(f) =>
+        whenReady(f, timeout = timeout(3000 millis)) { result =>
+          //result.leftSideValue shouldBe controller.getGameId
+        }
+        case _=>
+    }
+    controller.initNewGame(32, 4)
+  }
 }

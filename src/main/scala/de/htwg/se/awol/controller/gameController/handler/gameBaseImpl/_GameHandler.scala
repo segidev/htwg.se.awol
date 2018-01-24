@@ -388,7 +388,7 @@ class _GameHandler() extends _TGameHandler {
   }
 
   def loadSettings(): Unit = {
-    Settings.loadSettingsFromJSON(Settings.getSettingsPath) match {
+    Settings.loadSettingsFromJSON() match {
       case Some(error) => publish(SettingsLoadFailed(error))
       case _ =>
     }

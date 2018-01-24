@@ -26,8 +26,7 @@ object MessageEnv {
 
   object PhrasesHuman extends Enumeration {
     val WonTheRound, IsTheWinner, IsTheLooser, ReceivesCardFrom, SuitableCards, NoSuitableCards, IsPlayingNow,
-    Passed, PassForbidden, YouPlayedThoseCards, HowManyCardsToPlay, CommandNotAvailable, CardCommandNotAvailable,
-    NotSuitableCards = Value
+    Passed, PassForbidden, YouPlayedThoseCards, HowManyCardsToPlay, CommandNotAvailable, CardCommandNotAvailable = Value
   }
 
   object Titles extends Enumeration {

@@ -108,7 +108,7 @@ class Tui @Inject()(controller: _TGameHandler) extends Reactor with LazyLogging 
     case event: HumanPlayerPlaying =>
       logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.IsPlayingNow))
       if (event.suitableCards.isEmpty) {
-        logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NotSuitableCards))
+        logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.NoSuitableCards))
       } else {
         logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.SuitableCards).format(
           event.suitableCards.toSeq.sortBy(_._1).map(f => "%dx %s [%d]".format(f._2.length, f._2.head.cardValueName, f._1)).mkString(", ")))

@@ -71,7 +71,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesGeneral.ClickAnywhereToContinue -> "\nClick anywhere to continue...",
     MessageEnv.PhrasesGeneral.HitEnterToContinue -> "\nHit Enter to continue...",
     MessageEnv.PhrasesGeneral.GameHasStarted -> "The game has started",
-    MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Every play received cards",
+    MessageEnv.PhrasesGeneral.CardsHandedOutToPlayers -> "Every player received cards",
 
     MessageEnv.PhrasesBot.WonTheRound -> "%s has won the round!\n",
     MessageEnv.PhrasesBot.IsTheWinner -> "%s ist the winner and ranks as %s\n",
@@ -88,7 +88,7 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesHuman.IsTheLooser -> "You have lost, that makes you the %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "You receive %s from %s\n",
     MessageEnv.PhrasesHuman.SuitableCards -> "You can play these cards: %s",
-    MessageEnv.PhrasesHuman.NoSuitableCards -> "No suitable cards found!",
+    MessageEnv.PhrasesHuman.NoSuitableCards -> "No suitable cards found! You can pass with \"p\"",
     MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== It's your turn! ==",
     MessageEnv.PhrasesHuman.Passed -> "You passed",
     MessageEnv.PhrasesHuman.PassForbidden -> "You are not allowed to pass. Please put some cards.",
@@ -96,7 +96,6 @@ object LanguageEnglish extends _LanguageHandler {
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "How many cards do you want to play?",
     MessageEnv.PhrasesHuman.CommandNotAvailable -> "Command not possible, please try another one.",
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Command \"%s\" not available for cards",
-    MessageEnv.PhrasesHuman.NotSuitableCards -> "You have no cards to play, sorry :(",
 
     SettingEnv.Language.German -> "German",
     SettingEnv.Language.English -> "English"

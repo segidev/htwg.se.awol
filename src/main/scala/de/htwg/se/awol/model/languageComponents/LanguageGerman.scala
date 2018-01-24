@@ -88,7 +88,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.IsTheLooser -> "Du hast verloren und bist das neue %s\n",
     MessageEnv.PhrasesHuman.ReceivesCardFrom -> "Du erhälst %s von %s\n",
     MessageEnv.PhrasesHuman.SuitableCards -> "Diese Karten kannst du spielen: %s",
-    MessageEnv.PhrasesHuman.NoSuitableCards -> "Keine passenden Karten gefunden!",
+    MessageEnv.PhrasesHuman.NoSuitableCards -> "Keine passenden Karten gefunden! Du kannst nun mit \"p\" passen",
     MessageEnv.PhrasesHuman.IsPlayingNow -> "\n== Du bist dran! ==",
     MessageEnv.PhrasesHuman.Passed -> "Du hast gepasst",
     MessageEnv.PhrasesHuman.PassForbidden -> "Du kannst jetzt nicht passen. Bitte lege deine Karten.",
@@ -96,7 +96,6 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wieviele Karten willst du spielen?",
     MessageEnv.PhrasesHuman.CommandNotAvailable -> "Befehl nicht möglich, bitte versuche einen anderen.",
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Befehl \"%s\" nicht möglich für Karten",
-    MessageEnv.PhrasesHuman.NotSuitableCards -> "Du hast keine Karten die du spielen könntest, sorry :(",
 
     SettingEnv.Language.German -> "Deutsch",
     SettingEnv.Language.English -> "Englisch"

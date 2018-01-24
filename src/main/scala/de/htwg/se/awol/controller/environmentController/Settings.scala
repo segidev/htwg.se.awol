@@ -1,17 +1,20 @@
 package de.htwg.se.awol.controller.environmentController
 
-import de.htwg.se.awol.controller.environmentController.settings.SettingsJSON
+import com.google.inject.{Guice, Inject, Injector}
+import de.htwg.se.awol.ArschlochModule
+import de.htwg.se.awol.controller.environmentController.settings.TSettingsHandlers
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.SettingEnv
 import de.htwg.se.awol.model.languageComponents.{LanguageEnglish, LanguageGerman, _LanguageHandler}
-import net.liftweb.json.DefaultFormats
-import net.liftweb.json.Serialization.{read, write}
 
-import scala.reflect.io.{Directory, File, Path}
+import scala.reflect.io.Directory
 import scalafx.beans.property.BooleanProperty
 
 object Settings {
+  val injector: Injector = Guice.createInjector(new ArschlochModule())
+  @Inject() private val settingsHandler: TSettingsHandlers = injector.getInstance(classOf[TSettingsHandlers])
+  private val defaultSettingsDirectory: Directory = Directory(sys.props.apply("user.home")).resolve(".awol").toDirectory
 
   // Game Settings
   private val fastSpeed: Int = 1000
@@ -63,65 +66,31 @@ object Settings {
     case _ => isGermanActive.update(true)
   }
 
-  // Saving
-  implicit val formats: DefaultFormats.type = DefaultFormats
+  // Load / Saving
+  def loadSettingsFromJSON(directory: Directory = defaultSettingsDirectory): Option[String] = {
+    settingsHandler.setSettingsDirectory(directory)
 
-  def getSettingsPath: File = {
-    Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
-  }
-
-  def createSettingsFile(fullSettingsPath: File): Option[File] = {
-    val directorySettingsPath: Directory = fullSettingsPath.parent
-
-    directorySettingsPath.createDirectory()
-    if (directorySettingsPath.exists) {
-      try {
-        val writeFile: File = fullSettingsPath.createFile()
-        if (!writeFile.exists) throw new Exception
-        Option(writeFile)
-      } catch {
-        case _: Exception => None
-      }
-    } else {
-      None
-    }
-  }
-
-  def saveSettingsToJSON(fullSettingsPath: File): Boolean = {
-    val (deckSize, playerCount) = Game.getGameSettings
-
-    val jsonSettingsClass = SettingsJSON(getGameSpeed, actualLanguage.getLanguageCode.toString,
-      deckSize, playerCount)
-
-    val jsonString = write(jsonSettingsClass)
-
-    createSettingsFile(fullSettingsPath) match {
-      case Some(writeFile) =>
-        writeFile.writeAll(jsonString)
-        true
-      case _ => false
-    }
-  }
-
-  def loadSettingsFromJSON(fullSettingsPath: File): Option[String] = {
-    if (fullSettingsPath.exists) {
-      try {
-        val jsonSettingsClass = read[SettingsJSON](fullSettingsPath.bufferedReader())
-
-        jsonSettingsClass.speed match {
+    settingsHandler.load() match {
+      case Some(settingsClass) =>
+        settingsClass.speed match {
           case `normalSpeed` => isNormalSpeedActive.update(true)
           case `fastSpeed` => isFastSpeedActive.update(true)
           case `slowSpeed` => isSlowSpeedActive.update(true)
+          case _ => isNormalSpeedActive.update(true)
         }
-        setLanguageFromString(jsonSettingsClass.language)
-        Game.setGameSettings(jsonSettingsClass.deckSize, jsonSettingsClass.playerCount, doSave = false)
+        setLanguageFromString(settingsClass.language)
+        Game.setGameSettings(settingsClass.deckSize, settingsClass.playerCount, doSave = false)
 
         None
-      } catch {
-        case e: Exception => Some(e.getMessage)
-      }
-    } else {
-      None
+      case _ => Some("Couldn't load settings!")
     }
+  }
+
+  def saveSettingsToJSON(directory: Directory = defaultSettingsDirectory): Boolean = {
+    settingsHandler.setSettingsDirectory(directory)
+
+    val (deckSize, playerCount) = Game.getGameSettings
+
+    settingsHandler.save(getGameSpeed, actualLanguage.getLanguageCode.toString, deckSize, playerCount)
   }
 }

@@ -339,16 +339,20 @@ class GameHandlerSpec extends WordSpec with Matchers {
     "publish an event if it fails" in {
       val controller: _GameHandler = new _GameHandler()
       val originalPath: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
-      val originalSettings: String = Source.fromFile(originalPath.path).getLines().mkString
+      var originalSettings: String = ""
+      if (originalPath.exists) originalSettings = Source.fromFile(originalPath.path).getLines().mkString
+
       originalPath.delete()
       originalPath.createFile().writeAll("[asdsadasd, asqwe - asd}")
       controller.loadSettings()
+
       originalPath.delete()
-      originalPath.createFile().writeAll(originalSettings)
+      if (!originalSettings.isEmpty) {
+        originalPath.createFile().writeAll(originalSettings)
+      }
     }
     "work fine if the path is correct" in {
       val controller: _GameHandler = new _GameHandler()
-      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
       controller.loadSettings()
     }
   }

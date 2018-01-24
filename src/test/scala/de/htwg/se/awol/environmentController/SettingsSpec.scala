@@ -37,14 +37,14 @@ class SettingsSpec extends WordSpec with Matchers {
     "fail to load JSON with a wrong directory" in {
       val jsonSettings = JSON()
 
-      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
+      val dir: Directory = Directory("//&$%qweqwqw")
       jsonSettings.setSettingsDirectory(dir)
       jsonSettings.load() should be(None)
     }
     "fail to save JSON with a wrong directory" in {
       val jsonSettings = JSON()
 
-      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
+      val dir: Directory = Directory("//&$%qweqwqw")
       jsonSettings.setSettingsDirectory(dir)
       jsonSettings.save(Settings.getGameSpeed, "Deutsch", 32, 4) should be(false)
     }
@@ -52,8 +52,10 @@ class SettingsSpec extends WordSpec with Matchers {
       val xmlSettings = XML()
 
       val dir: Directory = Directory(sys.props.apply("user.home")).resolve(".awol").toDirectory
-      val originalPath = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.xml").toFile
-      val originalSettings: String = Source.fromFile(originalPath.path).getLines().mkString
+
+      val originalPath = File(sys.props.apply("user.home")).resolve(".awol").resolve("settings.xml").toFile
+      var originalSettings: String = ""
+      if (originalPath.exists) originalSettings = Source.fromFile(originalPath.path).getLines().mkString
 
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.save(3000, "German", 36, 4) should be(true)
@@ -61,26 +63,29 @@ class SettingsSpec extends WordSpec with Matchers {
       xmlSettings.load() should be(Some(SettingsOutput(3000,"German",36,4)))
 
       originalPath.delete()
-      originalPath.createFile().writeAll(originalSettings)
+      if (!originalSettings.isEmpty) {
+        originalPath.createFile().writeAll(originalSettings)
+      }
     }
     "fail to load XML with a wrong directory" in {
       val xmlSettings = XML()
 
-      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
+      val dir: Directory = Directory("//&$%qweqwqw")
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.load() should be(None)
     }
     "fail to save XML with a wrong directory" in {
       val xmlSettings = XML()
 
-      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
+      val dir: Directory = Directory("//&$%qweqwqw")
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.save(2000, "Deutsch", 32, 4) should be(false)
     }
     "fail to create the settings file in a wrong directory" in {
       val xmlSettings = XML()
 
-      val dir: Directory = Directory("C:\\Program Files (x86)\\NuGet")
+      val lockedDir = sys.props.apply("java.home")
+      val dir: Directory = Directory(lockedDir)
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.load() should be(None)
     }
@@ -88,24 +93,27 @@ class SettingsSpec extends WordSpec with Matchers {
       val xmlSettings = XML()
 
       val dir: Directory = Directory(sys.props.apply("user.home")).resolve(".awol").toDirectory
-      val originalPath = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.xml").toFile
-      val originalSettings: String = Source.fromFile(originalPath.path).getLines().mkString
+      val originalPath: File = File(sys.props.apply("user.home")).resolve(".awol").resolve("settings.xml").toFile
+      var originalSettings: String = ""
+      if (originalPath.exists) originalSettings = Source.fromFile(originalPath.path).getLines().mkString
 
-      originalPath.delete()
-      originalPath.writeAll("laas- a-s -q qeqw 123")
+      originalPath.createFile().writeAll("laas- a-s -q qeqw 123")
 
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.load() should be(None)
 
       originalPath.delete()
-      originalPath.createFile().writeAll(originalSettings)
+      if (!originalSettings.isEmpty) {
+        originalPath.createFile().writeAll(originalSettings)
+      }
     }
     "save and load all different speed settings" in {
       val originalPath: File = File(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
-      val settings: String = Source.fromFile(originalPath.path).getLines().mkString
-      val dir: Directory = originalPath.parent
 
-      originalPath.delete()
+      var originalSettings: String = ""
+      if (originalPath.exists) originalSettings = Source.fromFile(originalPath.path).getLines().mkString
+
+      val dir: Directory = originalPath.parent
 
       originalPath.createFile().writeAll("{\"speed\":1000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
       Settings.loadSettings(dir) should be(None)
@@ -120,7 +128,9 @@ class SettingsSpec extends WordSpec with Matchers {
       Settings.loadSettings(dir) should be(None)
 
       originalPath.delete()
-      originalPath.createFile().writeAll(settings)
+      if (!originalSettings.isEmpty) {
+        originalPath.createFile().writeAll(originalSettings)
+      }
     }
 
   }

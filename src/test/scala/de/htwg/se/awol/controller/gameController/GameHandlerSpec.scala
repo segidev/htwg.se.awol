@@ -1,6 +1,5 @@
 package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
@@ -8,16 +7,16 @@ import de.htwg.se.awol.model.playerComponent.Player
 import org.junit.runner.RunWith
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{FunSuite, Matchers, WordSpec}
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.duration._
 import scala.io.Source
 import scala.language.postfixOps
 import scala.reflect.io.Path
 
 @RunWith(classOf[JUnitRunner])
-class GameHandlerSpec extends WordSpec with Matchers {
+class GameHandlerSpec extends WordSpec with Matchers with ScalaFutures {
   "Starting a new round" should {
     "not work in the wrong state" in {
       val controller: _GameHandler = new _GameHandler()
@@ -369,13 +368,15 @@ class GameHandlerSpec extends WordSpec with Matchers {
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
+  implicit val defaultPatience = PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
+
   test("A valid message should be returned to a valid name") {
     val controller: _GameHandler = new _GameHandler()
     controller.initNewGame(32, 4)
     controller.callNextActionByState()
     controller.triggerNextPlay(controller.getPlayerList.last) match {
       case Some(f) =>
-        whenReady(f, timeout = timeout(3000 milliseconds)) { result =>
+        whenReady(f) { result =>
           result.leftSideValue shouldBe controller.getGameId
         }
         case _=>
@@ -383,7 +384,7 @@ class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
 
     controller.triggerNextPlay(controller.getPlayerList.last) match {
       case Some(f) =>
-        whenReady(f, timeout = timeout(3000 milliseconds)) { result =>
+        whenReady(f) { result =>
           //result.leftSideValue shouldBe controller.getGameId
         }
         case _=>

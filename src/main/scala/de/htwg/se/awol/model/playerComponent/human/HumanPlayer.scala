@@ -1,6 +1,7 @@
-package de.htwg.se.awol.model.playerComponent
+package de.htwg.se.awol.model.playerComponent.human
 
 import de.htwg.se.awol.model.cardComponents.Card
+import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable.ListBuffer
 

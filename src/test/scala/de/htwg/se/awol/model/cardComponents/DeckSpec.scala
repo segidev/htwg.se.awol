@@ -49,8 +49,8 @@ class DeckSpec extends WordSpec with Matchers {
       testString should include("Herz")
     }
     "have 2 as lowest possible card value" in {
-      val deck = new Deck()
-      deck.getLowestCardValue should be(2)
+      val deck = new Deck(32)
+      deck.getLowestCardValue should be(7)
     }
   }
 

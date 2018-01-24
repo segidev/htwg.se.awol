@@ -2,7 +2,8 @@ package de.htwg.se.awol.view.gui
 
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
+import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.environmentComponents.{GuiEnv, MessageEnv}
 import de.htwg.se.awol.model.playerComponent.Player
@@ -20,7 +21,7 @@ import scalafx.scene.image.ImageView
 import scalafx.scene.layout._
 import scalafx.scene.text.TextAlignment
 
-class Table(controller: _GameHandler) extends SFXPanel with Reactor {
+class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
   listenTo(controller)
 
   // Variables
@@ -300,9 +301,9 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
     })
   }
 
-  def showSettingsLoadError(): Unit = {
+  def showSettingsLoadError(error: String = ""): Unit = {
     new Alert(AlertType.Warning) {
-      headerText = LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed)
+      headerText = LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed) + "\n%s".format(error)
     }.showAndWait()
   }
 
@@ -356,7 +357,7 @@ class Table(controller: _GameHandler) extends SFXPanel with Reactor {
 
     case _: GameContinuedFromPause => hideGlobalMessage(globalMessage)
 
-    case _: SettingsLoadFailed => showSettingsLoadError()
+    case event: SettingsLoadFailed => showSettingsLoadError(event.error)
 
   }
 }

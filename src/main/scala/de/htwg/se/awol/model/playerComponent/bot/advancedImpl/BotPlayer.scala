@@ -1,7 +1,8 @@
-package de.htwg.se.awol.model.playerComponent.playerAdvancedImpl
+package de.htwg.se.awol.model.playerComponent.bot.advancedImpl
 
 import de.htwg.se.awol.model.cardComponents._
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.{BotPlayer => BaseBotPlayer}
+import de.htwg.se.awol.model.environmentComponents.CardEnv
+import de.htwg.se.awol.model.playerComponent.bot.baseImpl.{BotPlayer => BaseBotPlayer}
 
 import scala.collection.mutable.ListBuffer
 
@@ -29,9 +30,9 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
   }
 
   def safeWinScenario(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Option[ListBuffer[Card]] = {
-    if (suitableCards.keySet.size == 2) {
-      val buffer: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.last)
-      if (buffer.head.cardValue == 14 && buffer.size >= actualCardCount) {
+    if (getCardGroups.size == 2) {
+      val buffer: ListBuffer[Card] = suitableCards.toSeq.maxBy(_._1)._2
+      if (buffer.head.cardValue == CardEnv.Values.Ace.id && buffer.size >= actualCardCount) {
         if (actualCardCount > 0) {
         return Some(buffer.take(actualCardCount))
         } else {
@@ -43,10 +44,10 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
   }
 
   def threeStepScenario(suitableCards: Map[Int, ListBuffer[Card]], actualCardCount: Int) : Option[ListBuffer[Card]] = {
-    if (suitableCards.keySet.size == 3) {
-      val buffer1: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.last)
-      if (buffer1.head.cardValue == 14) {
-        val buffer2: ListBuffer[Card] = suitableCards.apply(suitableCards.keySet.tail.head)
+    if (getCardGroups.size == 3) {
+      val buffer1: ListBuffer[Card] = suitableCards.toSeq.maxBy(_._1)._2
+      if (buffer1.head.cardValue == CardEnv.Values.Ace.id) {
+        val buffer2: ListBuffer[Card] = suitableCards.toSeq.sortBy(_._1).tail.head._2
         if(buffer2.size == actualCardCount) {
           Some(buffer2.take(actualCardCount))
         } else if (actualCardCount == 0) {

@@ -41,6 +41,7 @@ object Settings {
   val isGermanActive: BooleanProperty = BooleanProperty(false)
   isGermanActive.onChange(
     (_, _, newVal) => if (newVal) setLanguage(LanguageGerman)
+
   )
   val isEnglishActive: BooleanProperty = BooleanProperty(false)
   isEnglishActive.onChange(
@@ -60,6 +61,7 @@ object Settings {
   def setLanguageFromString(langStr: String): Unit = langStr match {
     case "German" => isGermanActive.update(true)
     case "English" => isEnglishActive.update(true)
+    case _ => isGermanActive.update(true)
   }
 
   // Saving
@@ -102,7 +104,7 @@ object Settings {
     }
   }
 
-  def loadSettingsFromJSON(fullSettingsPath: File): Boolean = {
+  def loadSettingsFromJSON(fullSettingsPath: File): Option[String] = {
     if (fullSettingsPath.exists) {
       try {
         val jsonSettingsClass = read[SettingsJSON](fullSettingsPath.bufferedReader())
@@ -115,12 +117,12 @@ object Settings {
         setLanguageFromString(jsonSettingsClass.language)
         Game.setGameSettings(jsonSettingsClass.deckSize, jsonSettingsClass.playerCount, doSave = false)
 
-        true
+        None
       } catch {
-        case _: Exception => false
+        case e: Exception => Some(e.getMessage)
       }
     } else {
-      true
+      None
     }
   }
 }

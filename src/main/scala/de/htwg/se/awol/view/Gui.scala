@@ -3,13 +3,14 @@ package de.htwg.se.awol.view
 import java.awt.event.{WindowAdapter, WindowEvent}
 import javax.swing.{JFrame, WindowConstants}
 
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import com.google.inject.Inject
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
 import de.htwg.se.awol.view.gui.Table
 
 import scala.swing.Dimension
 import scalafx.application.Platform
 
-class Gui(controller: _GameHandler) extends JFrame {
+class Gui @Inject()(controller: _TGameHandler) extends JFrame {
   val defaultSize: (Int, Int) = (1024, 768)
 
   setMinimumSize(new Dimension(defaultSize._1, defaultSize._2))

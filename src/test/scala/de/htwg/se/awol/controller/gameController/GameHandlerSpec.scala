@@ -1,19 +1,19 @@
 package de.htwg.se.awol.controller.gameController
 
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.playerComponent.Player
 import org.junit.runner.RunWith
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.junit.JUnitRunner
-import org.scalatest.{Matchers, WordSpec, FunSuite}
+import org.scalatest.{FunSuite, Matchers, WordSpec}
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Await
-import scala.reflect.io.Path
 import scala.concurrent.duration._
-import org.scalatest.concurrent.ScalaFutures
+import scala.language.postfixOps
+import scala.reflect.io.Path
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerSpec extends WordSpec with Matchers {
@@ -334,8 +334,8 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
   }
 
-  "Loading an invalid JSON String" should {
-    "lead publish an event that it failed loading the file" in {
+  "Loading Settings" should {
+    "publish an event if it fails" in {
       val controller: _GameHandler = new _GameHandler()
       val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
       val settings: String = path.toFile.bufferedReader().readLine()
@@ -345,18 +345,20 @@ class GameHandlerSpec extends WordSpec with Matchers {
       path.delete()
       path.createFile().writeAll(settings)
     }
-  }
-
-  "bla" should {
-    ".." in {
+    "work fine if the path is correct" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(32, 4)
-      controller.callNextActionByState()
-      Settings.isFastSpeedActive.update(true)
-      //val result = Await.result(controller.triggerNextPlay(controller.getPlayerList.tail.head), 10000 millis)
-      controller.triggerNextPlay(controller.getPlayerList.tail.head)
-
+      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
+      controller.loadSettings()
     }
+  }
+  "create a gameID of type double" in {
+    val controller: _GameHandler = new _GameHandler()
+    controller.initNewGame(32,4)
+    controller.getGameId.getClass
+  }
+  "have the Impl type Base Impl" in {
+    val controller: _GameHandler = new _GameHandler()
+    controller.getImplType should be("Base _GameHandler implementation")
   }
 }
 

@@ -1,12 +1,15 @@
-package de.htwg.se.awol.controller.gameController.gameMockImpl
+package de.htwg.se.awol.controller.gameController.handler.gameMockImpl
 
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
+import de.htwg.se.awol.model.playerComponent.Player
+import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.Future
 
 //noinspection ScalaStyle
-class _GameHandler() {
+case class _GameHandler() extends _TGameHandler {
 
   def loadSettings(): Unit = {}
 
@@ -28,11 +31,11 @@ class _GameHandler() {
 
   def startNewRound(): Unit = {}
 
-  def triggerNextPlay(player: Player): Unit = {}
+  def triggerNextPlay(player: Player): Option[Future[Double]] = None
 
   def doPlay(player: Player): Unit = {}
 
-  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = None // Option(ListBuffer())
+  def humanPlaying(pickedCards: ListBuffer[Card]): Option[ListBuffer[Card]] = None
 
   def botPlaying(player: Player): Unit = {}
 
@@ -69,4 +72,6 @@ class _GameHandler() {
 
   def getGamePausedStatus: Boolean = false
   def setGamePausedStatus(bool: Boolean): Unit = {}
+
+  override def getImplType: String = "Mock _GameHandler implementation"
 }

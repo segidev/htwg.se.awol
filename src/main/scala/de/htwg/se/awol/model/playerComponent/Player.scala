@@ -6,7 +6,7 @@ import de.htwg.se.awol.model.environmentComponents.PlayerEnv
 
 import scala.collection.mutable.ListBuffer
 
-trait Player {
+trait Player  {
   protected val playerNumber: Int = 0
 
   private var rank: PlayerEnv.Rank.Value = PlayerEnv.Rank.Mob
@@ -24,6 +24,8 @@ trait Player {
   def clearCards(): Unit = cards.clear()
 
   def getCards: ListBuffer[Card] = cards
+
+  def getCardGroups: Set[Int] = cards.groupBy(_.cardValue).keySet
 
   def getPlayerNumber: Int = playerNumber
 

@@ -1,10 +1,10 @@
 package de.htwg.se.awol.controller.gameController
 
-import de.htwg.se.awol.controller.gameController.gameMockImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler.gameMockImpl._GameHandler
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.playerComponent.Player
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
+import de.htwg.se.awol.model.playerComponent.bot.baseImpl.BotPlayer
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner
@@ -49,6 +49,7 @@ class MockGameHandlerSpec extends WordSpec with Matchers {
       controller.setPlayerCount(0)
       controller.getGamePausedStatus
       controller.setGamePausedStatus(true)
+      controller.getImplType should be("Mock _GameHandler implementation")
     }
   }
 

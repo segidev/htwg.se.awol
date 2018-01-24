@@ -1,7 +1,8 @@
 package de.htwg.se.awol
 
+import com.google.inject.{Guice, Injector}
 import de.htwg.se.awol.controller.environmentController.Settings
-import de.htwg.se.awol.controller.gameController.gameBaseImpl._GameHandler
+import de.htwg.se.awol.controller.gameController.handler._TGameHandler
 import de.htwg.se.awol.view.{Gui, Tui}
 
 import scala.io.StdIn.readLine
@@ -10,9 +11,12 @@ import scalafx.application.Platform
 object Arschloch {
   Settings.isGermanActive.set(true)
 
-  val controller: _GameHandler = new _GameHandler()
-  val tui: Tui = new Tui(controller)
-  val gui: Gui = new Gui(controller)
+  val injector: Injector = Guice.createInjector(new ArschlochModule())
+  val controller: _TGameHandler = injector.getInstance(classOf[_TGameHandler])
+
+  val tui: Tui = injector.getInstance(classOf[Tui])
+  val gui: Gui = injector.getInstance(classOf[Gui])
+
   Platform.runLater(controller.loadSettings())
 
   def main(args: Array[String]): Unit = {

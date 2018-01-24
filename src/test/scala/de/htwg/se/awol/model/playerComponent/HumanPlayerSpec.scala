@@ -4,8 +4,9 @@ import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
+import de.htwg.se.awol.model.playerComponent.bot.baseImpl.BotPlayer
+import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 import de.htwg.se.awol.model.languageComponents.LanguageGerman
-import de.htwg.se.awol.model.playerComponent.playerBaseImpl.BotPlayer
 import org.junit.runner.RunWith
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.junit.JUnitRunner

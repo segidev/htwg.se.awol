@@ -96,6 +96,7 @@ object LanguageGerman extends _LanguageHandler {
     MessageEnv.PhrasesHuman.HowManyCardsToPlay -> "Wieviele Karten willst du spielen?",
     MessageEnv.PhrasesHuman.CommandNotAvailable -> "Befehl nicht möglich, bitte versuche einen anderen.",
     MessageEnv.PhrasesHuman.CardCommandNotAvailable -> "Befehl \"%s\" nicht möglich für Karten",
+    MessageEnv.PhrasesHuman.NotSuitableCards -> "Du hast keine Karten die du spielen könntest, sorry :(",
 
     SettingEnv.Language.German -> "Deutsch",
     SettingEnv.Language.English -> "Englisch"

@@ -20,9 +20,10 @@ class SettingsSpec extends WordSpec with Matchers {
     "set the language with a String" in {
       Settings.setLanguageFromString("German")
       Settings.getLanguageAsString should be("Deutsch")
+      Settings.setLanguageFromString("abc")
+      Settings.getLanguageAsString should be("Deutsch")
       Settings.setLanguageFromString("English")
       Settings.getLanguageAsString should be("English")
-      an [MatchError] should be thrownBy Settings.setLanguageFromString("wrong string")
     }
     "create an instance of SettingsJSON" in {
       val settingsObj: SettingsJSON = SettingsJSON(2000, "Deutsch", 32, 4)
@@ -45,7 +46,7 @@ class SettingsSpec extends WordSpec with Matchers {
     }
     "load a file without write access" in {
       val path: File = File("C:\\Program Files (x86)\\NuGet\\invalid.log")
-      Settings.loadSettingsFromJSON(path) should be(true)
+      Settings.loadSettingsFromJSON(path) should be(None)
     }
     "save and load all different speed settings" in {
       val path: File = File(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
@@ -53,13 +54,13 @@ class SettingsSpec extends WordSpec with Matchers {
       path.delete()
 
       path.createFile().writeAll("{\"speed\":1000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
-      Settings.loadSettingsFromJSON(path) should be(true)
+      Settings.loadSettingsFromJSON(path) should be(None)
 
       path.createFile().writeAll("{\"speed\":2000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
-      Settings.loadSettingsFromJSON(path) should be(true)
+      Settings.loadSettingsFromJSON(path) should be(None)
 
       path.createFile().writeAll("{\"speed\":3000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
-      Settings.loadSettingsFromJSON(path) should be(true)
+      Settings.loadSettingsFromJSON(path) should be(None)
 
       path.delete()
       path.createFile().writeAll(settings)

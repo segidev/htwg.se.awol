@@ -13,7 +13,7 @@ class CardSpec extends WordSpec with Matchers {
     "should have a value of 8 and be the Kreuz" in {
       Settings.setLanguage(LanguageGerman)
 
-      val card = Card(CardEnv.Values.Eight, CardEnv.Colors.Clubs)
+      val card = new Card(CardEnv.Values.Eight, CardEnv.Colors.Clubs)
       card.cardValueName should be("8")
       card.cardValue should be(8)
       card.cardColorName should be("Kreuz")
@@ -21,7 +21,7 @@ class CardSpec extends WordSpec with Matchers {
     "should have a value of Bube and be the Herz" in {
       Settings.setLanguage(LanguageGerman)
 
-      val card = Card(CardEnv.Values.Jack, CardEnv.Colors.Hearts)
+      val card = new Card(CardEnv.Values.Jack, CardEnv.Colors.Hearts)
       card.cardValueName should be("Bube")
       card.cardValue should be(11)
       card.cardColorName should be("Herz")
@@ -30,10 +30,10 @@ class CardSpec extends WordSpec with Matchers {
 
   "A Card" should {
     "have a file name with its image" in {
-      val card1 = Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
-      val card2 = Card(CardEnv.Values.Ace, CardEnv.Colors.Hearts)
-      val card3 = Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
-      val card4 = Card(CardEnv.Values.Ace, CardEnv.Colors.Spades)
+      val card1 = new Card(CardEnv.Values.Ace, CardEnv.Colors.Clubs)
+      val card2 = new Card(CardEnv.Values.Ace, CardEnv.Colors.Hearts)
+      val card3 = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
+      val card4 = new Card(CardEnv.Values.Ace, CardEnv.Colors.Spades)
       card1.cardFilename should be("14_of_clubs")
       card2.cardFilename should be("14_of_hearts")
       card3.cardFilename should be("14_of_diamonds")

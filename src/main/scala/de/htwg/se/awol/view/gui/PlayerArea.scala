@@ -115,16 +115,13 @@ class PlayerArea(private val player: Player, controller: _TGameHandler) extends 
     direction match {
       case GuiEnv.Layout.TOP  =>
         add(playerBox, 0, 0)
-        //add(playerActionArea, 0, 1)
       case GuiEnv.Layout.BOTTOM =>
         add(playerActionArea, 0, 0)
         add(playerBox, 0, 1)
       case GuiEnv.Layout.RIGHT =>
-        //add(playerActionArea, 0, 0)
         add(playerBox, 1, 0)
       case GuiEnv.Layout.LEFT =>
         add(playerBox, 0, 0)
-        //add(playerActionArea, 1, 0)
       case _ => throw new MatchError("Layout direction not defined")
     }
 
@@ -151,7 +148,7 @@ class PlayerArea(private val player: Player, controller: _TGameHandler) extends 
 
       val cardStack = new CardStack()
 
-      cardGroup.foreach(card => {
+      cardGroup.sortBy(_.cardColorName).foreach(card => {
         val cardImageView = GuiEnv.getCardImageView(card)
 
         if (!cardGroupMap.contains(card.cardValue)) {

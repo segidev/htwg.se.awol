@@ -20,8 +20,8 @@ class GameSpec extends WordSpec with Matchers {
   }
   "The Human Player" should {
     "be able to be set" in {
-      val human: Player = new HumanPlayer(0)
-      Game.setHumanPlayer(new HumanPlayer(0))
+      val human: HumanPlayer = new HumanPlayer(0)
+      Game.setHumanPlayer(human)
       Game.getHumanPlayer should be(human)
     }
   }

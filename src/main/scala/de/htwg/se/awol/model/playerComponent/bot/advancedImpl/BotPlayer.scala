@@ -10,7 +10,7 @@ class BotPlayer(override protected val playerNumber: Int) extends BaseBotPlayer(
     if (suitableCards.isEmpty) {
       ListBuffer.empty
     } else {
-      StrategyContext().getContext(suitableCards, getCardGroups.size, actualCardCount).executeStrategy()
+      new StrategyContext().getContext(suitableCards, getCardGroups.size, actualCardCount).executeStrategy()
     }
   }
 }

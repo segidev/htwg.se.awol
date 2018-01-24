@@ -12,6 +12,7 @@ class CardStack extends StackPane {
   private val transparency: Double = 0.2
   private val cards: ListBuffer[Card] = ListBuffer()
   private val cardImageViews: ListBuffer[ImageView] = ListBuffer()
+  style = CardStack.styleCardStack
 
   def addCard(card: Card, cardImageView: ImageView): Unit = {
     children.append(cardImageView)
@@ -45,4 +46,8 @@ class CardStack extends StackPane {
   }
 
   override def toString(): String = "Stack with %d cards".format(cardImageViews.length)
+}
+
+object CardStack {
+  val styleCardStack: String = "-fx-padding: 5px"
 }

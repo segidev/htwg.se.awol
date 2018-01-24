@@ -65,7 +65,7 @@ case class _GameHandler() extends _TGameHandler {
 
   def getPlayerList: ListBuffer[Player] = ListBuffer()
 
-  def getPlayerByIndex(idx: Int): Player = HumanPlayer(0)
+  def getPlayerByIndex(idx: Int): Player = new HumanPlayer(0)
 
   def getPlayerCount: Int = 1
   def setPlayerCount(count: Int): Unit = {}

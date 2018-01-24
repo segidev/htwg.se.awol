@@ -21,7 +21,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
       val cardValue = CardEnv.Values.apply(i % cardStackSize + lowestCardValue)
       val cardColor = CardEnv.Colors.apply(i / cardStackSize)
 
-      cards.append(Card(cardValue, cardColor))
+      cards.append(new Card(cardValue, cardColor))
     })
 
     cards

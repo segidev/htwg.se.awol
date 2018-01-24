@@ -12,6 +12,7 @@ import org.scalatest.{FunSuite, Matchers, WordSpec}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._
+import scala.io.Source
 import scala.language.postfixOps
 import scala.reflect.io.Path
 
@@ -337,17 +338,17 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "Loading Settings" should {
     "publish an event if it fails" in {
       val controller: _GameHandler = new _GameHandler()
-      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
-      val settings: String = path.toFile.bufferedReader().readLine()
-      path.delete()
-      path.createFile().writeAll("[asdsadasd, asqwe - asd}")
+      val originalPath: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
+      val originalSettings: String = Source.fromFile(originalPath.path).getLines().mkString
+      originalPath.delete()
+      originalPath.createFile().writeAll("[asdsadasd, asqwe - asd}")
       controller.loadSettings()
-      path.delete()
-      path.createFile().writeAll(settings)
+      originalPath.delete()
+      originalPath.createFile().writeAll(originalSettings)
     }
     "work fine if the path is correct" in {
       val controller: _GameHandler = new _GameHandler()
-      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.ini").toFile
+      val path: Path = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
       controller.loadSettings()
     }
   }

@@ -68,7 +68,7 @@ object Settings {
   }
 
   // Load / Saving
-  def loadSettingsFromJSON(directory: Directory = defaultSettingsDirectory): Option[String] = {
+  def loadSettings(directory: Directory = defaultSettingsDirectory): Option[String] = {
     settingsHandler.setSettingsDirectory(directory)
 
     settingsHandler.load() match {
@@ -87,7 +87,7 @@ object Settings {
     }
   }
 
-  def saveSettingsToJSON(directory: Directory = defaultSettingsDirectory): Boolean = {
+  def saveSettings(directory: Directory = defaultSettingsDirectory): Boolean = {
     settingsHandler.setSettingsDirectory(directory)
 
     val (deckSize, playerCount) = Game.getGameSettings

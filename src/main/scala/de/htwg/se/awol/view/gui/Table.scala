@@ -243,7 +243,7 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
   }
 
   def saveSettings(): Unit = {
-    if (!Settings.saveSettingsToJSON()) {
+    if (!Settings.saveSettings()) {
       showSettingsWriteError()
     }
   }
@@ -254,7 +254,7 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
     createPlayerAreas()
   }
 
-  def updateCardView(): Unit = {
+  def updateHumanCardView(): Unit = {
     playerAreaMap.values.foreach(_.updatePlayerLabel())
     humanPlayerArea.showCardsOnTable()
   }
@@ -290,6 +290,8 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
 
       i += 1
     })
+
+    humanPlayerArea.updatePlayerLabel()
   }
 
   def removeAllEventsAndEffectsFromCards(playerList: ListBuffer[Player]): Unit = {
@@ -317,7 +319,7 @@ class Table(controller: _TGameHandler) extends SFXPanel with Reactor {
   reactions += {
     case _: PlayersCreated => updatePlayerView()
 
-    case _: CardsHandedToPlayers => updateCardView()
+    case _: CardsHandedToPlayers => updateHumanCardView()
 
     case event: CardsRemoveAllEventsAndEffects => removeAllEventsAndEffectsFromCards(event.playerList)
 

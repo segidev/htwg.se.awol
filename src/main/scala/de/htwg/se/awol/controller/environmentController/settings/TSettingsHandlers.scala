@@ -10,11 +10,8 @@ trait TSettingsHandlers {
 
     if (directoryPath.createDirectory().exists) {
       try {
-        if (fullFilePath.createFile().exists) {
-          Option(fullFilePath)
-        } else {
-          None
-        }
+        fullFilePath.createFile()
+        Option(fullFilePath)
       } catch {
         case _: Exception => None
       }

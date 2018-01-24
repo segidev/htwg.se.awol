@@ -22,7 +22,7 @@ class MessageSpec extends WordSpec with Matchers {
 
       val fromPlayer: Player = new BotPlayer(0)
       val toPlayer: Player = new BotPlayer(1)
-      val card: Card = Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
+      val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
       val cardSwap: ListBuffer[(Player, Card, Player)] = new ListBuffer()
       cardSwap.append((fromPlayer, card, toPlayer))
       val message: String = MessageEnv.getCardsWereSwappedText(CardsWereSwapped(cardSwap))
@@ -33,7 +33,7 @@ class MessageSpec extends WordSpec with Matchers {
 
       val fromPlayer: Player = new HumanPlayer(0)
       val toPlayer: Player = new BotPlayer(1)
-      val card: Card = Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
+      val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
       val cardSwap: ListBuffer[(Player, Card, Player)] = new ListBuffer()
       cardSwap.append((fromPlayer, card, toPlayer))
       val messageToBot: String = MessageEnv.getCardsWereSwappedText(CardsWereSwapped(cardSwap))
@@ -95,7 +95,7 @@ class MessageSpec extends WordSpec with Matchers {
 
       val bot: Player = new BotPlayer(1)
       val pickedCards: ListBuffer[Card] = new ListBuffer()
-      pickedCards.append(Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds))
+      pickedCards.append(new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds))
       val passMessage: String = MessageEnv.getBotPlayerPlaying(BotPlayerPlaying(bot, pickedCards))
       passMessage should be("\n== Jan is playing now! ==\n\nJan played those cards: 1x Ace\nJan has 0 card(s) left")
     }

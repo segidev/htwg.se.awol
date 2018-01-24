@@ -66,7 +66,7 @@ object Game {
     defaultPlayerCount = newPlayerCount
 
     if (doSave) {
-      Settings.saveSettingsToJSON()
+      Settings.saveSettings()
     }
   }
 

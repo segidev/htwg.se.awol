@@ -39,7 +39,7 @@ class _GameHandler() extends _TGameHandler {
   private var asshole: Option[Player] = None
 
   // User controlled
-  private val starterCard = Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+  private val starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
   private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
   private var totalPlayerCount: Int = _
@@ -117,7 +117,7 @@ class _GameHandler() extends _TGameHandler {
   def createPlayers(): Unit = {
     assert(Game.getGameState == Game.States.NewGame, "Creating players in wrong game state!")
 
-    Game.setHumanPlayer(HumanPlayer(0))
+    Game.setHumanPlayer(new HumanPlayer(0))
     playerList.append(Game.getHumanPlayer)
 
     val injector = Guice.createInjector(new ArschlochModule())
@@ -317,8 +317,13 @@ class _GameHandler() extends _TGameHandler {
   }
 
   def checkForEndOfRound(): Boolean = {
-    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount ||
-      (Game.getActualCardValue == CardEnv.Values.Ace.id && Game.getPassCounter > 0)) {
+    val roundEndedWithAce: Boolean = Game.getActualCardValue == CardEnv.Values.Ace.id && Game.getPassCounter > 0
+
+    if (Game.getPassCounter >= activePlayerList.length - 1 + roundWinnersCount || roundEndedWithAce) {
+      if (roundEndedWithAce) {
+        actualPlayerNumber -= 1
+      }
+
       roundNumber += 1
 
       if (rankedList.lengthCompare(playerList.length - 1) >= 0) {
@@ -388,7 +393,7 @@ class _GameHandler() extends _TGameHandler {
   }
 
   def loadSettings(): Unit = {
-    Settings.loadSettingsFromJSON() match {
+    Settings.loadSettings() match {
       case Some(error) => publish(SettingsLoadFailed(error))
       case _ =>
     }

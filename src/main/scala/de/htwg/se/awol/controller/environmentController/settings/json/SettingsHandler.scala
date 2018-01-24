@@ -7,7 +7,7 @@ import net.liftweb.json.Serialization.{read, write}
 import scala.reflect.io.File
 
 case class SettingsHandler() extends TSettingsHandlers {
-  override def getSettingsFileName: File = File("settings.ini")
+  override def getSettingsFileName: File = File("settings.json")
 
   private implicit val formats: DefaultFormats.type = DefaultFormats
 

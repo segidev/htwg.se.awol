@@ -5,7 +5,7 @@ import de.htwg.se.awol.model.playerComponent.Player
 
 import scala.collection.mutable.ListBuffer
 
-case class HumanPlayer(override protected val playerNumber: Int) extends Player {
+class HumanPlayer(override protected val playerNumber: Int) extends Player {
 
   override def validatePick(pickedCards: ListBuffer[Card], actualCardCount: Int, actualCardValue: Int): Option[ListBuffer[Card]] = {
     if (pickedCards.isEmpty) {

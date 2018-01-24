@@ -1,6 +1,6 @@
 package de.htwg.se.awol.controller.gameController.handler.gameBaseImpl
 
-import com.google.inject.Guice
+import com.google.inject.{Guice, Singleton}
 import de.htwg.se.awol.ArschlochModule
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController._
@@ -20,6 +20,7 @@ import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
 
 //noinspection ScalaStyle
+@Singleton
 class _GameHandler() extends _TGameHandler {
   private var isGamePaused: Boolean = false
   private var gameId: Double = 0.0
@@ -219,9 +220,9 @@ class _GameHandler() extends _TGameHandler {
       }
 
       f.onComplete {
-        case Success(id) =>
+        case Success(_) =>
           Platform.runLater(doPlay(nextPlayer))
-        case Failure(e) =>
+        case Failure(_) =>
       }
 
       Some(f)

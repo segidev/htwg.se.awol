@@ -15,7 +15,7 @@ case class Deck(private val amount: Int = Deck.smallCardStackSize) {
   private def createCards(amount: Int): ListBuffer[Card] = {
     val cards = new ListBuffer[Card]()
 
-    val lowestCardValue: Int = Deck.maxPlayerCardAmount - cardStackSize
+    lowestCardValue = Deck.maxPlayerCardAmount - cardStackSize
 
     (0 until amount).foreach(i => {
       val cardValue = CardEnv.Values.apply(i % cardStackSize + lowestCardValue)

@@ -26,7 +26,7 @@ class DeckSpec extends WordSpec with Matchers {
       deck.getDeckSize should be(52)
     }
     "return the containing cards within a ListBuffer" in {
-      val deck = new Deck(4)
+      val deck = new Deck(32)
       val cardList = new ListBuffer[Card]
       deck.getCards.foreach(card => {
         cardList.append(card)

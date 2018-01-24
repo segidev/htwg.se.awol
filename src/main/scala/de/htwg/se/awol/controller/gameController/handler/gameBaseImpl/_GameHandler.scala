@@ -39,7 +39,7 @@ class _GameHandler() extends _TGameHandler {
   private var asshole: Option[Player] = None
 
   // User controlled
-  private val starterCard = new Card(CardEnv.Values.Jack, CardEnv.Colors.Diamonds)
+  private var starterCard = new Card(CardEnv.Values.Seven, CardEnv.Colors.Clubs)
   private val actualCardsOnTable: mutable.Stack[ListBuffer[Card]] = mutable.Stack()
   private var deckSize: Int = Deck.smallCardStackSize
   private var totalPlayerCount: Int = _
@@ -137,6 +137,8 @@ class _GameHandler() extends _TGameHandler {
     val newDeck = new Deck(deckSize)
     val cardHandOutList: ListBuffer[Card] = newDeck.getCards
 
+    starterCard = cardHandOutList.apply(Random.nextInt(cardHandOutList.length))
+
     var i = 0
     while (cardHandOutList.nonEmpty) {
       val player: Player = getPlayerByIndex(i)
@@ -157,9 +159,7 @@ class _GameHandler() extends _TGameHandler {
       case Some(p1) => setCardLeadingPlayer(p1)
       case _ => playerList.find(_.hasCard(starterCard)) match {
         case Some(p2) => setCardLeadingPlayer(p2)
-        case _ =>
-          setCardLeadingPlayer(playerList.head) // TODO: Entfernen
-          //throw new MatchError("No player holds the starter card: " + starterCard) TODO: Kommentar weg
+        case _ => throw new MatchError("No player holds the starter card: " + starterCard)
       }
     }
 

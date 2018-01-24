@@ -60,7 +60,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "set the first player in the list without starting card in the game" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(4, 2)
+      controller.initNewGame(32, 2)
       controller.handoutCards()
       controller findStartingPlayer()
     }
@@ -115,7 +115,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "The playerlist" should {
     "match the initialized players" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       val playerList: ListBuffer[Player] = new ListBuffer()
       controller.getPlayerList.foreach(player => {
         playerList.append(player)
@@ -137,7 +137,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "work after setting king and asshole rank" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.setGameState(Game.States.CardSwap)
@@ -151,12 +151,12 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "End of game summarization" should {
     "not work if there is more than one active player" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8,2)
+      controller.initNewGame(32,2)
       an [AssertionError] should be thrownBy controller.summarizeEndOfGame()
     }
     "work if there is only one active player left" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.setGameState(Game.States.EndOfGame)
@@ -165,7 +165,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "change swap cards to be true" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.setGameState(Game.States.EndOfGame)
@@ -180,14 +180,14 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "Cards on the table" should {
     "contain the latest added card" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
       controller.addCardsToCardsOnTable(ListBuffer(card))
       controller.getLatestCardsOnTable should be(ListBuffer(card))
     }
     "be empty after clearing" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
       controller.addCardsToCardsOnTable(ListBuffer(card))
       controller.clearCardsOnTable()
@@ -206,7 +206,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "Check for end of round" should {
     "be true and evaluate if more than one player is left" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.addToPassCounter(1)
@@ -214,7 +214,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "be true and end game if only one player is left"in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       Game.addToPassCounter(1)
@@ -223,7 +223,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "be false if the round has not ended yet" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       controller.checkForEndOfRound() should be(false)
@@ -233,7 +233,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "A player" should {
     "be finished if he doesn't have any cards left" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8,2)
+      controller.initNewGame(32,2)
       val player: Player = controller.getPlayerList.head
       player.getCards.foreach(card => {
         player.validatePick(ListBuffer(card), Game.getActualCardCount, Game.getActualCardValue)
@@ -242,7 +242,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
     }
     "be still playing if he has cards on his hand" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8,2)
+      controller.initNewGame(32,2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       controller.checkForPlayerFinished(controller.getPlayerList.head) should be(false)
@@ -252,14 +252,14 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "Post play" should {
     "not be validated if the end of round has not been reached" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8,2)
+      controller.initNewGame(32,2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       controller.validatePostPlay(controller.getPlayerList.head)
     }
     "be validated if the end of round has been reached" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8,2)
+      controller.initNewGame(32,2)
       controller.callNextActionByState()
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.head
@@ -274,7 +274,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "Leading values" should {
     "be set properly" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 2)
+      controller.initNewGame(32, 2)
       val card: Card = new Card(CardEnv.Values.Ace, CardEnv.Colors.Diamonds)
       controller.setLeadingValues(controller.getPlayerList.head, ListBuffer(card))
     }
@@ -283,13 +283,13 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "A Player" should {
     "be playing if he is still an active player" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       val player: Player = controller.getPlayerList.tail.head
       controller.doPlay(player)
     }
     "increases the pass counter if he has already won" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       controller.callNextActionByState()
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.head
@@ -301,19 +301,19 @@ class GameHandlerSpec extends WordSpec with Matchers {
   "A human player" can {
     "refuse to choose cards" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       controller.humanPlaying(ListBuffer())
     }
     "choose cards that he doesn't own" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       controller.callNextActionByState()
       val card: Card = new Card(CardEnv.Values.Eight, CardEnv.Colors.Diamonds)
       controller.humanPlaying(ListBuffer(card))
     }
     "choose to pass" in {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       Game.setActualCardCount(1)
       controller.humanPlaying(ListBuffer())
     }
@@ -321,7 +321,7 @@ class GameHandlerSpec extends WordSpec with Matchers {
 
   "A bot player" can {
       val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(8, 4)
+      controller.initNewGame(32, 4)
       controller.callNextActionByState()
       controller.callNextActionByState()
       val player: Player = controller.getPlayerList.tail.head

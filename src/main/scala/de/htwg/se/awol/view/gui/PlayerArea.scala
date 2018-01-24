@@ -199,7 +199,7 @@ class PlayerArea(private val player: Player, controller: _TGameHandler) extends 
 
   def putCards(suitableCards: Map[Int, ListBuffer[Card]], cardStack: CardStack, cardAmount: Int, cardValue: Int): Boolean = {
     if (cardAmount != -1) {
-      val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue)
+      val pickedCards: ListBuffer[Card] = suitableCards.apply(cardValue).sortBy(_.cardColorName).reverse
 
       controller.humanPlaying(pickedCards.take(cardAmount)) match {
         case Some(usedCards) =>

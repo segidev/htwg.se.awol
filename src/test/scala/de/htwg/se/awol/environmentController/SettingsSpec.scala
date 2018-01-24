@@ -48,24 +48,17 @@ class SettingsSpec extends WordSpec with Matchers {
       jsonSettings.setSettingsDirectory(dir)
       jsonSettings.save(Settings.getGameSpeed, "Deutsch", 32, 4) should be(false)
     }
-    "succeed to load XML with the right directory" in {
-      val xmlSettings = XML()
-
-      val dir: Directory = Directory(sys.props.apply("user.home")).resolve(".awol").toDirectory
-      xmlSettings.setSettingsDirectory(dir)
-
-      xmlSettings.load() should be(Some(SettingsOutput(1000,"German",32,2)))
-    }
-    "succeed to save XML with the right directory" in {
+    "succeed to save and load XML with the right directory" in {
       val xmlSettings = XML()
 
       val dir: Directory = Directory(sys.props.apply("user.home")).resolve(".awol").toDirectory
       val originalPath = Path(sys.props.apply("user.home")).resolve(".awol").resolve("settings.xml").toFile
-      val readBuf: Array[Char] = Array()
       val originalSettings: String = Source.fromFile(originalPath.path).getLines().mkString
 
       xmlSettings.setSettingsDirectory(dir)
-      xmlSettings.save(Settings.getGameSpeed, "Deutsch", 32, 4) should be(true)
+      xmlSettings.save(3000, "German", 36, 4) should be(true)
+
+      xmlSettings.load() should be(Some(SettingsOutput(3000,"German",36,4)))
 
       originalPath.delete()
       originalPath.createFile().writeAll(originalSettings)
@@ -76,6 +69,13 @@ class SettingsSpec extends WordSpec with Matchers {
       val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
       xmlSettings.setSettingsDirectory(dir)
       xmlSettings.load() should be(None)
+    }
+    "fail to save XML with a wrong directory" in {
+      val xmlSettings = XML()
+
+      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
+      xmlSettings.setSettingsDirectory(dir)
+      xmlSettings.save(2000, "Deutsch", 32, 4) should be(false)
     }
     "fail to create the settings file in a wrong directory" in {
       val xmlSettings = XML()
@@ -100,52 +100,23 @@ class SettingsSpec extends WordSpec with Matchers {
       originalPath.delete()
       originalPath.createFile().writeAll(originalSettings)
     }
-    "fail to save XML with a wrong directory" in {
-      val xmlSettings = XML()
-
-      val dir: Directory = Directory("C:\\Program Files (x86)\\notexistent")
-      xmlSettings.setSettingsDirectory(dir)
-      xmlSettings.save(2000, "Deutsch", 32, 4) should be(false)
-    }
-    /*"create an instance of SettingsJSON" in {
-      val settingsObj: SettingsJSON = SettingsJSON(2000, "Deutsch", 32, 4)
-      settingsObj.speed should be(2000)
-      settingsObj.language should be("Deutsch")
-      settingsObj.deckSize should be(32)
-      settingsObj.playerCount should be(4)
-    }
-    "not create a file with wrong directory" in {
-      val path: File = File("C:\\Program Files (x86)\\notexistent\\invalid.log")
-      Settings.createSettingsFile(path) should be(None)
-    }
-    "not create a file with invalid file name" in {
-      val path: File = File("C:\\Program Files (x86)\\NuGet\\invalid.log")
-      Settings.createSettingsFile(path) should be(None)
-    }
-    "not save into a file without write access" in {
-      val path: File = File("C:\\Program Files (x86)\\NuGet\\invalid.log")
-      Settings.saveSettingsToJSON(path) should be(false)
-    }
-    "load a file without write access" in {
-      val path: File = File("C:\\Program Files (x86)\\NuGet\\invalid.log")
-      Settings.loadSettingsFromJSON(path) should be(None)
-    }*/
     "save and load all different speed settings" in {
       val originalPath: File = File(sys.props.apply("user.home")).resolve(".awol").resolve("settings.json").toFile
       val settings: String = Source.fromFile(originalPath.path).getLines().mkString
       val dir: Directory = originalPath.parent
+
       originalPath.delete()
 
       originalPath.createFile().writeAll("{\"speed\":1000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
       Settings.loadSettings(dir) should be(None)
 
-      originalPath.createFile().writeAll("{\"speed\":2000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
+      originalPath.writeAll("{\"speed\":2000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
       Settings.loadSettings(dir) should be(None)
 
-      originalPath.createFile().writeAll("{\"speed\":3000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
+      originalPath.writeAll("{\"speed\":3000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
       Settings.loadSettings(dir) should be(None)
 
-      originalPath.createFile().writeAll("{\"speed\":500000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
+      originalPath.writeAll("{\"speed\":500000,\"language\":\"German\",\"deckSize\":32,\"playerCount\":4}")
       Settings.loadSettings(dir) should be(None)
 
       originalPath.delete()

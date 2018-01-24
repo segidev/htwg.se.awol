@@ -2,6 +2,7 @@ package de.htwg.se.awol.view.gui
 
 import de.htwg.se.awol.model.cardComponents.Card
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scalafx.Includes._
 import scalafx.scene.image.ImageView
@@ -10,8 +11,7 @@ import scalafx.scene.layout.StackPane
 class CardStack extends StackPane {
   private var translateCards = 0
   private val transparency: Double = 0.2
-  private val cards: ListBuffer[Card] = ListBuffer()
-  private val cardImageViews: ListBuffer[ImageView] = ListBuffer()
+  private val cardImageMap: mutable.Map[Card, ImageView] = mutable.Map()
   style = CardStack.styleCardStack
 
   def addCard(card: Card, cardImageView: ImageView): Unit = {
@@ -19,33 +19,38 @@ class CardStack extends StackPane {
     cardImageView.setTranslateX(translateCards)
     translateCards += 6
 
-    cardImageViews.append(cardImageView)
-
-    cards.append(card)
+    cardImageMap.put(card, cardImageView)
   }
 
   def removeCards(usedCards: ListBuffer[Card]): Boolean = {
-    cardImageViews.remove(0, usedCards.length)
-    cards.--=(usedCards)
+    cardImageMap.toSeq.sortBy(_._1.cardColorName).reverse.slice(0, usedCards.length).foreach(c => {
+      val removeCard: Card = c._1
+      cardImageMap.remove(removeCard)
+    })
 
-    cards.isEmpty
+    cardImageMap.isEmpty
   }
 
   def setDisabled(): Unit = {
     this.onMouseReleased = null
-    cardImageViews.foreach(_.opacity = transparency)
+    cardImageMap.foreach(_._2.opacity = transparency)
   }
 
   def resetCards(): Unit = {
     this.onMouseReleased = null
-    cardImageViews.foreach(_.opacity = 1)
+    cardImageMap.foreach(_._2.opacity = 1)
   }
 
   def getCardImageViews: ListBuffer[ImageView] = {
+    val cardImageViews: ListBuffer[ImageView] = ListBuffer()
+
+    cardImageMap.toSeq.sortBy(_._1.cardColorName).foreach(c => {
+      cardImageViews.append(c._2)
+    })
     cardImageViews
   }
 
-  override def toString(): String = "Stack with %d cards".format(cardImageViews.length)
+  override def toString(): String = "Stack with %d cards".format(cardImageMap.size)
 }
 
 object CardStack {

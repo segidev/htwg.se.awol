@@ -80,7 +80,7 @@ class Tui @Inject()(controller: _TGameHandler) extends Reactor with LazyLogging 
 
         suitableCards.get(value) match {
           case Some(pickedCards) =>
-            controller.humanPlaying(pickedCards.take(count)) match {
+            controller.humanPlaying(pickedCards.sortBy(_.cardColorName).reverse.take(count)) match {
               case Some(usedCards) =>
                 logger.debug(LanguageTranslator.translate(MessageEnv.PhrasesHuman.YouPlayedThoseCards).format(
                   "%dx %s [%d]".format(usedCards.length, usedCards.head.cardValueName, usedCards.head.cardValue)))

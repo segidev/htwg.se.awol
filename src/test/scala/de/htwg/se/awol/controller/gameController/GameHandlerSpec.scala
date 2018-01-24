@@ -14,6 +14,7 @@ import scala.collection.mutable.ListBuffer
 import scala.io.Source
 import scala.language.postfixOps
 import scala.reflect.io.Path
+import scalafx.embed.swing.SFXPanel
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerSpec extends WordSpec with Matchers with ScalaFutures {
@@ -371,6 +372,7 @@ class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
   implicit val defaultPatience = PatienceConfig(timeout = Span(6, Seconds), interval = Span(3, Seconds))
 
   test("A valid message should be returned to a valid name") {
+    new SFXPanel()
     val controller: _GameHandler = new _GameHandler()
     controller.initNewGame(32, 4)
     controller.callNextActionByState()

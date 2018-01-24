@@ -11,11 +11,10 @@ import de.htwg.se.awol.model.playerComponent.{HumanPlayer, Player}
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.swing.Publisher
 import scala.util.{Failure, Random, Success}
 import scalafx.application.Platform
-import scala.concurrent.duration._
 
 //noinspection ScalaStyle
 class _GameHandler() extends Publisher {
@@ -215,9 +214,9 @@ class _GameHandler() extends Publisher {
       }
 
       f.onComplete {
-        case Success(id) =>
+        case Success(_) =>
           Platform.runLater(doPlay(nextPlayer))
-        case Failure(e) =>
+        case Failure(_) =>
       }
 
       Some(f)

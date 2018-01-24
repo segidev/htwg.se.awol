@@ -40,18 +40,8 @@ class CardSpec extends WordSpec with Matchers {
       card4.cardFilename should be("14_of_spades")
     }
   }
-
-  "Object CardEnv" should { //TODO: remove if not needed
+  "CardEnv" should {
     "be callable" in {
-      CardEnv.Colors.Hearts
-      CardEnv.Colors.Spades
-      CardEnv.Colors.Diamonds
-      CardEnv.Colors.Clubs
-      for(i <- 0 until 12) {
-        CardEnv.Values.values.foreach(value => {
-
-        })
-      }
       CardEnv
     }
   }

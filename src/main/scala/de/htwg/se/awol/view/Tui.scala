@@ -142,6 +142,5 @@ class Tui @Inject()(controller: _TGameHandler) extends Reactor with LazyLogging 
       logger.debug(sb.toString())
 
     case event: SettingsLoadFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.LoadSettingsFailed) + "\n%s".format(event.error))
-    case _: SettingsWriteFailed => logger.debug(LanguageTranslator.translate(MessageEnv.Warnings.WriteSettingsFailed))
   }
 }

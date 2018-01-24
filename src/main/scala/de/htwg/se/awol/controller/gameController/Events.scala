@@ -19,4 +19,3 @@ case class BotPlayerPlaying(player: Player, pickedCards: ListBuffer[Card]) exten
 case class CardsWereSwapped(swappedCards: ListBuffer[(Player, Card, Player)]) extends Event
 
 case class SettingsLoadFailed(error: String) extends Event
-case class SettingsWriteFailed() extends Event

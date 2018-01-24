@@ -44,6 +44,7 @@ object Settings {
   val isGermanActive: BooleanProperty = BooleanProperty(false)
   isGermanActive.onChange(
     (_, _, newVal) => if (newVal) setLanguage(LanguageGerman)
+
   )
   val isEnglishActive: BooleanProperty = BooleanProperty(false)
   isEnglishActive.onChange(

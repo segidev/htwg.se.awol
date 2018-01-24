@@ -7,5 +7,5 @@ trait TBotFactory {
 }
 
 class BotFactory extends TBotFactory {
-  override def create(playerNumber: Int): Player = new de.htwg.se.awol.model.playerComponent.bot.baseImpl.BotPlayer(playerNumber)
+  override def create(playerNumber: Int): Player = new de.htwg.se.awol.model.playerComponent.bot.advancedImpl.BotPlayer(playerNumber)
 }

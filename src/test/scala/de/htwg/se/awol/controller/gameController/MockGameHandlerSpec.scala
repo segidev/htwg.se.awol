@@ -49,6 +49,7 @@ class MockGameHandlerSpec extends WordSpec with Matchers {
       controller.setPlayerCount(0)
       controller.getGamePausedStatus
       controller.setGamePausedStatus(true)
+      controller.getImplType should be("Mock _GameHandler implementation")
     }
   }
 

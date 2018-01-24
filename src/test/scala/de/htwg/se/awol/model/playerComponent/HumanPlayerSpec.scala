@@ -3,7 +3,7 @@ package de.htwg.se.awol.model.playerComponent
 import de.htwg.se.awol.controller.environmentController.Settings
 import de.htwg.se.awol.controller.gameController.Game
 import de.htwg.se.awol.model.cardComponents.Card
-import de.htwg.se.awol.model.environmentComponents.CardEnv
+import de.htwg.se.awol.model.environmentComponents.{CardEnv, PlayerEnv}
 import de.htwg.se.awol.model.playerComponent.bot.baseImpl.BotPlayer
 import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 import de.htwg.se.awol.model.languageComponents.LanguageGerman
@@ -65,6 +65,12 @@ class HumanPlayerSpec extends WordSpec with Matchers {
     }
     "have player number 0" in {
       human.getPlayerNumber should be(0)
+    }
+  }
+
+  "PlayerEnv" should {
+    "be callable" in {
+      PlayerEnv
     }
   }
 

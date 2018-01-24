@@ -20,6 +20,8 @@ class SettingsSpec extends WordSpec with Matchers {
     "set the language with a String" in {
       Settings.setLanguageFromString("German")
       Settings.getLanguageAsString should be("Deutsch")
+      Settings.setLanguageFromString("abc")
+      Settings.getLanguageAsString should be("Deutsch")
       Settings.setLanguageFromString("English")
       Settings.getLanguageAsString should be("English")
     }

@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Future
 
 //noinspection ScalaStyle
-case class _GameHandler() extends _TGameHandler {
+class _GameHandler() extends _TGameHandler {
 
   def loadSettings(): Unit = {}
 

@@ -29,6 +29,7 @@ case class SettingsHandler() extends TSettingsHandlers {
       case Some(file) =>
         try {
           val xmlData = XML.load(file.path)
+          //TODO: cover 2 lines
           Some(SettingsOutput((xmlData \ "speed").text.toInt, (xmlData \ "language").text,
             (xmlData \ "deckSize").text.toInt, (xmlData \ "playerCount").text.toInt))
         } catch {

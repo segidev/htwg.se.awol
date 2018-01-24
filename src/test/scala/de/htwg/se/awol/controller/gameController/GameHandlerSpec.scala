@@ -383,7 +383,7 @@ class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
 
     controller.triggerNextPlay(controller.getPlayerList.last) match {
       case Some(f) =>
-        whenReady(f, timeout = timeout(3000 millis)) { result =>
+        whenReady(f, timeout = timeout(3000 milliseconds)) { result =>
           //result.leftSideValue shouldBe controller.getGameId
         }
         case _=>

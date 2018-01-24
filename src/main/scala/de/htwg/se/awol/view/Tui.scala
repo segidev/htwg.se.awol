@@ -4,7 +4,6 @@ import com.google.inject.Inject
 import com.typesafe.scalalogging.LazyLogging
 import de.htwg.se.awol.controller.gameController._
 import de.htwg.se.awol.controller.gameController.handler._TGameHandler
-import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandler
 import de.htwg.se.awol.controller.languageController.LanguageTranslator
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.MessageEnv

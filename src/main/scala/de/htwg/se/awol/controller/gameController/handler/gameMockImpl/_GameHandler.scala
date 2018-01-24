@@ -8,7 +8,7 @@ import de.htwg.se.awol.model.playerComponent.human.HumanPlayer
 import scala.collection.mutable.ListBuffer
 
 //noinspection ScalaStyle
-class _GameHandler() extends _TGameHandler {
+case class _GameHandler() extends _TGameHandler {
 
   def loadSettings(): Unit = {}
 

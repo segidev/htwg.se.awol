@@ -13,7 +13,6 @@ object Arschloch {
 
   val injector: Injector = Guice.createInjector(new ArschlochModule())
   val controller: _TGameHandler = injector.getInstance(classOf[_TGameHandler])
-  println(controller.getImplType)
 
   val tui: Tui = injector.getInstance(classOf[Tui])
   val gui: Gui = injector.getInstance(classOf[Gui])

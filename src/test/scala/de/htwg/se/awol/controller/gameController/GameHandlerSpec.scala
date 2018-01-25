@@ -4,7 +4,6 @@ import de.htwg.se.awol.controller.gameController.handler.gameBaseImpl._GameHandl
 import de.htwg.se.awol.model.cardComponents.Card
 import de.htwg.se.awol.model.environmentComponents.CardEnv
 import de.htwg.se.awol.model.playerComponent.Player
-import de.htwg.se.awol.model.playerComponent.bot.advancedImpl.BotPlayer
 import org.junit.runner.RunWith
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.junit.JUnitRunner
@@ -18,7 +17,7 @@ import scala.reflect.io.Path
 import scalafx.embed.swing.SFXPanel
 
 @RunWith(classOf[JUnitRunner])
-class GameHandlerSpec extends WordSpec with Matchers with ScalaFutures {
+class GameHandlerSpec extends WordSpec with Matchers {
   "Starting a new round" should {
     "not work in the wrong state" in {
       val controller: _GameHandler = new _GameHandler()
@@ -370,43 +369,27 @@ class GameHandlerSpec extends WordSpec with Matchers with ScalaFutures {
 
 @RunWith(classOf[JUnitRunner])
 class GameHandlerFutureSpec extends FunSuite with Matchers with ScalaFutures {
-  implicit val defaultPatience = PatienceConfig(timeout = Span(30, Seconds), interval = Span(100, Millis))
+  implicit val defaultPatience = PatienceConfig(timeout = Span(6, Seconds), interval = Span(500, Millis))
 
   test("A valid message should be returned to a valid name") {
-      new SFXPanel()
-      val controller: _GameHandler = new _GameHandler()
-      controller.initNewGame(32, 4)
-      println(controller.getStarterCard)
-      println(controller.getPlayerList.remove(0))
-      controller.getPlayerList.append(new BotPlayer(0))
-      val aPlayer: Player = controller.getPlayerList.last
-      controller.callNextActionByState()
-      controller.triggerNextPlay(aPlayer) match {
-        case Some(f) =>
-          whenReady(f) { result =>
-            println(result)
-            result shouldBe controller.getGameId
-          }
-        case _=>
-      }
-    }
-
-    /*controller.triggerNextPlay(aPlayer) match {
+    val controller: _GameHandler = new _GameHandler()
+    controller.initNewGame(32, 4)
+    controller.callNextActionByState()
+    controller.triggerNextPlay(controller.getPlayerList.last) match {
       case Some(f) =>
         whenReady(f) { result =>
-          println(result)
           result.leftSideValue shouldBe controller.getGameId
         }
         case _=>
     }
 
-    println("AGAIN!", aPlayer)
-    controller.triggerNextPlay(aPlayer) match {
+    controller.triggerNextPlay(controller.getPlayerList.last) match {
       case Some(f) =>
         whenReady(f) { result =>
           //result.leftSideValue shouldBe controller.getGameId
         }
         case _=>
     }
-    controller.initNewGame(32, 4)*/
+    controller.initNewGame(32, 4)
+  }
 }

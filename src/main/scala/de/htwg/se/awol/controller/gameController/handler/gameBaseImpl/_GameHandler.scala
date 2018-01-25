@@ -205,9 +205,11 @@ class _GameHandler() extends _TGameHandler {
     val nextPlayer: Player = getPlayerByIndex(actualPlayerNumber)
 
     if (nextPlayer.isHumanPlayer) {
+      println("CALLING PLAYER")
       doPlay(nextPlayer)
       None
     } else {
+      println("=====> CALLING FUTURE")
       val f = Future[Double] {
         val useId = gameId
         Thread.sleep(Settings.getGameSpeed)
@@ -423,6 +425,8 @@ class _GameHandler() extends _TGameHandler {
     }
     isGamePaused = bool
   }
+
+  def getStarterCard: Card = starterCard
 
   def setKing(playerOption: Option[Player]): Unit = {
     playerOption match {
